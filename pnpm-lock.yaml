@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@onjmin/oekaki':
+        specifier: 1.0.42
+        version: 1.0.42
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
@@ -219,6 +223,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@onjmin/oekaki@1.0.42':
+    resolution: {integrity: sha512-VZhJv6hMEc6dUhYX5SbR8jp8hDbRzweOdoHlJmFfA+6NI+RYHcslHU0/ek74oxp8pvfPKLcKPRYfv1luycVGqQ==}
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -906,6 +913,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@onjmin/oekaki@1.0.42': {}
 
   '@polka/url@1.0.0-next.29': {}
 

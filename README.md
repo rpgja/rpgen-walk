@@ -1,38 +1,65 @@
-# sv
+# rpg-walk
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A pixel art tool for creating RPG walking sprites.
 
-## Creating a project
+## 概要 / Overview
 
-If you're seeing this, you've probably already done this step. Congrats!
+**rpg-walk** は、RPG の歩行グラフィックを自作できるツールです。  
+基本的な規格は [RPGEN](https://rpgen.org/) に準拠しており、今後は **RPGツクール** や **ウディタ** への対応も予定しています。
 
-```bash
-# create a new project in the current directory
-npx sv create
+### 競合アプリに対する強み / Features
 
-# create a new project in my-app
-npx sv create my-app
-```
+- 各フレームが独立したレイヤー構造を持ち、柔軟な編集が可能
+- ドット絵を手軽に始められる、充実したテンプレート
+- **Undo / Redo** 完備で安心の編集操作
+- シンプルな UI と軽快な動作
 
-## Developing
+## ライセンス / License
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- **MIT**  
+  本プロジェクト全体には MIT ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
 
-```bash
-npm run dev
+## 採用技術 / Tech Stack
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+- **開発言語**: TypeScript  
+- **実行環境**: Volta / pnpm / Biome  
+- **フロントエンド**: SvelteKit
 
-## Building
+## 環境構築 / Getting Started
 
-To create a production version of your app:
+1. [Volta をインストール](https://docs.volta.sh/guide/getting-started)
+2. このリポジトリをローカルにクローン
+3. [pnpm をインストール](https://pnpm.io/ja/installation)
+4. この `README.md` があるディレクトリを VS Code で開く
+5. 拡張機能タブから推奨拡張をインストール
+6. `.env.example` を `.env` にリネーム
+7. `pnpm i` を実行して依存関係をインストール
+8. よく使うコマンド:
+   - `pnpm run dev` — 開発ビルド
+   - `pnpm run prod` — 本番ビルド
 
-```bash
-npm run build
-```
+## 今後の予定 / Roadmap
 
-You can preview the production build with `npm run preview`.
+- ✅ RPGEN 規格対応
+- 🚧 RPGツクール・ウディタへのエクスポート
+- 🚧 カスタムタイル対応
+- 🚧 アニメーション再生機能の強化
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## スクリーンショット / Screenshots
+
+(ここにツールのスクリーンショットを追加)
+
+例:
+
+
+## コントリビュート / Contributing
+
+改善案・バグ報告・PR 歓迎です！
+
+1. Issue を作成
+2. Fork & ブランチ作成
+3. PR を送信してレビューを待つ
+
+---
+
+Pull requests are welcome! Let's build better sprite tools together 🧙‍♀️✨

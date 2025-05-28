@@ -1,6 +1,6 @@
 {
-  "author": "rpgja",
-  "license": "MIT",
+	"author": "rpgja",
+	"license": "MIT",
 	"name": "rpg-walk",
 	"private": true,
 	"version": "0.0.1",
@@ -30,5 +30,8 @@
 		"onlyBuiltDependencies": [
 			"esbuild"
 		]
+	},
+	"dependencies": {
+		"@onjmin/oekaki": "1.0.42"
 	}
 }
