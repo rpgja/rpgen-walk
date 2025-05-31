@@ -23,7 +23,7 @@ A pixel art tool for creating RPG walking sprites.
 
 - **開発言語**: TypeScript  
 - **実行環境**: Volta / pnpm / Biome  
-- **フロントエンド**: SvelteKit / Tailwind CSS / Skeleton UI / Lucide Svelte
+- **フロントエンド**: SvelteKit / Tailwind CSS / Skeleton / Lucide
 
 ## 環境構築 / Getting Started
 
