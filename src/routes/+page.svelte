@@ -1,9 +1,7 @@
 <script lang="ts">
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
-    import { ObjectStorage } from "$lib/object-storage";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
-    import type { Component } from "@lucide/svelte";
     import IconEraser from "@lucide/svelte/icons/eraser";
     import IconFlipHorizontal from "@lucide/svelte/icons/flip-horizontal-2";
     import IconGrid from "@lucide/svelte/icons/grid";
@@ -16,7 +14,6 @@
     import IconTrash2 from "@lucide/svelte/icons/trash-2";
     import IconUndo from "@lucide/svelte/icons/undo";
     import {
-        mdiContentSave,
         mdiContentSaveOutline,
         mdiEraser,
         mdiEraserVariant,
@@ -25,11 +22,8 @@
         mdiFormatColorFill,
         mdiGrid,
         mdiHandBackRight,
-        mdiLayers,
         mdiPen,
-        mdiPlus,
         mdiRedo,
-        mdiTrashCan,
         mdiTrashCanOutline,
         mdiUndo,
     } from "@mdi/js";
