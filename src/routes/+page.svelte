@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
@@ -362,7 +363,7 @@
             style="min-width: 180px;"
         >
             <img
-                src="/momoi.png"
+                src="{base}/momoi.png"
                 alt="Momoi Icon"
                 class="w-6 h-6 object-contain"
             />
