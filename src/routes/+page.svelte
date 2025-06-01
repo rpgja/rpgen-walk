@@ -37,23 +37,23 @@
     const handleKeyDown = async (e: KeyboardEvent) => {
         if (!e.ctrlKey) return;
         switch (e.key) {
-            case "2":
+            case "1":
                 e.preventDefault();
                 choiced = tool.pen.label;
                 break;
-            case "3":
+            case "2":
                 e.preventDefault();
                 choiced = tool.eraser.label;
                 break;
-            case "4":
+            case "3":
                 e.preventDefault();
                 choiced = tool.dropper.label;
                 break;
-            case "5":
+            case "4":
                 e.preventDefault();
                 choiced = tool.fill.label;
                 break;
-            case "6":
+            case "5":
                 e.preventDefault();
                 choiced = tool.translate.label;
                 break;
@@ -219,6 +219,7 @@
     let recent: string[] = $state([]);
     const maxRecent = 16;
     const addRecent = () => {
+        if (choiced === tool.translate.label) return;
         const idx = recent.indexOf($color);
         if (idx === 0) return;
         if (idx !== -1) recent.splice(idx, 1);
