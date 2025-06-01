@@ -42,7 +42,9 @@
 
 	let clickedTimestamp = $state(0);
 	const updateClickedTimestamp = () => {
-		clickedTimestamp = performance.now();
+		setTimeout(() => {
+			clickedTimestamp = performance.now();
+		});
 	};
 	$effect(() => {
 		document.addEventListener("click", updateClickedTimestamp);
@@ -85,7 +87,11 @@
 								: 'https://placehold.co/32x32?text=new'});"
 						></div>
 						<div>
-							<p class="text-sm font-medium">{layer.name}</p>
+							<p
+								class="text-sm font-medium truncate max-w-[128px]"
+							>
+								{layer.name}
+							</p>
 							<div
 								class="flex items-center text-xs text-gray-500 space-x-1"
 							>
