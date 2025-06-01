@@ -1,7 +1,7 @@
 {
 	"author": "rpgja",
 	"license": "MIT",
-	"name": "rpg-walk",
+	"name": "rpgen-walk",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",

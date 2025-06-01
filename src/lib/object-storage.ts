@@ -1,7 +1,7 @@
 import localforage from "localforage";
 
 localforage.config({
-	name: "rpg-walk.v25.5.30",
+	name: "rpgen-walk.v25.5.30",
 	storeName: "cache.objects",
 });
 
