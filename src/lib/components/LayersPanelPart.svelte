@@ -72,13 +72,13 @@
 						: 'hover:bg-gray-100'}"
 				>
 					<div
-						class="flex items-center space-x-2"
 						tabindex="0"
 						role="button"
+						onkeydown={() => {}}
+						class="flex items-center space-x-2"
 						onclick={() => {
 							activeLayer = layer;
 						}}
-						onkeydown={() => {}}
 					>
 						<div
 							class="w-8 h-8 bg-gray-200 bg-center bg-cover rounded"

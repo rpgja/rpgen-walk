@@ -1,6 +1,7 @@
 <script lang="ts">
     import { base } from "$app/paths";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+    import FramesPanelPart from "$lib/components/FramesPanelPart.svelte";
     import LayersPanelPart from "$lib/components/LayersPanelPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
     import { color } from "$lib/store";
@@ -479,7 +480,7 @@
     <div class="grid grid-cols-1 md:grid-cols-[auto_1fr_auto]">
         <!-- Left Sidebar -->
         <aside class="bg-surface-200 p-4 space-y-4">
-            <div>フレームごとの差分？</div>
+            <FramesPanelPart />
         </aside>
 
         <!-- Main Canvas Area -->
