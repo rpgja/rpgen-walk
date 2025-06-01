@@ -14,21 +14,6 @@ A pixel art tool for creating RPG walking sprites.
 - **Undo / Redo** 完備で安心の編集操作
 - シンプルな UI と軽快な動作
 
-## ライセンス / License
-
-- **MIT**  
-  本プロジェクト全体には MIT ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
-
-> [!NOTE]
-> Although this application uses a library originally licensed under AGPLv3,
-> both the application and the library are authored by the same developer,
-> who hereby distributes this application under the MIT license.
-> 
-> （このアプリケーションはもともとAGPLv3でライセンスされたライブラリを使用していますが、
-> アプリケーションとライブラリの両方が同じ開発者によって作成されており、
-> MITライセンスの下でこのアプリケーションを配布しています。）
-
-
 ## 採用技術 / Tech Stack
 
 - **開発言語**: TypeScript  
@@ -61,6 +46,19 @@ A pixel art tool for creating RPG walking sprites.
 
 例:
 
+## ライセンス / License
+
+- **MIT**  
+  本プロジェクト全体には MIT ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
+
+> [!NOTE]
+> Although this application uses a library originally licensed under AGPLv3,
+> both the application and the library are authored by the same developer,
+> who hereby distributes this application under the MIT license.
+> 
+> （このアプリケーションはもともとAGPLv3でライセンスされたライブラリを使用していますが、
+> アプリケーションとライブラリの両方が同じ開発者によって作成されており、
+> MITライセンスの下でこのアプリケーションを配布しています。）
 
 ## コントリビュート / Contributing
 
