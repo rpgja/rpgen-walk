@@ -37,6 +37,7 @@
             <p class="opacity-60">Ctrl + Z：操作を戻す（Undo）</p>
             <p class="opacity-60">Ctrl + Z + Shift：操作をやり直す（Redo）</p>
             <p class="opacity-60">Ctrl + S：画像を保存</p>
+            <p class="opacity-60">モニターサイズは24インチ以上推奨</p>
         </article>
     {/snippet}
 </Popover>

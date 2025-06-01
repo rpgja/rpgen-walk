@@ -1,6 +1,7 @@
 <script lang="ts">
     import { base } from "$app/paths";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+    import LayersPanelPart from "$lib/components/LayersPanelPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
@@ -353,8 +354,6 @@
                 break;
         }
     };
-
-    let manualOpen = $state(false);
 </script>
 
 <div class="grid h-screen grid-rows-[auto_1fr_auto]">
@@ -496,8 +495,8 @@
 
         <!-- Right Sidebar -->
         <aside class="bg-surface-200 p-4 space-y-4">
-            <div>レイヤー？</div>
             <ColorWheelPart />
+            <LayersPanelPart bind:activeLayer />
         </aside>
     </div>
 
