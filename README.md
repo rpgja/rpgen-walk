@@ -25,8 +25,8 @@ A pixel art tool for creating RPG walking sprites.
 > who hereby distributes this application under the MIT license.
 > 
 > （このアプリケーションはもともとAGPLv3でライセンスされたライブラリを使用していますが、
-> 　アプリケーションとライブラリの両方が同じ開発者によって作成されており、
-> 　MITライセンスの下でこのアプリケーションを配布しています。）
+> アプリケーションとライブラリの両方が同じ開発者によって作成されており、
+> MITライセンスの下でこのアプリケーションを配布しています。）
 
 
 ## 採用技術 / Tech Stack
