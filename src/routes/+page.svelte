@@ -1,6 +1,7 @@
 <script lang="ts">
     import { base } from "$app/paths";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+    import ManualPart from "$lib/components/ManualPart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
     import { CheckIcon } from "@lucide/svelte";
@@ -352,6 +353,8 @@
                 break;
         }
     };
+
+    let manualOpen = $state(false);
 </script>
 
 <div class="grid h-screen grid-rows-[auto_1fr_auto]">
@@ -570,6 +573,7 @@
                 </button>
             {/each}
         </nav>
+        <ManualPart />
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
             <!-- Skeleton ColorPicker -->
