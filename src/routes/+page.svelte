@@ -2,6 +2,11 @@
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
+    import { CheckIcon } from "@lucide/svelte";
+    import { EyeIcon } from "@lucide/svelte";
+    import { TrashIcon } from "@lucide/svelte";
+    import { EditIcon } from "@lucide/svelte";
+    import { LockIcon } from "@lucide/svelte";
     import IconEraser from "@lucide/svelte/icons/eraser";
     import IconFlipHorizontal from "@lucide/svelte/icons/flip-horizontal-2";
     import IconGrid from "@lucide/svelte/icons/grid";
@@ -28,6 +33,7 @@
         mdiUndo,
     } from "@mdi/js";
     import * as oekaki from "@onjmin/oekaki";
+    import { Slider } from "@skeletonlabs/skeleton-svelte";
     import { Segment, Switch } from "@skeletonlabs/skeleton-svelte";
     import ColorPicker from "svelte-awesome-color-picker";
 
@@ -63,7 +69,7 @@
                 break;
             case "f":
                 e.preventDefault();
-                oekaki.flipped.value = !oekaki.flipped.value;
+                flipped = !flipped;
                 break;
             case "g":
                 e.preventDefault();
@@ -203,13 +209,32 @@
         oekaki.onClick((x, y, buttons) => {});
     });
 
-    let opacity = $state(100);
+    // activeLayerが変わったときにstateを同期する
+    $effect(() => {
+        if (!activeLayer) return;
+        opacity = [activeLayer.opacity];
+        layerVisible = activeLayer.visible;
+        layerName = activeLayer.name;
+        layerNameDisabled = true;
+        layerLocked = activeLayer.locked;
+    });
+
+    let opacity = $state([100]);
     let layerVisible = $state(true);
     let layerName = $state("");
     let layerNameDisabled = $state(true);
     let layerLocked = $state(false);
     $effect(() => {
-        if (activeLayer) activeLayer.opacity = opacity;
+        if (activeLayer) activeLayer.opacity = opacity[0];
+    });
+    $effect(() => {
+        if (activeLayer) activeLayer.visible = layerVisible;
+    });
+    $effect(() => {
+        if (activeLayer) activeLayer.name = layerName;
+    });
+    $effect(() => {
+        if (activeLayer) activeLayer.locked = layerLocked;
     });
     $effect(() => {
         unjStorage.color.value = $color;
@@ -330,8 +355,124 @@
 
 <div class="grid h-screen grid-rows-[auto_1fr_auto]">
     <!-- Header -->
-    <header class="bg-surface-100 shadow p-4">
-        HGペイント（歩行グラフィックペイント）
+    <header class="bg-surface-100 shadow p-4 flex flex-wrap items-center gap-3">
+        <!-- タイトルは左寄せ、固定幅 -->
+        <div
+            class="flex-none px-3 py-1 bg-primary rounded select-none text-left font-bold text-error-700 flex items-center gap-2"
+            style="min-width: 180px;"
+        >
+            <img
+                src="/momoi.png"
+                alt="Momoi Icon"
+                class="w-6 h-6 object-contain"
+            />
+            HGペイント（歩行グラフィックペイント）
+        </div>
+
+        <!-- タイトル以降の要素を包むコンテナ、中央寄せ -->
+        <div class="flex flex-1 flex-wrap justify-center items-center gap-3">
+            <Switch
+                controlActive="bg-secondary-500"
+                checked={layerLocked}
+                onCheckedChange={(e) => {
+                    layerLocked = e.checked;
+                }}
+            >
+                {#snippet inactiveChild()}
+                    <LockIcon size="14" />
+                {/snippet}
+                {#snippet activeChild()}
+                    <LockIcon size="14" />
+                {/snippet}
+            </Switch>
+            <div class="input-group grid-cols-[1fr_auto]">
+                <input
+                    class="ig-input"
+                    type="text"
+                    placeholder="レイヤー名"
+                    bind:value={layerName}
+                    disabled={layerNameDisabled}
+                    maxlength="32"
+                />
+                <button
+                    class="ig-btn {layerNameDisabled ? '' : 'preset-filled'}"
+                    title="レイヤー名の編集"
+                    onclick={() => (layerNameDisabled = !layerNameDisabled)}
+                >
+                    {#if layerNameDisabled}
+                        <EditIcon size={18} />
+                    {:else}
+                        <CheckIcon size={18} />
+                    {/if}
+                </button>
+            </div>
+            <button
+                type="button"
+                class="btn-icond btn-lg"
+                onclick={() => {
+                    if (
+                        layerLocked ||
+                        !activeLayer ||
+                        (activeLayer.used &&
+                            !confirm(`${activeLayer.name}を削除しますか？`))
+                    )
+                        return;
+                    activeLayer.delete();
+                    const { prev, next } = activeLayer;
+                    if (next) activeLayer = next;
+                    else if (prev) activeLayer = prev;
+                    else {
+                        oekaki.refresh();
+                        activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+                    }
+                }}
+            >
+                <TrashIcon size={18} />
+            </button>
+            <button
+                type="button"
+                class="btn-icond btn-lg"
+                onclick={async () => {
+                    if (
+                        layerLocked ||
+                        !activeLayer ||
+                        !confirm("全レイヤーを削除しますか？") ||
+                        !confirm(
+                            "一度消すと二度と復元できません。本当に消しますか？",
+                        ) ||
+                        !confirm("後悔しませんね？")
+                    )
+                        return;
+                    init();
+                }}
+            >
+                <IconTrash2 size={18} />
+            </button>
+        </div>
+
+        <Switch
+            controlActive="bg-secondary-500"
+            checked={layerVisible}
+            onCheckedChange={(e) => {
+                layerVisible = e.checked;
+            }}
+        >
+            {#snippet inactiveChild()}
+                <EyeIcon size="14" />
+            {/snippet}
+            {#snippet activeChild()}
+                <EyeIcon size="14" />
+            {/snippet}
+        </Switch>
+        <span class="text-sm w-[4ch] font-mono text-end block">{opacity}%</span>
+        <!-- スライダー -->
+        <div class="w-full basis-full max-w-[300px] mt-2">
+            <Slider
+                value={opacity}
+                onValueChange={(e) => (opacity = e.value)}
+                markers={[25, 50, 75]}
+            />
+        </div>
     </header>
 
     <!-- Content Area -->
@@ -375,7 +516,6 @@
         </Segment>
         <nav class="btn-group preset-outlined-surface-200-800 flex gap-4">
             <Switch
-                name="erasable"
                 controlActive="bg-secondary-500"
                 checked={erasable}
                 onCheckedChange={(e) => {
@@ -383,14 +523,13 @@
                 }}
             >
                 {#snippet inactiveChild()}
-                    <IconEraser size="14" />
+                    <tool.erasable.icon size="14" />
                 {/snippet}
                 {#snippet activeChild()}
-                    <IconEraser size="14" />
+                    <tool.erasable.icon size="14" />
                 {/snippet}
             </Switch>
             <Switch
-                name="flipped"
                 controlActive="bg-secondary-500"
                 checked={flipped}
                 onCheckedChange={(e) => {
@@ -398,14 +537,13 @@
                 }}
             >
                 {#snippet inactiveChild()}
-                    <IconFlipHorizontal size="14" />
+                    <tool.flip.icon size="14" />
                 {/snippet}
                 {#snippet activeChild()}
-                    <IconFlipHorizontal size="14" />
+                    <tool.flip.icon size="14" />
                 {/snippet}
             </Switch>
             <Switch
-                name="grid"
                 controlActive="bg-secondary-500"
                 checked={isGrid}
                 onCheckedChange={(e) => {
@@ -413,10 +551,10 @@
                 }}
             >
                 {#snippet inactiveChild()}
-                    <IconGrid size="14" />
+                    <tool.grid.icon size="14" />
                 {/snippet}
                 {#snippet activeChild()}
-                    <IconGrid size="14" />
+                    <tool.grid.icon size="14" />
                 {/snippet}
             </Switch>
         </nav>
