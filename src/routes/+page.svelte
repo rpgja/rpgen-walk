@@ -4,6 +4,7 @@
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
     import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
+    import PreviewPart from "$lib/components/PreviewPart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
     import { BombIcon, CheckIcon } from "@lucide/svelte";
@@ -483,7 +484,8 @@
         </aside>
 
         <!-- Main Canvas Area -->
-        <main class="bg-white flex flex-col items-center justify-center">
+        <main class="bg-white flex items-center justify-center gap-4">
+            <PreviewPart />
             <div
                 class={`relative ${isGrid ? "hg-paint-grid-mode" : ""}`}
                 bind:this={oekakiWrapper}

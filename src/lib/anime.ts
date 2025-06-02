@@ -3,15 +3,20 @@ import type * as oekaki from "@onjmin/oekaki";
 export let ways: number;
 export let frames: number;
 export let waysOrder: Way[];
-export const toI = (way: number, frame: number) => way * frames + frame;
+export const toI = (x: number, y: number) => x + y * frames;
 export const init = (_ways: number, _frames: number, _waysOrder: Way[]) => {
 	ways = _ways;
 	frames = _frames;
 	waysOrder = _waysOrder;
+	for (const [i, v] of _waysOrder.entries()) {
+		iByWay.set(v, i * frames);
+	}
 };
 
+export const iByWay = new Map<Way, number>();
 export const layersByI = new Map<number, oekaki.LayeredCanvas[]>();
-export const imageByI = new Map<number, string>();
+export const canvasByI = new Map<number, HTMLCanvasElement>();
+export const dataURLByI = new Map<number, string>();
 
 type Way = {
 	key: string;
@@ -28,3 +33,38 @@ export const way = {
 	z: { key: "z", label: "左前" },
 	c: { key: "c", label: "右前" },
 } as const;
+
+export const RPGEN = {
+	w: 16,
+	h: 16,
+	frames: 2,
+	ways: [way.w, way.d, way.s, way.a],
+};
+
+export const RPGMaker2000 = {
+	w: 24,
+	h: 32,
+	frames: 3,
+	ways: [way.w, way.d, way.s, way.a],
+};
+
+export const RPGMakerXP = {
+	w: 32,
+	h: 48,
+	frames: 4,
+	ways: [way.s, way.a, way.d, way.w],
+};
+
+export const RPGMakerVX = {
+	w: 32,
+	h: 32,
+	frames: 3,
+	ways: [way.s, way.a, way.d, way.w],
+};
+
+export const RPGMakerMV = {
+	w: 48,
+	h: 48,
+	frames: 3,
+	ways: [way.s, way.a, way.d, way.w],
+};

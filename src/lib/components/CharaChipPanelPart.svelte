@@ -31,8 +31,10 @@
 	const updateClickedTimestamp = () => {
 		setTimeout(() => {
 			clickedTimestamp = performance.now();
-			const dataURL = oekaki.render().toDataURL("image/png");
-			anime.imageByI.set(activeIndex, dataURL);
+			const canvas = oekaki.render();
+			anime.canvasByI.set(activeIndex, canvas);
+			const dataURL = canvas.toDataURL("image/png");
+			anime.dataURLByI.set(activeIndex, dataURL);
 		});
 	};
 	$effect(() => {
@@ -43,23 +45,23 @@
 </script>
 
 <section class="space-y-4">
-	{#each Array(anime.ways) as _, way}
+	{#each Array(anime.ways) as _, y}
 		<div class="flex items-center gap-4">
 			<!-- フレーム -->
 			<div class="flex gap-4">
-				{#each Array(anime.frames) as __, frame}
-					{#key anime.toI(way, frame)}
+				{#each Array(anime.frames) as __, x}
+					{#key anime.toI(x, y)}
 						<div
 							tabindex="0"
 							role="button"
 							onkeydown={() => {}}
 							class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
-								activeIndex === anime.toI(way, frame)
+								activeIndex === anime.toI(x, y)
 									? "ring-4 ring-primary-500 ring-offset-2"
 									: ""
 							}`}
 							onclick={() => {
-								const i = anime.toI(way, frame);
+								const i = anime.toI(x, y);
 								if (activeIndex === i) return;
 								prevIndex = activeIndex;
 								activeIndex = i;
@@ -69,13 +71,13 @@
 							<div
 								class="absolute top-1 left-1 bg-primary-600/40 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
 							>
-								{anime.toI(way, frame) + 1}
+								{anime.toI(x, y) + 1}
 							</div>
 							{#key clickedTimestamp}
 								<img
 									alt="frame"
-									src={anime.imageByI.get(
-										anime.toI(way, frame),
+									src={anime.dataURLByI.get(
+										anime.toI(x, y),
 									) ?? "https://placehold.co/32x32?text=new"}
 									class="gimp-checkered-background w-full h-full object-cover bg-surface-500"
 								/>
@@ -86,13 +88,13 @@
 			</div>
 			<!-- 行ラベル -->
 			<div class="w-6 text-sm font-semibold">
-				{#if anime.waysOrder[way] === anime.way.w}
+				{#if anime.waysOrder[y] === anime.way.w}
 					<ArrowUpIcon />
-				{:else if anime.waysOrder[way] === anime.way.a}
+				{:else if anime.waysOrder[y] === anime.way.a}
 					<ArrowLeftIcon />
-				{:else if anime.waysOrder[way] === anime.way.s}
+				{:else if anime.waysOrder[y] === anime.way.s}
 					<ArrowDownIcon />
-				{:else if anime.waysOrder[way] === anime.way.d}
+				{:else if anime.waysOrder[y] === anime.way.d}
 					<ArrowRightIcon />
 				{/if}
 			</div>
