@@ -81,11 +81,15 @@
 						}}
 					>
 						<div
-							class="w-8 h-8 bg-gray-200 bg-center bg-cover rounded"
-							style="background-image: url({layer.used
-								? layer.canvas.toDataURL('image/png')
-								: 'https://placehold.co/32x32?text=new'});"
-						></div>
+							class="gimp-checkered-background relative w-8 h-8 rounded overflow-hidden"
+						>
+							<div
+								class="w-full h-full bg-center bg-cover"
+								style="background-image: url({layer.used
+									? layer.canvas.toDataURL('image/png')
+									: 'https://placehold.co/32x32?text=new'});"
+							></div>
+						</div>
 						<div>
 							<p
 								class="text-sm font-medium truncate max-w-[128px]"

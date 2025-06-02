@@ -99,7 +99,7 @@
 									src={imageByIndex.get(
 										toIndex(rowIndex, colIndex),
 									) ?? "https://placehold.co/32x32?text=new"}
-									class="w-full h-full object-cover bg-surface-500 gimp-checkered-background"
+									class="gimp-checkered-background w-full h-full object-cover bg-surface-500\"
 								/>
 							{/key}
 						</div>
