@@ -2,6 +2,7 @@
     import { base } from "$app/paths";
     import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+    import ConfigPart from "$lib/components/ConfigPart.svelte";
     import InspoPart from "$lib/components/InspoPart.svelte";
     import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
@@ -503,7 +504,7 @@
 
     <!-- Footer Tool Selector -->
     <footer
-        class="bg-surface-100 shadow p-4 flex flex-wrap items-center justify-center"
+        class="bg-surface-100 shadow p-2 flex flex-wrap items-center justify-center gap-2"
     >
         <Segment
             name="tool"
@@ -574,6 +575,7 @@
             {/each}
         </nav>
         <ManualPart />
+        <ConfigPart />
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
             <!-- Skeleton ColorPicker -->

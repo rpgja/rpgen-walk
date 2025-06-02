@@ -39,6 +39,7 @@ export const way = {
 } as const;
 
 export const RPGEN = {
+	label: "RPGEN",
 	w: 16,
 	h: 16,
 	frames: 2,
@@ -46,6 +47,7 @@ export const RPGEN = {
 };
 
 export const RPGMaker2000 = {
+	label: "RPGツクール2000",
 	w: 24,
 	h: 32,
 	frames: 3,
@@ -53,6 +55,7 @@ export const RPGMaker2000 = {
 };
 
 export const RPGMakerXP = {
+	label: "RPGツクールXP",
 	w: 32,
 	h: 48,
 	frames: 4,
@@ -60,6 +63,7 @@ export const RPGMakerXP = {
 };
 
 export const RPGMakerVX = {
+	label: "RPGツクールVX",
 	w: 32,
 	h: 32,
 	frames: 3,
@@ -67,6 +71,7 @@ export const RPGMakerVX = {
 };
 
 export const RPGMakerMV = {
+	label: "RPGツクールMV",
 	w: 48,
 	h: 48,
 	frames: 3,

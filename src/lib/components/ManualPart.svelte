@@ -25,20 +25,20 @@
                 }}><IconX /></button
             >
         </header>
-        <article>
-            <p class="opacity-60">右クリック：カラーピッカー</p>
-            <p class="opacity-60">Ctrl + 1：ペン</p>
-            <p class="opacity-60">Ctrl + 2：消しゴム</p>
-            <p class="opacity-60">Ctrl + 3：カラーピッカー</p>
-            <p class="opacity-60">Ctrl + 4：塗りつぶし</p>
-            <p class="opacity-60">Ctrl + 5：ハンドツール</p>
-            <p class="opacity-60">Ctrl + E：常に消しゴム</p>
-            <p class="opacity-60">Ctrl + F：左右反転</p>
-            <p class="opacity-60">Ctrl + G：グリッド表示</p>
-            <p class="opacity-60">Ctrl + Z：戻す</p>
-            <p class="opacity-60">Ctrl + Shift + Z：やり直す</p>
-            <p class="opacity-60">Ctrl + S：保存</p>
-            <p class="opacity-60">モニターサイズは24インチ以上推奨</p>
+        <article class="opacity-60">
+            <p>右クリック：カラーピッカー</p>
+            <p>Ctrl + 1：ペン</p>
+            <p>Ctrl + 2：消しゴム</p>
+            <p>Ctrl + 3：カラーピッカー</p>
+            <p>Ctrl + 4：塗りつぶし</p>
+            <p>Ctrl + 5：ハンドツール</p>
+            <p>Ctrl + E：常に消しゴム</p>
+            <p>Ctrl + F：左右反転</p>
+            <p>Ctrl + G：グリッド表示</p>
+            <p>Ctrl + Z：戻す</p>
+            <p>Ctrl + Shift + Z：やり直す</p>
+            <p>Ctrl + S：保存</p>
+            <p>モニターサイズは24インチ以上推奨</p>
         </article>
     {/snippet}
 </Popover>
