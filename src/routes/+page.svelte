@@ -6,9 +6,8 @@
     import ManualPart from "$lib/components/ManualPart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
-    import { CheckIcon } from "@lucide/svelte";
+    import { BombIcon, CheckIcon } from "@lucide/svelte";
     import { EyeIcon } from "@lucide/svelte";
-    import { TrashIcon } from "@lucide/svelte";
     import { EditIcon } from "@lucide/svelte";
     import { LockIcon } from "@lucide/svelte";
     import IconEraser from "@lucide/svelte/icons/eraser";
@@ -428,7 +427,7 @@
                     else init();
                 }}
             >
-                <TrashIcon size={18} />
+                <IconTrash2 size={18} />
             </button>
             <button
                 type="button"
@@ -447,7 +446,7 @@
                     init();
                 }}
             >
-                <IconTrash2 size={18} />
+                <BombIcon size={18} />
             </button>
         </div>
 
