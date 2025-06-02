@@ -54,20 +54,7 @@
 <section class="space-y-4">
 	{#each Array(ways) as _, rowIndex}
 		<div class="flex items-center gap-4">
-			<!-- 行ラベル -->
-			<div class="w-6 text-sm font-semibold">
-				{#if directions[rowIndex] === "前"}
-					<ArrowDownIcon />
-				{:else if directions[rowIndex] === "後"}
-					<ArrowUpIcon />
-				{:else if directions[rowIndex] === "左"}
-					<ArrowLeftIcon />
-				{:else if directions[rowIndex] === "右"}
-					<ArrowRightIcon />
-				{/if}
-			</div>
-
-			<!-- 画像3枚 -->
+			<!-- フレーム -->
 			<div class="flex gap-4">
 				{#each Array(frames) as __, colIndex}
 					{#key toIndex(rowIndex, colIndex)}
@@ -99,12 +86,24 @@
 									src={imageByIndex.get(
 										toIndex(rowIndex, colIndex),
 									) ?? "https://placehold.co/32x32?text=new"}
-									class="gimp-checkered-background w-full h-full object-cover bg-surface-500\"
+									class="gimp-checkered-background w-full h-full object-cover bg-surface-500"
 								/>
 							{/key}
 						</div>
 					{/key}
 				{/each}
+			</div>
+			<!-- 行ラベル -->
+			<div class="w-6 text-sm font-semibold">
+				{#if directions[rowIndex] === "前"}
+					<ArrowDownIcon />
+				{:else if directions[rowIndex] === "後"}
+					<ArrowUpIcon />
+				{:else if directions[rowIndex] === "左"}
+					<ArrowLeftIcon />
+				{:else if directions[rowIndex] === "右"}
+					<ArrowRightIcon />
+				{/if}
 			</div>
 		</div>
 	{/each}
