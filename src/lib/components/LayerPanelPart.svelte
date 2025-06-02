@@ -116,15 +116,15 @@
 					<div class="flex space-x-1">
 						<button
 							class="p-1 text-gray-500 hover:text-blue-500"
-							onclick={() => moveLayerUp(layer)}
-						>
-							<ArrowUpIcon class="w-4 h-4" />
-						</button>
-						<button
-							class="p-1 text-gray-500 hover:text-blue-500"
 							onclick={() => moveLayerDown(layer)}
 						>
 							<ArrowDownIcon class="w-4 h-4" />
+						</button>
+						<button
+							class="p-1 text-gray-500 hover:text-blue-500"
+							onclick={() => moveLayerUp(layer)}
+						>
+							<ArrowUpIcon class="w-4 h-4" />
 						</button>
 					</div>
 				</li>

@@ -26,17 +26,18 @@
             >
         </header>
         <article>
+            <p class="opacity-60">右クリック：カラーピッカー</p>
             <p class="opacity-60">Ctrl + 1：ペン</p>
             <p class="opacity-60">Ctrl + 2：消しゴム</p>
             <p class="opacity-60">Ctrl + 3：カラーピッカー</p>
             <p class="opacity-60">Ctrl + 4：塗りつぶし</p>
             <p class="opacity-60">Ctrl + 5：ハンドツール</p>
-            <p class="opacity-60">Ctrl + E：常に消しゴムモード切替</p>
-            <p class="opacity-60">Ctrl + F：左右反転切替</p>
-            <p class="opacity-60">Ctrl + G：グリッド表示切替</p>
-            <p class="opacity-60">Ctrl + Z：操作を戻す（Undo）</p>
-            <p class="opacity-60">Ctrl + Z + Shift：操作をやり直す（Redo）</p>
-            <p class="opacity-60">Ctrl + S：画像を保存</p>
+            <p class="opacity-60">Ctrl + E：常に消しゴム</p>
+            <p class="opacity-60">Ctrl + F：左右反転</p>
+            <p class="opacity-60">Ctrl + G：グリッド表示</p>
+            <p class="opacity-60">Ctrl + Z：戻す</p>
+            <p class="opacity-60">Ctrl + Shift + Z：やり直す</p>
+            <p class="opacity-60">Ctrl + S：保存</p>
             <p class="opacity-60">モニターサイズは24インチ以上推奨</p>
         </article>
     {/snippet}
