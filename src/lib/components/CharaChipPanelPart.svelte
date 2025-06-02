@@ -5,6 +5,7 @@
 		ArrowRightIcon,
 		ArrowUpIcon,
 	} from "@lucide/svelte";
+	import * as oekaki from "@onjmin/oekaki";
 
 	let activeIndex = 0;
 	const directions = [
@@ -29,11 +30,9 @@
 	const ways = 4;
 	const frames = 3;
 
-	const images = Array.from(
-		{ length: ways * frames },
-		(_, i) => `https://picsum.photos/192/192?random=${i + 1}`,
-	);
-	const toImagesIndex = (rowIndex: number, colIndex: number) =>
+	const layersByIndex = new Map();
+	const imageByIndex = new Map();
+	const toIndex = (rowIndex: number, colIndex: number) =>
 		rowIndex * frames + colIndex;
 </script>
 
@@ -48,32 +47,30 @@
 			<!-- 画像3枚 -->
 			<div class="flex gap-4">
 				{#each Array(frames) as __, colIndex}
-					{#key toImagesIndex(rowIndex, colIndex)}
+					{#key toIndex(rowIndex, colIndex)}
 						<div
 							tabindex="0"
 							role="button"
 							onkeydown={() => {}}
 							class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
-								activeIndex ===
-								toImagesIndex(rowIndex, colIndex)
+								activeIndex === toIndex(rowIndex, colIndex)
 									? "ring-4 ring-primary-500 ring-offset-2"
 									: ""
 							}`}
 							onclick={() =>
-								(activeIndex = toImagesIndex(
-									rowIndex,
-									colIndex,
-								))}
+								(activeIndex = toIndex(rowIndex, colIndex))}
 						>
 							<!-- 左上バッジ -->
 							<div
 								class="absolute top-1 left-1 bg-primary-600/40 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
 							>
-								{toImagesIndex(rowIndex, colIndex) + 1}
+								{toIndex(rowIndex, colIndex) + 1}
 							</div>
 							<img
 								alt="frame"
-								src={images[toImagesIndex(rowIndex, colIndex)]}
+								src={imageByIndex.get(
+									toIndex(rowIndex, colIndex),
+								) ?? "https://placehold.co/32x32?text=new"}
 								class="w-full h-full object-cover bg-surface-500"
 							/>
 						</div>
