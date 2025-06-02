@@ -480,7 +480,7 @@
     <div class="grid grid-cols-1 md:grid-cols-[auto_1fr_auto]">
         <!-- Left Sidebar -->
         <aside class="bg-surface-200 p-4 space-y-4">
-            <CharaChipPanelPart />
+            <CharaChipPanelPart bind:activeLayer ready={!!upperLayer} />
         </aside>
 
         <!-- Main Canvas Area -->

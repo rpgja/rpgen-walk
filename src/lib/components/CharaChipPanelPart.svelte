@@ -7,33 +7,48 @@
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
 
-	let activeIndex = 0;
-	const directions = [
-		{
-			label: "前",
-			icon: ArrowDownIcon,
-		},
-		{
-			label: "後",
-			icon: ArrowUpIcon,
-		},
-		{
-			label: "左",
-			icon: ArrowLeftIcon,
-		},
-		{
-			label: "右",
-			icon: ArrowRightIcon,
-		},
-	];
+	let { activeLayer = $bindable(undefined), ready } = $props();
+
+	let activeIndex = $state(0);
+	let prevIndex = 0;
+	$effect(() => {
+		if (!ready) return;
+		layersByIndex.set(prevIndex, oekaki.getLayers());
+		const now = layersByIndex.get(activeIndex);
+		if (now) {
+			oekaki.setLayers(now);
+			activeLayer = now[now.length - 1];
+		} else {
+			oekaki.setLayers([]);
+			activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+		}
+	});
+
+	const directions = ["前", "後", "左", "右"];
 
 	const ways = 4;
 	const frames = 3;
 
-	const layersByIndex = new Map();
-	const imageByIndex = new Map();
+	const layersByIndex = new Map<number, oekaki.LayeredCanvas[]>();
+	const imageByIndex = new Map<number, string>();
 	const toIndex = (rowIndex: number, colIndex: number) =>
 		rowIndex * frames + colIndex;
+
+	let clickedTimestamp = $state(0);
+	const updateClickedTimestamp = () => {
+		setTimeout(() => {
+			clickedTimestamp = performance.now();
+			// const now = layersByIndex.get(activeIndex);
+			// if (!now) return;
+			const dataURL = oekaki.render().toDataURL("image/png");
+			imageByIndex.set(activeIndex, dataURL);
+		});
+	};
+	$effect(() => {
+		document.addEventListener("click", updateClickedTimestamp);
+		return () =>
+			document.removeEventListener("click", updateClickedTimestamp);
+	});
 </script>
 
 <section class="space-y-4">
@@ -41,7 +56,15 @@
 		<div class="flex items-center gap-4">
 			<!-- 行ラベル -->
 			<div class="w-6 text-sm font-semibold">
-				<svelte:component this={directions[rowIndex].icon} />
+				{#if directions[rowIndex] === "前"}
+					<ArrowDownIcon />
+				{:else if directions[rowIndex] === "後"}
+					<ArrowUpIcon />
+				{:else if directions[rowIndex] === "左"}
+					<ArrowLeftIcon />
+				{:else if directions[rowIndex] === "右"}
+					<ArrowRightIcon />
+				{/if}
 			</div>
 
 			<!-- 画像3枚 -->
@@ -57,8 +80,12 @@
 									? "ring-4 ring-primary-500 ring-offset-2"
 									: ""
 							}`}
-							onclick={() =>
-								(activeIndex = toIndex(rowIndex, colIndex))}
+							onclick={() => {
+								const i = toIndex(rowIndex, colIndex);
+								if (activeIndex === i) return;
+								prevIndex = activeIndex;
+								activeIndex = i;
+							}}
 						>
 							<!-- 左上バッジ -->
 							<div
@@ -66,13 +93,15 @@
 							>
 								{toIndex(rowIndex, colIndex) + 1}
 							</div>
-							<img
-								alt="frame"
-								src={imageByIndex.get(
-									toIndex(rowIndex, colIndex),
-								) ?? "https://placehold.co/32x32?text=new"}
-								class="w-full h-full object-cover bg-surface-500"
-							/>
+							{#key clickedTimestamp}
+								<img
+									alt="frame"
+									src={imageByIndex.get(
+										toIndex(rowIndex, colIndex),
+									) ?? "https://placehold.co/32x32?text=new"}
+									class="w-full h-full object-cover bg-surface-500 gimp-checkered-background"
+								/>
+							{/key}
 						</div>
 					{/key}
 				{/each}
