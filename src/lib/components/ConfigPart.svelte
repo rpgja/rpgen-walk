@@ -71,7 +71,7 @@
         <input
           class="input input-bordered w-full bg-white"
           type="text"
-          placeholder="例: wasd+qezc"
+          placeholder="例: WASDQEZC"
         />
         <p class="opacity-60 text-xs">WASD(前後左右)+QEZC(ナナメ)</p>
       </label>
