@@ -4,13 +4,17 @@ export let ways: number;
 export let frames: number;
 export let waysOrder: Way[];
 export const toI = (x: number, y: number) => x + y * frames;
-export const init = (_ways: number, _frames: number, _waysOrder: Way[]) => {
-	ways = _ways;
+export const init = (_frames: number, _ways: Way[]) => {
+	ways = _ways.length;
 	frames = _frames;
-	waysOrder = _waysOrder;
-	for (const [i, v] of _waysOrder.entries()) {
+	waysOrder = _ways;
+	iByWay.clear();
+	for (const [i, v] of _ways.entries()) {
 		iByWay.set(v, i * frames);
 	}
+	layersByI.clear();
+	canvasByI.clear();
+	dataURLByI.clear();
 };
 
 export const iByWay = new Map<Way, number>();

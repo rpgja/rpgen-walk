@@ -137,7 +137,7 @@
     let upperLayer: oekaki.LayeredCanvas | null = $state(null);
     let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
 
-    const width = 480;
+    const width = 480; // 動的に計算すべき
     const height = 480;
     $effect(() => {
         init();

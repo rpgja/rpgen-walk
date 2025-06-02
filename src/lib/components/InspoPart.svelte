@@ -56,7 +56,7 @@
 
   <!-- Preview -->
   {#if imageUrl}
-    <div class="mt-4">
+    <div class="mt-4 max-h-96 overflow-auto border rounded p-2">
       <img
         src={imageUrl}
         alt="参考画像"

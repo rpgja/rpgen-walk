@@ -25,10 +25,11 @@
 		}
 	});
 
-	anime.init(4, 3, [anime.way.s, anime.way.w, anime.way.a, anime.way.d]);
+	anime.init(3, [anime.way.s, anime.way.w, anime.way.a, anime.way.d]);
 
 	let clickedTimestamp = $state(0);
 	const updateClickedTimestamp = () => {
+		if (!ready) return;
 		setTimeout(() => {
 			clickedTimestamp = performance.now();
 			const canvas = oekaki.render();
