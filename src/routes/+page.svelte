@@ -2,6 +2,7 @@
     import { base } from "$app/paths";
     import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+    import InspoPart from "$lib/components/InspoPart.svelte";
     import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
     import PreviewPart from "$lib/components/PreviewPart.svelte";
@@ -490,6 +491,7 @@
                 class={`relative ${isGrid ? "hg-paint-grid-mode" : ""}`}
                 bind:this={oekakiWrapper}
             ></div>
+            <InspoPart />
         </main>
 
         <!-- Right Sidebar -->
