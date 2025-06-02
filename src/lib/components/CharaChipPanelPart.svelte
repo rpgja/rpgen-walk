@@ -6,6 +6,7 @@
 		ArrowUpIcon,
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
+	import * as anime from "../anime";
 
 	let { activeLayer = $bindable(undefined), ready } = $props();
 
@@ -13,8 +14,8 @@
 	let prevIndex = 0;
 	$effect(() => {
 		if (!ready) return;
-		layersByIndex.set(prevIndex, oekaki.getLayers());
-		const now = layersByIndex.get(activeIndex);
+		anime.layersByI.set(prevIndex, oekaki.getLayers());
+		const now = anime.layersByI.get(activeIndex);
 		if (now) {
 			oekaki.setLayers(now);
 			activeLayer = now[now.length - 1];
@@ -24,24 +25,14 @@
 		}
 	});
 
-	const directions = ["前", "後", "左", "右"];
-
-	const ways = 4;
-	const frames = 3;
-
-	const layersByIndex = new Map<number, oekaki.LayeredCanvas[]>();
-	const imageByIndex = new Map<number, string>();
-	const toIndex = (rowIndex: number, colIndex: number) =>
-		rowIndex * frames + colIndex;
+	anime.init(4, 3, [anime.way.s, anime.way.w, anime.way.a, anime.way.d]);
 
 	let clickedTimestamp = $state(0);
 	const updateClickedTimestamp = () => {
 		setTimeout(() => {
 			clickedTimestamp = performance.now();
-			// const now = layersByIndex.get(activeIndex);
-			// if (!now) return;
 			const dataURL = oekaki.render().toDataURL("image/png");
-			imageByIndex.set(activeIndex, dataURL);
+			anime.imageByI.set(activeIndex, dataURL);
 		});
 	};
 	$effect(() => {
@@ -52,23 +43,23 @@
 </script>
 
 <section class="space-y-4">
-	{#each Array(ways) as _, rowIndex}
+	{#each Array(anime.ways) as _, way}
 		<div class="flex items-center gap-4">
 			<!-- フレーム -->
 			<div class="flex gap-4">
-				{#each Array(frames) as __, colIndex}
-					{#key toIndex(rowIndex, colIndex)}
+				{#each Array(anime.frames) as __, frame}
+					{#key anime.toI(way, frame)}
 						<div
 							tabindex="0"
 							role="button"
 							onkeydown={() => {}}
 							class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
-								activeIndex === toIndex(rowIndex, colIndex)
+								activeIndex === anime.toI(way, frame)
 									? "ring-4 ring-primary-500 ring-offset-2"
 									: ""
 							}`}
 							onclick={() => {
-								const i = toIndex(rowIndex, colIndex);
+								const i = anime.toI(way, frame);
 								if (activeIndex === i) return;
 								prevIndex = activeIndex;
 								activeIndex = i;
@@ -78,13 +69,13 @@
 							<div
 								class="absolute top-1 left-1 bg-primary-600/40 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
 							>
-								{toIndex(rowIndex, colIndex) + 1}
+								{anime.toI(way, frame) + 1}
 							</div>
 							{#key clickedTimestamp}
 								<img
 									alt="frame"
-									src={imageByIndex.get(
-										toIndex(rowIndex, colIndex),
+									src={anime.imageByI.get(
+										anime.toI(way, frame),
 									) ?? "https://placehold.co/32x32?text=new"}
 									class="gimp-checkered-background w-full h-full object-cover bg-surface-500"
 								/>
@@ -95,13 +86,13 @@
 			</div>
 			<!-- 行ラベル -->
 			<div class="w-6 text-sm font-semibold">
-				{#if directions[rowIndex] === "前"}
-					<ArrowDownIcon />
-				{:else if directions[rowIndex] === "後"}
+				{#if anime.waysOrder[way] === anime.way.w}
 					<ArrowUpIcon />
-				{:else if directions[rowIndex] === "左"}
+				{:else if anime.waysOrder[way] === anime.way.a}
 					<ArrowLeftIcon />
-				{:else if directions[rowIndex] === "右"}
+				{:else if anime.waysOrder[way] === anime.way.s}
+					<ArrowDownIcon />
+				{:else if anime.waysOrder[way] === anime.way.d}
 					<ArrowRightIcon />
 				{/if}
 			</div>
