@@ -56,7 +56,8 @@
         ctx.clearRect(0, 0, cv.width, cv.height);
         const n = anime.frames;
         const step = (currentFrame / 30) | 0;
-        const frameIndex = n - 1 - Math.abs((step % ((n - 1) * 2)) - (n - 1));
+        const frameIndex =
+          n === 1 ? 0 : n - 1 - Math.abs((step % ((n - 1) * 2)) - (n - 1));
         const canvas = anime.canvasByI.get(i + frameIndex);
         if (!canvas) continue;
         ctx.drawImage(canvas, 0, 0, cv.width, cv.height);

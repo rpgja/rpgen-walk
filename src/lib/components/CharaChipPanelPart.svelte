@@ -99,6 +99,14 @@
 						<ArrowDownIcon />
 					{:else if anime.waysOrder[y] === anime.way.d}
 						<ArrowRightIcon />
+					{:else if anime.waysOrder[y] === anime.way.q}
+						<ArrowUpIcon class="rotate-315" />
+					{:else if anime.waysOrder[y] === anime.way.e}
+						<ArrowUpIcon class="rotate-45" />
+					{:else if anime.waysOrder[y] === anime.way.z}
+						<ArrowUpIcon class="rotate-225" />
+					{:else if anime.waysOrder[y] === anime.way.c}
+						<ArrowUpIcon class="rotate-135" />
 					{/if}
 				</div>
 			</div>
