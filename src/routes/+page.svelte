@@ -3,6 +3,7 @@
     import * as anime from "$lib/anime";
     import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+    import ExportPart from "$lib/components/ExportPart.svelte";
     import ImportPart from "$lib/components/ImportPart.svelte";
     import InspoPart from "$lib/components/InspoPart.svelte";
     import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
@@ -581,9 +582,12 @@
                 </button>
             {/each}
         </nav>
+
         <ManualPart />
         <ResizePart {init} />
         <ImportPart {init} bind:activeLayer bind:initTimestamp />
+        <ExportPart />
+
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
             <!-- Skeleton ColorPicker -->

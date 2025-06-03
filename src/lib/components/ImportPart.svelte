@@ -53,8 +53,6 @@
         ctx.drawImage(imageRef, 0, 0);
         const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        // ここまで確認OK
-
         for (let y = 0; y < ways; y++) {
             for (let x = 0; x < frames; x++) {
                 const layer = new oekaki.LayeredCanvas("素材の味");

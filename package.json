@@ -38,6 +38,7 @@
 		"@lucide/svelte": "0.511.0",
 		"@mdi/js": "7.4.47",
 		"@onjmin/oekaki": "1.0.47",
+		"jszip": "3.10.1",
 		"localforage": "1.10.0",
 		"valibot": "1.1.0"
 	}
