@@ -28,17 +28,25 @@
   ];
 
   const render = () => {
+    // 足踏み
+    const n = anime.frames;
+    const step = (currentFrame / 30) | 0;
+    const frameIndex =
+      n === 1 ? 0 : n - 1 - Math.abs((step % ((n - 1) * 2)) - (n - 1));
+
+    // ぐるぐる
+    const rotateStep = (currentFrame / 30 / (8 / n)) | 0;
+
     for (const [canvasIndex, way] of ways.entries()) {
       //真ん中
       if (way === null) {
         const n = anime.ways;
         if (n !== 4 && n !== 8) continue;
         const rotate = n === 4 ? rotate4ways : rotate8ways;
-        const step = (currentFrame / 30 / (8 / n)) | 0;
-        const _way = rotate[step % n];
+        const _way = rotate[rotateStep % n];
         const i = anime.iByWay.get(_way);
         if (!i && i !== 0) continue;
-        const canvas = anime.canvasByI.get(i);
+        const canvas = anime.canvasByI.get(i + frameIndex);
         if (!canvas) continue;
         const cv = canvasRefs[canvasIndex];
         if (!cv) continue;
@@ -54,10 +62,6 @@
         const ctx = cv.getContext("2d", { willReadFrequently: true });
         if (!ctx) continue;
         ctx.clearRect(0, 0, cv.width, cv.height);
-        const n = anime.frames;
-        const step = (currentFrame / 30) | 0;
-        const frameIndex =
-          n === 1 ? 0 : n - 1 - Math.abs((step % ((n - 1) * 2)) - (n - 1));
         const canvas = anime.canvasByI.get(i + frameIndex);
         if (!canvas) continue;
         ctx.drawImage(canvas, 0, 0, cv.width, cv.height);
