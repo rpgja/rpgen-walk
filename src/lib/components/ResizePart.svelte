@@ -58,7 +58,7 @@
   arrow
   arrowBackground="!bg-surface-200 dark:!bg-surface-800"
 >
-  {#snippet trigger()}初期化{/snippet}
+  {#snippet trigger()}リサイズ{/snippet}
   {#snippet content()}
     <header class="flex justify-between">
       <p class="font-bold text-xl">コマ数 / サイズ変更</p>

@@ -3,11 +3,11 @@
     import * as anime from "$lib/anime";
     import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
-    import ConfigPart from "$lib/components/ConfigPart.svelte";
     import InspoPart from "$lib/components/InspoPart.svelte";
     import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
     import PreviewPart from "$lib/components/PreviewPart.svelte";
+    import ResizePart from "$lib/components/ResizePart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
     import { BombIcon, CheckIcon } from "@lucide/svelte";
@@ -583,7 +583,7 @@
             {/each}
         </nav>
         <ManualPart />
-        <ConfigPart {init} />
+        <ResizePart {init} />
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
             <!-- Skeleton ColorPicker -->
