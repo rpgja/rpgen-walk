@@ -90,7 +90,7 @@
 
                         const [r, g, b, a] = data.subarray(index, index + 4);
                         if (!a) continue;
-                        oekaki.color.value = `rgb(${r}, ${g}, ${b})`;
+                        oekaki.color.value = `rgb(${r}, ${g}, ${b}, ${a})`;
                         layer.drawByDot(p * dotSize, o * dotSize);
                     }
                 }
