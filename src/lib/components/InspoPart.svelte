@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SearchIcon } from "@lucide/svelte";
 
-  let imageUrl = "";
+  let imageUrl = $state("");
   let fileInput: HTMLInputElement;
 
   function handleFileChange(event: Event) {
@@ -51,7 +51,9 @@
         required
       />
     </div>
-    <button class="btn btn-primary" type="submit">表示</button>
+    <button class="btn bg-blue-600 text-white hover:bg-blue-700" type="submit"
+      >表示</button
+    >
   </form>
 
   <!-- Preview -->

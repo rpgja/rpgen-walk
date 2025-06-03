@@ -1,10 +1,19 @@
 import type * as oekaki from "@onjmin/oekaki";
 
-export let ways: number;
+export let width: number;
+export let height: number;
 export let frames: number;
+export let ways: number;
 export let waysOrder: Way[];
 export const toI = (x: number, y: number) => x + y * frames;
-export const init = (_frames: number, _waysStr: string) => {
+export const init = (
+	_width: number,
+	_height: number,
+	_frames: number,
+	_waysStr: string,
+) => {
+	width = _width;
+	height = _height;
 	const _ways = strToWays(_waysStr);
 	ways = _ways.length;
 	frames = _frames;

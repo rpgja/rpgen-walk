@@ -3,6 +3,7 @@
     import * as anime from "$lib/anime";
     import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+    import ImportPart from "$lib/components/ImportPart.svelte";
     import InspoPart from "$lib/components/InspoPart.svelte";
     import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
@@ -141,17 +142,15 @@
 
     let width = 480;
     const height = 480;
-    let g_w = 0;
-    let g_h = 0;
     let initTimestamp = $state(0);
     $effect(() => {
-        init(anime.RPGEN.w, anime.RPGEN.h);
+        init();
     });
-    const init = async (w: number, h: number) => {
+    const init = async () => {
         if (!oekakiWrapper) return;
-        g_w = w;
-        g_h = h;
         initTimestamp = performance.now();
+        const w = anime.width;
+        const h = anime.height;
         width = Math.floor(height * (w / h));
         oekaki.init(oekakiWrapper, width, height);
 
@@ -339,7 +338,7 @@
     $effect(() => {
         oekaki.flipped.value = flipped;
     });
-    let isGrid = $state(false);
+    let isGrid = $state(true);
 
     let actions = [tool.undo, tool.redo, tool.save, tool.clear];
     const doAction = (action: string) => {
@@ -435,7 +434,7 @@
                     const { prev, next } = activeLayer;
                     if (next) activeLayer = next;
                     else if (prev) activeLayer = prev;
-                    else init(g_w, g_h);
+                    else init();
                 }}
             >
                 <IconTrash2 size={18} />
@@ -454,7 +453,7 @@
                         !confirm("後悔しませんね？")
                     )
                         return;
-                    init(g_w, g_h);
+                    init();
                 }}
             >
                 <BombIcon size={18} />
@@ -584,6 +583,7 @@
         </nav>
         <ManualPart />
         <ResizePart {init} />
+        <ImportPart />
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
             <!-- Skeleton ColorPicker -->

@@ -164,8 +164,13 @@
             }
             errors = new Set();
             if (!confirm("全てを初期化しますか？")) return;
-            anime.init(param.output.frames, param.output.ways);
-            init(param.output.width, param.output.height);
+            anime.init(
+              param.output.width,
+              param.output.height,
+              param.output.frames,
+              param.output.ways,
+            );
+            init();
           }}
         >
           初期化の実行

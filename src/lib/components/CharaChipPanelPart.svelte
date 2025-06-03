@@ -25,7 +25,12 @@
 		}
 	});
 
-	anime.init(anime.RPGEN.frames, anime.waysToStr(anime.RPGEN.ways));
+	anime.init(
+		anime.RPGEN.w,
+		anime.RPGEN.h,
+		anime.RPGEN.frames,
+		anime.waysToStr(anime.RPGEN.ways),
+	);
 
 	let clickedTimestamp = $state(0);
 	const updateClickedTimestamp = () => {
