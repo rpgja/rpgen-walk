@@ -90,8 +90,9 @@
 
                         const [r, g, b, a] = data.subarray(index, index + 4);
                         if (!a) continue;
-                        oekaki.color.value = `rgb(${r}, ${g}, ${b}, ${a})`;
+                        oekaki.color.value = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
                         layer.drawByDot(p * dotSize, o * dotSize);
+                        layer.used = true;
                     }
                 }
 
@@ -106,7 +107,7 @@
         const now = anime.layersByI.get(0);
         if (now) {
             oekaki.setLayers(now);
-            activeLayer = now;
+            activeLayer = now[now.length - 1];
             initTimestamp = performance.now();
         }
     };
