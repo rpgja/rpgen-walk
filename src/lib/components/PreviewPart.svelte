@@ -78,10 +78,10 @@
 <div class="grid grid-cols-3 gap-2">
   {#each canvasRefs as _, i}
     <canvas
-      class="w-16 h-16 border border-gray-300 gimp-checkered-background"
+      class="border border-gray-300 gimp-checkered-background"
       bind:this={canvasRefs[i]}
-      width="32"
-      height="32"
+      width="64"
+      height="64"
     ></canvas>
   {/each}
 </div>

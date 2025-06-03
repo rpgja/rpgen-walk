@@ -583,7 +583,7 @@
         </nav>
         <ManualPart />
         <ResizePart {init} />
-        <ImportPart />
+        <ImportPart {init} bind:activeLayer bind:initTimestamp />
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
             <!-- Skeleton ColorPicker -->

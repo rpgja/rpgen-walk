@@ -163,7 +163,8 @@
               return;
             }
             errors = new Set();
-            if (!confirm("全てを初期化しますか？")) return;
+            if (!confirm("初期化しますか？（※全てのデータは失われます）"))
+              return;
             anime.init(
               param.output.width,
               param.output.height,

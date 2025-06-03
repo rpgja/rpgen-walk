@@ -76,7 +76,7 @@
 							>
 								<!-- 左上バッジ -->
 								<div
-									class="absolute top-1 left-1 bg-primary-600/40 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+									class="absolute top-1 left-1 bg-primary-600/80 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
 								>
 									{anime.toI(x, y) + 1}
 								</div>
