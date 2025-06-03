@@ -1,9 +1,52 @@
 <script lang="ts">
   import IconX from "@lucide/svelte/icons/x";
   import { Popover } from "@skeletonlabs/skeleton-svelte";
+  import * as v from "valibot";
   import * as anime from "../anime";
 
+  let { init } = $props();
+
   let open = $state(false);
+
+  let width = $state(anime.RPGEN.w);
+  let height = $state(anime.RPGEN.h);
+  let frames = $state(anime.RPGEN.frames);
+  let ways = $state(anime.waysToStr(anime.RPGEN.ways));
+
+  let errors = $state(new Set<string>());
+
+  export const ParamSchema = v.strictObject({
+    width: v.pipe(
+      v.unknown(),
+      v.transform((input) => Number(input)),
+      v.number(),
+      v.integer(),
+      v.minValue(16),
+      v.maxValue(256),
+    ),
+    height: v.pipe(
+      v.unknown(),
+      v.transform((input) => Number(input)),
+      v.number(),
+      v.integer(),
+      v.minValue(16),
+      v.maxValue(256),
+    ),
+    frames: v.pipe(
+      v.unknown(),
+      v.transform((input) => Number(input)),
+      v.number(),
+      v.integer(),
+      v.minValue(1),
+      v.maxValue(8),
+    ),
+    ways: v.pipe(
+      v.string(),
+      v.trim(),
+      v.regex(/^[a-z]+$/),
+      v.check((input) => input.length === new Set(input).size),
+    ),
+  });
 </script>
 
 <Popover
@@ -31,9 +74,22 @@
 
       <label class="flex flex-col">
         <span class="label-text font-medium">テンプレ</span>
-        <select class="select select-bordered w-full bg-white">
+        <select
+          class="select select-bordered w-full bg-white"
+          onchange={(e) => {
+            const template = anime.standards.find(
+              (v) => v.label === e.currentTarget.value,
+            );
+            if (template) {
+              width = template.w;
+              height = template.h;
+              frames = template.frames;
+              ways = anime.waysToStr(template.ways);
+            }
+          }}
+        >
           <option value="">自動入力</option>
-          {#each [anime.RPGEN, anime.RPGMaker2000, anime.RPGMakerXP, anime.RPGMakerVX, anime.RPGMakerMV] as template}
+          {#each anime.standards as template}
             <option value={template.label}>{template.label}</option>
           {/each}
         </select>
@@ -42,38 +98,50 @@
       <label class="flex flex-col gap-1">
         <span class="label-text font-medium">幅</span>
         <input
-          class="input input-bordered w-full bg-white"
+          class="input input-bordered w-full placeholder:opacity-40"
+          class:bg-error-50={errors.has("width")}
+          class:bg-white={!errors.has("width")}
           type="text"
           placeholder="例: 48"
+          bind:value={width}
         />
       </label>
 
       <label class="flex flex-col gap-1">
         <span class="label-text font-medium">高さ</span>
         <input
-          class="input input-bordered w-full bg-white"
+          class="input input-bordered w-full bg-white placeholder:opacity-40"
+          class:bg-error-50={errors.has("height")}
+          class:bg-white={!errors.has("height")}
           type="text"
           placeholder="例: 48"
+          bind:value={height}
         />
       </label>
 
       <label class="flex flex-col gap-1">
         <span class="label-text font-medium">コマ数</span>
         <input
-          class="input input-bordered w-full bg-white"
+          class="input input-bordered w-full bg-white placeholder:opacity-40"
+          class:bg-error-50={errors.has("frames")}
+          class:bg-white={!errors.has("frames")}
           type="text"
           placeholder="例: 3"
+          bind:value={frames}
         />
       </label>
 
       <label class="flex flex-col gap-1">
         <span class="label-text font-medium">方向転換</span>
         <input
-          class="input input-bordered w-full bg-white"
+          class="input input-bordered w-full bg-white placeholder:opacity-40"
+          class:bg-error-50={errors.has("ways")}
+          class:bg-white={!errors.has("ways")}
           type="text"
-          placeholder="例: WASDQEZC"
+          placeholder="例: wasdqezc"
+          bind:value={ways}
         />
-        <p class="opacity-60 text-xs">WASD(前後左右)+QEZC(ナナメ)</p>
+        <p class="opacity-60 text-xs">wasd(前後左右)+qezc(ナナメ)</p>
       </label>
 
       <div class="pt-2">
@@ -81,6 +149,24 @@
           type="button"
           class="btn btn-primary w-full bg-blue-500 text-white rounded hover:bg-blue-600"
           aria-label="submit"
+          onclick={() => {
+            const param = v.safeParse(ParamSchema, {
+              width,
+              height,
+              frames,
+              ways,
+            });
+            if (!param.success) {
+              errors = new Set(
+                param.issues.map((v) => v.path?.[0].key ?? "").map(String),
+              );
+              return;
+            }
+            errors = new Set();
+            if (!confirm("全てを初期化しますか？")) return;
+            anime.init(param.output.frames, param.output.ways);
+            init(param.output.width, param.output.height);
+          }}
         >
           初期化の実行
         </button>

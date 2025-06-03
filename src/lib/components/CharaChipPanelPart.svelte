@@ -8,12 +8,12 @@
 	import * as oekaki from "@onjmin/oekaki";
 	import * as anime from "../anime";
 
-	let { activeLayer = $bindable(undefined), ready } = $props();
+	let { activeLayer = $bindable(undefined), initTimestamp } = $props();
 
 	let activeIndex = $state(0);
 	let prevIndex = 0;
 	$effect(() => {
-		if (!ready) return;
+		if (!initTimestamp) return;
 		anime.layersByI.set(prevIndex, oekaki.getLayers());
 		const now = anime.layersByI.get(activeIndex);
 		if (now) {
@@ -25,11 +25,11 @@
 		}
 	});
 
-	anime.init(3, [anime.way.s, anime.way.w, anime.way.a, anime.way.d]);
+	anime.init(anime.RPGEN.frames, anime.waysToStr(anime.RPGEN.ways));
 
 	let clickedTimestamp = $state(0);
 	const updateClickedTimestamp = () => {
-		if (!ready) return;
+		if (!initTimestamp) return;
 		setTimeout(() => {
 			clickedTimestamp = performance.now();
 			const canvas = oekaki.render();
@@ -46,59 +46,62 @@
 </script>
 
 <section class="space-y-4">
-	{#each Array(anime.ways) as _, y}
-		<div class="flex items-center gap-4">
-			<!-- フレーム -->
-			<div class="flex gap-4">
-				{#each Array(anime.frames) as __, x}
-					{#key anime.toI(x, y)}
-						<div
-							tabindex="0"
-							role="button"
-							onkeydown={() => {}}
-							class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
-								activeIndex === anime.toI(x, y)
-									? "ring-4 ring-primary-500 ring-offset-2"
-									: ""
-							}`}
-							onclick={() => {
-								const i = anime.toI(x, y);
-								if (activeIndex === i) return;
-								prevIndex = activeIndex;
-								activeIndex = i;
-							}}
-						>
-							<!-- 左上バッジ -->
+	{#key initTimestamp}
+		{#each Array(anime.ways) as _, y}
+			<div class="flex items-center gap-4">
+				<!-- フレーム -->
+				<div class="flex gap-4">
+					{#each Array(anime.frames) as __, x}
+						{#key anime.toI(x, y)}
 							<div
-								class="absolute top-1 left-1 bg-primary-600/40 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+								tabindex="0"
+								role="button"
+								onkeydown={() => {}}
+								class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
+									activeIndex === anime.toI(x, y)
+										? "ring-4 ring-primary-500 ring-offset-2"
+										: ""
+								}`}
+								onclick={() => {
+									const i = anime.toI(x, y);
+									if (activeIndex === i) return;
+									prevIndex = activeIndex;
+									activeIndex = i;
+								}}
 							>
-								{anime.toI(x, y) + 1}
+								<!-- 左上バッジ -->
+								<div
+									class="absolute top-1 left-1 bg-primary-600/40 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+								>
+									{anime.toI(x, y) + 1}
+								</div>
+								{#key clickedTimestamp}
+									<img
+										alt="frame"
+										src={anime.dataURLByI.get(
+											anime.toI(x, y),
+										) ??
+											"https://placehold.co/32x32?text=new"}
+										class="gimp-checkered-background w-full h-full object-cover bg-surface-500"
+									/>
+								{/key}
 							</div>
-							{#key clickedTimestamp}
-								<img
-									alt="frame"
-									src={anime.dataURLByI.get(
-										anime.toI(x, y),
-									) ?? "https://placehold.co/32x32?text=new"}
-									class="gimp-checkered-background w-full h-full object-cover bg-surface-500"
-								/>
-							{/key}
-						</div>
-					{/key}
-				{/each}
+						{/key}
+					{/each}
+				</div>
+				<!-- 行ラベル -->
+				<div class="w-6 text-sm font-semibold">
+					{#if anime.waysOrder[y] === anime.way.w}
+						<ArrowUpIcon />
+					{:else if anime.waysOrder[y] === anime.way.a}
+						<ArrowLeftIcon />
+					{:else if anime.waysOrder[y] === anime.way.s}
+						<ArrowDownIcon />
+					{:else if anime.waysOrder[y] === anime.way.d}
+						<ArrowRightIcon />
+					{/if}
+				</div>
 			</div>
-			<!-- 行ラベル -->
-			<div class="w-6 text-sm font-semibold">
-				{#if anime.waysOrder[y] === anime.way.w}
-					<ArrowUpIcon />
-				{:else if anime.waysOrder[y] === anime.way.a}
-					<ArrowLeftIcon />
-				{:else if anime.waysOrder[y] === anime.way.s}
-					<ArrowDownIcon />
-				{:else if anime.waysOrder[y] === anime.way.d}
-					<ArrowRightIcon />
-				{/if}
-			</div>
-		</div>
-	{/each}
+		{/each}
+	{/key}
 </section>

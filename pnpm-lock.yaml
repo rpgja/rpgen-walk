@@ -20,6 +20,9 @@ importers:
       localforage:
         specifier: 1.10.0
         version: 1.10.0
+      valibot:
+        specifier: 1.1.0
+        version: 1.1.0(typescript@5.8.3)
     devDependencies:
       '@biomejs/biome':
         specifier: 1.9.4
@@ -960,6 +963,14 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  valibot@1.1.0:
+    resolution: {integrity: sha512-Nk8lX30Qhu+9txPYTwM0cFlWLdPFsFr6LblzqIySfbZph9+BFsAHsNvHOymEviUepeIW6KFHzpX8TKhbptBXXw==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   vite@6.3.5:
     resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
@@ -1894,6 +1905,10 @@ snapshots:
   totalist@3.0.1: {}
 
   typescript@5.8.3: {}
+
+  valibot@1.1.0(typescript@5.8.3):
+    optionalDependencies:
+      typescript: 5.8.3
 
   vite@6.3.5(jiti@2.4.2)(lightningcss@1.30.1):
     dependencies:

@@ -4,7 +4,8 @@ export let ways: number;
 export let frames: number;
 export let waysOrder: Way[];
 export const toI = (x: number, y: number) => x + y * frames;
-export const init = (_frames: number, _ways: Way[]) => {
+export const init = (_frames: number, _waysStr: string) => {
+	const _ways = strToWays(_waysStr);
 	ways = _ways.length;
 	frames = _frames;
 	waysOrder = _ways;
@@ -37,6 +38,13 @@ export const way = {
 	z: { key: "z", label: "左前" },
 	c: { key: "c", label: "右前" },
 } as const;
+type WayKey = keyof typeof way;
+
+export const waysToStr = (ways: Way[]) => ways.map((v) => v.key).join("");
+export const strToWays = (str: string): Way[] =>
+	str
+		.split("")
+		.map((v) => (v in way ? way[v as WayKey] : { key: v, label: "" }));
 
 export const RPGEN = {
 	label: "RPGEN",
@@ -77,3 +85,14 @@ export const RPGMakerMV = {
 	frames: 3,
 	ways: [way.s, way.a, way.d, way.w],
 };
+
+/**
+ * 業界規格
+ */
+export const standards = [
+	RPGEN,
+	RPGMaker2000,
+	RPGMakerXP,
+	RPGMakerVX,
+	RPGMakerMV,
+];

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from "$app/paths";
+    import * as anime from "$lib/anime";
     import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
     import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
     import ConfigPart from "$lib/components/ConfigPart.svelte";
@@ -138,13 +139,20 @@
     let upperLayer: oekaki.LayeredCanvas | null = $state(null);
     let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
 
-    const width = 480; // 動的に計算すべき
+    let width = 480;
     const height = 480;
+    let g_w = 0;
+    let g_h = 0;
+    let initTimestamp = $state(0);
     $effect(() => {
-        init();
+        init(anime.RPGEN.w, anime.RPGEN.h);
     });
-    const init = async () => {
+    const init = async (w: number, h: number) => {
         if (!oekakiWrapper) return;
+        g_w = w;
+        g_h = h;
+        initTimestamp = performance.now();
+        width = Math.floor(height * (w / h));
         oekaki.init(oekakiWrapper, width, height);
 
         const upper = oekaki.upperLayer.value;
@@ -154,7 +162,7 @@
         upperLayer = upper;
         lowerLayer = lower;
 
-        oekaki.setDotSize(1, 16);
+        oekaki.setDotSize(1, h);
         document.documentElement.style.setProperty(
             "--grid-cell-size",
             `${oekaki.getDotSize()}px`,
@@ -427,7 +435,7 @@
                     const { prev, next } = activeLayer;
                     if (next) activeLayer = next;
                     else if (prev) activeLayer = prev;
-                    else init();
+                    else init(g_w, g_h);
                 }}
             >
                 <IconTrash2 size={18} />
@@ -446,7 +454,7 @@
                         !confirm("後悔しませんね？")
                     )
                         return;
-                    init();
+                    init(g_w, g_h);
                 }}
             >
                 <BombIcon size={18} />
@@ -482,7 +490,7 @@
     <div class="grid grid-cols-1 md:grid-cols-[auto_1fr_auto]">
         <!-- Left Sidebar -->
         <aside class="bg-surface-200 p-4 space-y-4">
-            <CharaChipPanelPart bind:activeLayer ready={!!upperLayer} />
+            <CharaChipPanelPart bind:activeLayer {initTimestamp} />
         </aside>
 
         <!-- Main Canvas Area -->
@@ -575,7 +583,7 @@
             {/each}
         </nav>
         <ManualPart />
-        <ConfigPart />
+        <ConfigPart {init} />
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
             <!-- Skeleton ColorPicker -->
