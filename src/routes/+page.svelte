@@ -63,7 +63,6 @@
      */
     const handleKeyDown = async (e: KeyboardEvent) => {
         if (notDrawing(e)) return;
-        e.preventDefault();
         if (!e.ctrlKey) return;
         switch (e.key) {
             case "1":
@@ -103,9 +102,11 @@
                 isDark = !isDark;
                 break;
             case "z":
+                e.preventDefault();
                 doAction(tool.undo.label);
                 break;
             case "Z":
+                e.preventDefault();
                 doAction(tool.redo.label);
                 break;
             case "s":
@@ -114,6 +115,7 @@
                 break;
             case "c": // クリップボードにコピー
                 {
+                    e.preventDefault();
                     const blob = await new Promise<Blob | null>((resolve) =>
                         oekaki.render().toBlob(resolve),
                     );
