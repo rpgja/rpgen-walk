@@ -54,9 +54,9 @@
   onOpenChange={(e) => (open = e.open)}
   positioning={{ placement: "top" }}
   triggerBase="btn preset-tonal"
-  contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
+  contentBase="card bg-surface-300 p-4 space-y-4 max-w-[320px]"
   arrow
-  arrowBackground="!bg-surface-200 dark:!bg-surface-800"
+  arrowBackground="!bg-surface-300 dark:!bg-surface-800"
 >
   {#snippet trigger()}リサイズ{/snippet}
   {#snippet content()}

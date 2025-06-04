@@ -1,13 +1,31 @@
 <script lang="ts">
-	import "../app.css";
-	import { base } from "$app/paths";
+  import "../app.css";
+  let { children } = $props();
 
-	let { children } = $props();
+  const title = "HGペイント（歩行グラフィックペイント）";
+  const description =
+    "RPGの歩行グラフィックをドット絵で直感的に作れるWebアプリです。";
 </script>
 
 <svelte:head>
-	<title>HGペイント（歩行グラフィックペイント）</title>
-	<link rel="icon" href="{base}/momoi.png" type="image/png" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="%sveltekit.assets%/" />
+  <meta property="og:image" content="%sveltekit.assets%/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content="%sveltekit.assets%/og-image.png" />
+
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
 </svelte:head>
 
 {@render children()}

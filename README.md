@@ -33,7 +33,6 @@ A pixel art tool for creating RPG walking sprites.
 3. [pnpm をインストール](https://pnpm.io/ja/installation)
 4. この `README.md` があるディレクトリを VS Code で開く
 5. 拡張機能タブから推奨拡張をインストール
-6. `.env.example` を `.env` にリネーム
 7. `pnpm i` を実行して依存関係をインストール
 8. よく使うコマンド:
    - `pnpm run dev` — 開発ビルド
