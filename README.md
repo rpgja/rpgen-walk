@@ -5,7 +5,7 @@ A pixel art tool for creating RPG walking sprites.
 ## 概要 / Overview
 
 **rpgen-walk** は、RPG の歩行グラフィックを自作できるツールです。  
-基本的な規格は [RPGEN](https://rpgen.org/) に準拠しており、今後は **RPGツクール** や **ウディタ** にも対応しています。
+基本的な規格は [RPGEN](https://rpgen.org/) に準拠しており、 **RPGツクール** や **ウディタ** にも対応しています。
 
 ### 競合アプリに対する強み / Features
 
