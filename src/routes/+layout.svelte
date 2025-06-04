@@ -1,5 +1,7 @@
 <script lang="ts">
   import "../app.css";
+  import { base } from "$app/paths";
+
   let { children } = $props();
 
   const title = "HGペイント（歩行グラフィックペイント）";
@@ -14,17 +16,17 @@
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="%sveltekit.assets%/" />
-  <meta property="og:image" content="%sveltekit.assets%/momoi.png" />
+  <meta property="og:url" content="{base}/" />
+  <meta property="og:image" content="{base}/momoi.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content="%sveltekit.assets%/momoi.png" />
+  <meta name="twitter:image" content="{base}/momoi.png" />
 
   <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="%sveltekit.assets%/momoi.png" />
+  <link rel="apple-touch-icon" href="{base}/momoi.png" />
 </svelte:head>
 
 {@render children()}
