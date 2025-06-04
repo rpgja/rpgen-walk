@@ -112,7 +112,7 @@
     {#snippet trigger()}出力{/snippet}
     {#snippet content()}
         <header class="flex justify-between">
-            <p class="font-bold text-xl">歩行グラの書き出し</p>
+            <p class="font-bold text-xl">歩行グラの出力</p>
             <button
                 class="btn-icon hover:preset-tonal"
                 onclick={() => {

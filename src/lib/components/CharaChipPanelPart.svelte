@@ -14,6 +14,12 @@
 	let prevIndex = 0;
 	$effect(() => {
 		if (!initTimestamp) return;
+		activeIndex = 0;
+		prevIndex = 0;
+	});
+
+	$effect(() => {
+		if (!initTimestamp) return;
 		anime.layersByI.set(prevIndex, oekaki.getLayers());
 		const now = anime.layersByI.get(activeIndex);
 		if (now) {

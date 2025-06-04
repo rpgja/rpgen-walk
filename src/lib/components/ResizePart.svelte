@@ -101,7 +101,7 @@
           class="input input-bordered w-full placeholder:opacity-40"
           class:bg-error-50={errors.has("width")}
           class:bg-white={!errors.has("width")}
-          type="text"
+          type="number"
           placeholder="例: 48"
           bind:value={width}
         />
@@ -113,7 +113,7 @@
           class="input input-bordered w-full bg-white placeholder:opacity-40"
           class:bg-error-50={errors.has("height")}
           class:bg-white={!errors.has("height")}
-          type="text"
+          type="number"
           placeholder="例: 48"
           bind:value={height}
         />
@@ -125,7 +125,7 @@
           class="input input-bordered w-full bg-white placeholder:opacity-40"
           class:bg-error-50={errors.has("frames")}
           class:bg-white={!errors.has("frames")}
-          type="text"
+          type="number"
           placeholder="例: 3"
           bind:value={frames}
         />

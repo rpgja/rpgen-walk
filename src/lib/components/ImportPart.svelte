@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { SearchIcon } from "@lucide/svelte";
+    import { SearchIcon, Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
     import * as oekaki from "@onjmin/oekaki";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
+    import { Slider } from "@skeletonlabs/skeleton-svelte";
     import * as anime from "../anime";
 
     let {
@@ -28,6 +29,9 @@
         }
     }
 
+    let opacity = $state([100]);
+    let isAddEmptyLayer = $state(true);
+
     const handleImportButton = async () => {
         if (!imageUrl || !imageRef) return;
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
@@ -47,6 +51,7 @@
         for (let y = 0; y < ways; y++) {
             for (let x = 0; x < frames; x++) {
                 const layer = new oekaki.LayeredCanvas("素材の味");
+                layer.opacity = opacity[0];
 
                 // 全体シートの横幅ピクセル数
                 const sheetWidth = width * frames; // 例: width=48, frames=8 なら 48*8 = 384px
@@ -87,10 +92,15 @@
 
                 // 反映
                 const i = anime.toI(x, y);
-                anime.layersByI.set(i, [layer]);
-                anime.canvasByI.set(i, layer.canvas);
-                const dataURL = layer.canvas.toDataURL("image/png");
+                const layers = [layer];
+                if (isAddEmptyLayer)
+                    layers.push(new oekaki.LayeredCanvas("トレース台"));
+                anime.layersByI.set(i, layers);
+                const canvas = oekaki.render();
+                anime.canvasByI.set(i, canvas);
+                const dataURL = canvas.toDataURL("image/png");
                 anime.dataURLByI.set(i, dataURL);
+                oekaki.setLayers([]);
             }
         }
         const now = anime.layersByI.get(0);
@@ -166,24 +176,29 @@
             </label>
 
             <div class="relative flex-1">
-                <SearchIcon
-                    class="absolute left-2 top-2.5 text-gray-400"
-                    size={16}
-                />
                 <input
                     name="url"
                     type="url"
                     placeholder="画像のURLを入力"
-                    class="input input-bordered w-full pl-8 bg-white"
+                    class="input input-bordered w-full pr-8 bg-white"
                     value={imageUrl}
+                />
+                <Trash2Icon
+                    class="absolute right-2 top-2.5 text-gray-400"
+                    size={16}
+                    onclick={() => {
+                        imageUrl = "";
+                    }}
                 />
             </div>
 
             <div>
                 <label class="label">
-                    <span class="label-text">File Input</span>
+                    <span class="label-text"
+                        >ローカル保存ファイルから読み込む</span
+                    >
                     <input
-                        class="file-input file-input-bordered w-full"
+                        class="input"
                         type="file"
                         accept="image/*"
                         bind:this={fileInput}
@@ -204,6 +219,29 @@
                     />
                 </div>
             {/if}
+
+            <div class="flex items-center gap-4 max-w-[360px]">
+                <div
+                    class="w-[20ch] flex justify-between font-mono text-sm tabular-nums"
+                >
+                    <span class="text-left">不透明度</span>
+                    <span class="text-right">{opacity}%</span>
+                </div>
+                <Slider
+                    value={opacity}
+                    onValueChange={(e) => (opacity = e.value)}
+                    markers={[25, 50, 75]}
+                />
+            </div>
+
+            <label class="flex items-center space-x-2">
+                <input
+                    class="checkbox"
+                    type="checkbox"
+                    bind:checked={isAddEmptyLayer}
+                />
+                <p>トレース台</p>
+            </label>
 
             <div class="pt-2">
                 <button

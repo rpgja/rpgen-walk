@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SearchIcon } from "@lucide/svelte";
+  import { SearchIcon, Trash2Icon } from "@lucide/svelte";
 
   let imageUrl = $state("");
   let fileInput: HTMLInputElement;
@@ -44,21 +44,27 @@
   </label>
 
   <div class="relative flex-1">
-    <SearchIcon class="absolute left-2 top-2.5 text-gray-400" size={16} />
     <input
       name="url"
       type="url"
       placeholder="画像のURLを入力"
-      class="input input-bordered w-full pl-8 bg-white"
+      class="input input-bordered w-full pr-8 bg-white"
       value={imageUrl}
+    />
+    <Trash2Icon
+      class="absolute right-2 top-2.5 text-gray-400"
+      size={16}
+      onclick={() => {
+        imageUrl = "";
+      }}
     />
   </div>
 
   <div>
     <label class="label">
-      <span class="label-text">File Input</span>
+      <span class="label-text">ローカル保存ファイルから読み込む</span>
       <input
-        class="file-input file-input-bordered w-full"
+        class="input"
         type="file"
         accept="image/*"
         bind:this={fileInput}

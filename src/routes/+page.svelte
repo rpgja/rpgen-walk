@@ -323,7 +323,8 @@
     let choiced: string = $state(unjStorage.tool.value ?? tool.pen.label);
 
     const mdi2DataUrl = (mdi: string) => {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" fill="black" stroke="white" stroke-width="1"/></svg>`;
+        const style = `fill="${isDark ? "white" : "black"}" stroke="${isDark ? "black" : "white"}" stroke-width="1"`;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" ${style}/></svg>`;
         const base64 = btoa(svg);
         return `data:image/svg+xml;base64,${base64}`;
     };
@@ -487,8 +488,13 @@
                 <EyeIcon size="14" />
             {/snippet}
         </Switch>
-        <span class="text-sm w-[4ch] font-mono text-end block">{opacity}%</span>
-        <!-- スライダー -->
+
+        <div
+            class="w-[12ch] flex justify-between font-mono text-sm tabular-nums"
+        >
+            <span class="text-left">不透明度</span>
+            <span class="text-right">{opacity}%</span>
+        </div>
         <div class="w-full basis-full max-w-[300px] mt-2">
             <Slider
                 value={opacity}
