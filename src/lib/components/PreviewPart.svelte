@@ -1,6 +1,15 @@
 <script lang="ts">
   import * as anime from "../anime";
 
+  let { initTimestamp } = $props();
+
+  const width = 48;
+  let height = $state(0);
+  $effect(() => {
+    if (!initTimestamp) return;
+    height = Math.floor((width * anime.height) / anime.width);
+  });
+
   let currentFrame = 0;
   let rafId: number;
   const ways = [
@@ -84,8 +93,8 @@
     <canvas
       class="border border-gray-300 gimp-checkered-background"
       bind:this={canvasRefs[i]}
-      width="64"
-      height="64"
+      {width}
+      {height}
     ></canvas>
   {/each}
 </div>

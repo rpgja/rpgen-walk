@@ -620,7 +620,7 @@
 
         <!-- Main Canvas Area -->
         <main class="bg-white flex items-center justify-center gap-4">
-            <PreviewPart />
+            <PreviewPart {initTimestamp} />
             <div
                 class={`relative ${isGrid ? "hg-paint-grid-mode" : ""}`}
                 bind:this={oekakiWrapper}
