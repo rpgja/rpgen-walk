@@ -24,7 +24,7 @@
 </script>
 
 <div class="space-y-4 p-4 bg-surface-100 rounded-xl">
-  <h2 class="text-lg font-semibold">参考画像</h2>
+  <h2 class="text-lg font-semibold">模写用</h2>
 
   <label class="flex flex-col">
     <span class="label-text font-medium">テンプレ</span>
@@ -78,7 +78,7 @@
     <div class="mt-4 max-h-96 overflow-auto border rounded p-2">
       <img
         src={imageUrl}
-        alt="参考画像"
+        alt="模写用"
         class="w-full max-w-96 object-contain rounded border"
       />
     </div>
