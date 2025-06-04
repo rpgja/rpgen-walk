@@ -12,7 +12,7 @@
     import ResizePart from "$lib/components/ResizePart.svelte";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
-    import { BombIcon, CheckIcon } from "@lucide/svelte";
+    import { BombIcon, CheckIcon, MoonIcon, SunIcon } from "@lucide/svelte";
     import { EyeIcon } from "@lucide/svelte";
     import { EditIcon } from "@lucide/svelte";
     import { LockIcon } from "@lucide/svelte";
@@ -340,6 +340,14 @@
         oekaki.flipped.value = flipped;
     });
     let isGrid = $state(true);
+    let isDark = $state(true);
+    $effect(() => {
+        if (isDark) {
+            document.body.classList.add("hg-paint-gimp-dark");
+        } else {
+            document.body.classList.remove("hg-paint-gimp-dark");
+        }
+    });
 
     let actions = [tool.undo, tool.redo, tool.save, tool.clear];
     const doAction = (action: string) => {
@@ -568,6 +576,20 @@
                 {/snippet}
                 {#snippet activeChild()}
                     <tool.grid.icon size="14" />
+                {/snippet}
+            </Switch>
+            <Switch
+                controlActive="bg-secondary-500"
+                checked={isDark}
+                onCheckedChange={(e) => {
+                    isDark = e.checked;
+                }}
+            >
+                {#snippet inactiveChild()}
+                    <SunIcon size="14" />
+                {/snippet}
+                {#snippet activeChild()}
+                    <MoonIcon size="14" />
                 {/snippet}
             </Switch>
         </nav>
