@@ -84,6 +84,10 @@
                 e.preventDefault();
                 isGrid = !isGrid;
                 break;
+            case "d":
+                e.preventDefault();
+                isDark = !isDark;
+                break;
             case "z":
                 doAction(tool.undo.label);
                 break;

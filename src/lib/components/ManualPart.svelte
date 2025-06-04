@@ -35,6 +35,7 @@
             <p>Ctrl + E：常に消しゴム</p>
             <p>Ctrl + F：左右反転</p>
             <p>Ctrl + G：グリッド表示</p>
+            <p>Ctrl + D：ダークモード</p>
             <p>Ctrl + Z：戻す</p>
             <p>Ctrl + Shift + Z：やり直す</p>
             <p>Ctrl + S：保存</p>
