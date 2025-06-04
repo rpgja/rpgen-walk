@@ -17,15 +17,6 @@
     let imageRef: HTMLImageElement | undefined = $state();
     let fileInput: HTMLInputElement;
 
-    function handleUrlSubmit(event: Event) {
-        event.preventDefault();
-        const urlInput = new FormData(event.target as HTMLFormElement).get(
-            "url",
-        ) as string;
-        if (urlInput)
-            imageUrl = `https://api.allorigins.win/raw?url=${urlInput}`;
-    }
-
     function handleFileChange(event: Event) {
         const file = (event.target as HTMLInputElement)?.files?.[0];
         if (file) {
@@ -109,6 +100,27 @@
             initTimestamp = performance.now();
         }
     };
+
+    const template = [
+        { label: "鍵山雛", url: "https://rpgen.cc/dq/sAnims/res/1920.png" },
+        { label: "ドレミー", url: "https://rpgen.cc/dq/sAnims/res/1919.png" },
+        { label: "八雲紫", url: "https://rpgen.cc/dq/sAnims/res/1282.png" },
+        {
+            label: "天子",
+            url: "https://rpgen.cc/dq/sAnims/res/1891.png",
+        },
+        { label: "純狐", url: "https://rpgen.cc/dq/sAnims/res/1894.png" },
+        {
+            label: "ヘカーティア",
+            url: "https://rpgen.cc/dq/sAnims/res/1884.png",
+        },
+        { label: "妹紅", url: "https://rpgen.cc/dq/sAnims/res/1874.png" },
+        { label: "小鈴", url: "https://rpgen.cc/dq/sAnims/res/1526.png" },
+        { label: "阿求", url: "https://rpgen.cc/dq/sAnims/res/1527.png" },
+        { label: "霊夢", url: "https://rpgen.cc/dq/sAnims/res/1053.png" },
+        { label: "魔理沙", url: "https://rpgen.cc/dq/sAnims/res/1888.png" },
+        { label: "パチュリー", url: "https://rpgen.cc/dq/sAnims/res/1273.png" },
+    ];
 </script>
 
 <Popover
@@ -134,25 +146,38 @@
         <article class="space-y-4">
             <p class="opacity-60">先にリサイズしてください</p>
 
-            <form class="flex gap-2 items-center" onsubmit={handleUrlSubmit}>
-                <div class="relative flex-1">
-                    <SearchIcon
-                        class="absolute left-2 top-2.5 text-gray-400"
-                        size={16}
-                    />
-                    <input
-                        name="url"
-                        type="url"
-                        placeholder="画像のURLを入力"
-                        class="input input-bordered w-full pl-8 bg-white"
-                        required
-                    />
-                </div>
-                <button
-                    class="btn bg-blue-600 text-white hover:bg-blue-700"
-                    type="submit">表示</button
+            <label class="flex flex-col">
+                <span class="label-text font-medium">テンプレ</span>
+                <select
+                    class="select select-bordered w-full bg-white"
+                    onchange={(e) => {
+                        const v = template.find(
+                            (v) => v.label === e.currentTarget.value,
+                        );
+                        if (!v) return;
+                        imageUrl = `https://api.allorigins.win/raw?url=${v.url}`;
+                    }}
                 >
-            </form>
+                    <option value="">自動入力</option>
+                    {#each template as v}
+                        <option value={v.label}>{v.label}</option>
+                    {/each}
+                </select>
+            </label>
+
+            <div class="relative flex-1">
+                <SearchIcon
+                    class="absolute left-2 top-2.5 text-gray-400"
+                    size={16}
+                />
+                <input
+                    name="url"
+                    type="url"
+                    placeholder="画像のURLを入力"
+                    class="input input-bordered w-full pl-8 bg-white"
+                    value={imageUrl}
+                />
+            </div>
 
             <div>
                 <label class="label">

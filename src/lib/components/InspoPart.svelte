@@ -4,14 +4,6 @@
   let imageUrl = $state("");
   let fileInput: HTMLInputElement;
 
-  function handleUrlSubmit(event: Event) {
-    event.preventDefault();
-    const urlInput = new FormData(event.target as HTMLFormElement).get(
-      "url",
-    ) as string;
-    if (urlInput) imageUrl = urlInput;
-  }
-
   function handleFileChange(event: Event) {
     const file = (event.target as HTMLInputElement)?.files?.[0];
     if (file) {
@@ -22,26 +14,45 @@
       reader.readAsDataURL(file);
     }
   }
+
+  const template = [
+    { label: "鍵山雛", url: "https://i.imgur.com/Wd713Fe.png" },
+    { label: "ドレミー", url: "https://i.imgur.com/vENwj1P.png" },
+    { label: "八雲紫", url: "https://i.imgur.com/OLpXzvs.png" },
+    { label: "カナ", url: "https://i.imgur.com/rgekbAz.png" },
+  ];
 </script>
 
 <div class="space-y-4 p-4 bg-surface-100 rounded-xl">
   <h2 class="text-lg font-semibold">参考画像</h2>
 
-  <form class="flex gap-2 items-center" onsubmit={handleUrlSubmit}>
-    <div class="relative flex-1">
-      <SearchIcon class="absolute left-2 top-2.5 text-gray-400" size={16} />
-      <input
-        name="url"
-        type="url"
-        placeholder="画像のURLを入力"
-        class="input input-bordered w-full pl-8 bg-white"
-        required
-      />
-    </div>
-    <button class="btn bg-blue-600 text-white hover:bg-blue-700" type="submit"
-      >表示</button
+  <label class="flex flex-col">
+    <span class="label-text font-medium">テンプレ</span>
+    <select
+      class="select select-bordered w-full bg-white"
+      onchange={(e) => {
+        const v = template.find((v) => v.label === e.currentTarget.value);
+        if (!v) return;
+        imageUrl = v.url;
+      }}
     >
-  </form>
+      <option value="">自動入力</option>
+      {#each template as v}
+        <option value={v.label}>{v.label}</option>
+      {/each}
+    </select>
+  </label>
+
+  <div class="relative flex-1">
+    <SearchIcon class="absolute left-2 top-2.5 text-gray-400" size={16} />
+    <input
+      name="url"
+      type="url"
+      placeholder="画像のURLを入力"
+      class="input input-bordered w-full pl-8 bg-white"
+      value={imageUrl}
+    />
+  </div>
 
   <div>
     <label class="label">
