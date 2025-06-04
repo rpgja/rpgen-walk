@@ -63,6 +63,7 @@
      */
     const handleKeyDown = async (e: KeyboardEvent) => {
         if (notDrawing(e)) return;
+        e.preventDefault();
         if (!e.ctrlKey) return;
         switch (e.key) {
             case "1":
@@ -353,7 +354,7 @@
     });
 
     let recent: string[] = $state([]);
-    const maxRecent = 16;
+    const maxRecent = 32;
     const addRecent = () => {
         if (choiced === tool.translate.label) return;
         const idx = recent.indexOf($color);
@@ -477,16 +478,16 @@
 
 <div class="grid h-screen grid-rows-[auto_1fr_auto]">
     <!-- Header -->
-    <header class="bg-surface-100 shadow p-4 flex flex-wrap items-center gap-3">
+    <header class="bg-surface-100 shadow flex flex-wrap items-center gap-3">
         <!-- タイトルは左寄せ、固定幅 -->
         <div
-            class="flex-none px-3 py-1 bg-primary rounded select-none text-left font-bold text-error-700 flex items-center gap-2"
+            class="flex-none px-8 bg-primary rounded select-none text-left font-bold text-error-700 flex items-center gap-2"
             style="min-width: 180px;"
         >
             <img
                 src="{base}/momoi.png"
                 alt="Momoi Icon"
-                class="w-6 h-6 object-contain"
+                class="w-16 h-16 object-contain"
             />
             HGペイント（歩行グラフィックペイント）
         </div>

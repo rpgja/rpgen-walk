@@ -181,7 +181,7 @@
                     type="url"
                     placeholder="画像のURLを入力"
                     class="input input-bordered w-full pr-8 bg-white"
-                    value={imageUrl}
+                    bind:value={imageUrl}
                 />
                 <Trash2Icon
                     class="absolute right-2 top-2.5 text-gray-400"
