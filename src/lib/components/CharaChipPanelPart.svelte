@@ -8,7 +8,11 @@
 	import * as oekaki from "@onjmin/oekaki";
 	import * as anime from "../anime";
 
-	let { activeLayer = $bindable(undefined), initTimestamp } = $props();
+	let {
+		activeLayer = $bindable(undefined),
+		initTimestamp,
+		pointerupTimestamp,
+	} = $props();
 
 	let activeIndex = $state(0);
 	let prevIndex = 0;
@@ -38,21 +42,14 @@
 		anime.waysToStr(anime.RPGEN.ways),
 	);
 
-	let clickedTimestamp = $state(0);
-	const updateClickedTimestamp = () => {
-		if (!initTimestamp) return;
-		setTimeout(() => {
-			clickedTimestamp = performance.now();
-			const canvas = oekaki.render();
-			anime.canvasByI.set(activeIndex, canvas);
-			const dataURL = canvas.toDataURL("image/png");
-			anime.dataURLByI.set(activeIndex, dataURL);
-		});
-	};
+	let pointerupTimestampAfter = $state(0);
 	$effect(() => {
-		document.addEventListener("click", updateClickedTimestamp);
-		return () =>
-			document.removeEventListener("click", updateClickedTimestamp);
+		if (!initTimestamp || !pointerupTimestamp) return;
+		const canvas = oekaki.render();
+		anime.canvasByI.set(activeIndex, canvas);
+		const dataURL = canvas.toDataURL("image/png");
+		anime.dataURLByI.set(activeIndex, dataURL);
+		pointerupTimestampAfter = performance.now();
 	});
 </script>
 
@@ -86,7 +83,7 @@
 								>
 									{anime.toI(x, y) + 1}
 								</div>
-								{#key clickedTimestamp}
+								{#key pointerupTimestampAfter}
 									<img
 										alt="frame"
 										src={anime.dataURLByI.get(

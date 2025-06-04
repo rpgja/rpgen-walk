@@ -10,7 +10,7 @@
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
 
-	let { activeLayer = $bindable(undefined) } = $props();
+	let { activeLayer = $bindable(undefined), pointerupTimestamp } = $props();
 
 	let layers: oekaki.LayeredCanvas[] = $state([]);
 	$effect(() => {
@@ -39,18 +39,6 @@
 			`レイヤー #${layers.length + 1}`,
 		);
 	};
-
-	let clickedTimestamp = $state(0);
-	const updateClickedTimestamp = () => {
-		setTimeout(() => {
-			clickedTimestamp = performance.now();
-		});
-	};
-	$effect(() => {
-		document.addEventListener("click", updateClickedTimestamp);
-		return () =>
-			document.removeEventListener("click", updateClickedTimestamp);
-	});
 </script>
 
 <div
@@ -64,7 +52,7 @@
 	<!-- レイヤーリスト（スクロール可能部分） -->
 	<ul class="divide-y divide-gray-200 overflow-auto flex-1 min-h-0">
 		{#each layers as layer}
-			{#key activeLayer === layer ? clickedTimestamp : "noop"}
+			{#key activeLayer === layer ? pointerupTimestamp : "noop"}
 				<li
 					class="flex items-center justify-between p-2 cursor-pointer {activeLayer ===
 					layer

@@ -46,10 +46,23 @@
     import { Segment, Switch } from "@skeletonlabs/skeleton-svelte";
     import ColorPicker from "svelte-awesome-color-picker";
 
+    let pointerupTimestamp = $state(0);
+    const updatePointerupTimestamp = () => {
+        setTimeout(() => {
+            pointerupTimestamp = performance.now();
+        });
+    };
+    $effect(() => {
+        document.addEventListener("pointerup", updatePointerupTimestamp);
+        return () =>
+            document.removeEventListener("pointerup", updatePointerupTimestamp);
+    });
+
     /**
      * PC版ショートカット
      */
     const handleKeyDown = async (e: KeyboardEvent) => {
+        if (notDrawing(e)) return;
         if (!e.ctrlKey) return;
         switch (e.key) {
             case "1":
@@ -100,7 +113,6 @@
                 break;
             case "c": // クリップボードにコピー
                 {
-                    if (!getSelection()?.isCollapsed) return; // 何か選択中ならそれを優先させる
                     const blob = await new Promise<Blob | null>((resolve) =>
                         oekaki.render().toBlob(resolve),
                     );
@@ -119,9 +131,23 @@
     });
 
     /**
+     * 別の作業中
+     */
+    const notDrawing = (e: Event) => {
+        const target = e.target as HTMLElement;
+        return (
+            !getSelection()?.isCollapsed ||
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable
+        );
+    };
+
+    /**
      * PC版ショートカット
      */
     const handlePaste = async (e: ClipboardEvent) => {
+        if (notDrawing(e)) return;
         if (!activeLayer || activeLayer?.locked) return;
         let imageItem: DataTransferItem | null = null;
         for (const v of e.clipboardData?.items ?? []) {
@@ -165,6 +191,7 @@
             }
         }
         activeLayer?.trace();
+        updatePointerupTimestamp();
     };
     $effect(() => {
         if (!upperLayer) return;
@@ -425,9 +452,11 @@
         switch (action) {
             case tool.undo.label:
                 activeLayer?.undo();
+                updatePointerupTimestamp();
                 break;
             case tool.redo.label:
                 activeLayer?.redo();
+                updatePointerupTimestamp();
                 break;
             case tool.save.label:
                 {
@@ -574,7 +603,11 @@
     <div class="grid grid-cols-1 md:grid-cols-[auto_1fr_auto]">
         <!-- Left Sidebar -->
         <aside class="bg-surface-200 p-4 space-y-4">
-            <CharaChipPanelPart bind:activeLayer {initTimestamp} />
+            <CharaChipPanelPart
+                bind:activeLayer
+                {initTimestamp}
+                {pointerupTimestamp}
+            />
         </aside>
 
         <!-- Main Canvas Area -->
@@ -590,7 +623,7 @@
         <!-- Right Sidebar -->
         <aside class="bg-surface-200 p-4 space-y-4">
             <ColorWheelPart />
-            <LayerPanelPart bind:activeLayer />
+            <LayerPanelPart bind:activeLayer {pointerupTimestamp} />
         </aside>
     </div>
 
