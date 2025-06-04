@@ -33,7 +33,7 @@
     let isAddEmptyLayer = $state(true);
 
     const handleImportButton = async () => {
-        if (!imageUrl || !imageRef) return;
+        if (!imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
         init();

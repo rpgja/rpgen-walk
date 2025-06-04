@@ -543,7 +543,10 @@
                     const { prev, next } = activeLayer;
                     if (next) activeLayer = next;
                     else if (prev) activeLayer = prev;
-                    else init();
+                    else {
+                        oekaki.refresh();
+                        activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+                    }
                 }}
             >
                 <IconTrash2 size={18} />
@@ -562,7 +565,9 @@
                         !confirm("後悔しませんね？")
                     )
                         return;
-                    init();
+                    oekaki.setLayers([]);
+                    oekaki.refresh();
+                    activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
                 }}
             >
                 <BombIcon size={18} />
