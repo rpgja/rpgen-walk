@@ -39,6 +39,8 @@
             <p>Ctrl + Z：戻す</p>
             <p>Ctrl + Shift + Z：やり直す</p>
             <p>Ctrl + S：保存</p>
+            <p>Ctrl + C：コピー</p>
+            <p>Ctrl + V：貼り付け</p>
             <p>モニターサイズは24インチ以上推奨</p>
         </article>
     {/snippet}

@@ -3,8 +3,7 @@
   let { children } = $props();
 
   const title = "HGペイント（歩行グラフィックペイント）";
-  const description =
-    "RPGの歩行グラフィックをドット絵で直感的に作れるWebアプリです。";
+  const description = "歩行グラを作れるフリーソフトです。";
 </script>
 
 <svelte:head>

@@ -98,6 +98,17 @@
                 e.preventDefault();
                 doAction(tool.save.label);
                 break;
+            case "c": // クリップボードにコピー
+                {
+                    if (!getSelection()?.isCollapsed) return; // 何か選択中ならそれを優先させる
+                    const blob = await new Promise<Blob | null>((resolve) =>
+                        oekaki.render().toBlob(resolve),
+                    );
+                    if (!blob) return;
+                    const item = new ClipboardItem({ "image/png": blob });
+                    await navigator.clipboard.write([item]);
+                }
+                break;
         }
     };
     $effect(() => {
@@ -105,6 +116,61 @@
         window.removeEventListener("keydown", handleKeyDown);
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
+    });
+
+    /**
+     * PC版ショートカット
+     */
+    const handlePaste = async (e: ClipboardEvent) => {
+        if (!activeLayer || activeLayer?.locked) return;
+        let imageItem: DataTransferItem | null = null;
+        for (const v of e.clipboardData?.items ?? []) {
+            if (v.kind === "file" && v.type.startsWith("image/")) {
+                imageItem = v;
+            }
+        }
+        if (!imageItem) return;
+        const blob = imageItem.getAsFile();
+        if (!blob) return;
+
+        const dotSize = oekaki.getDotSize();
+        const { width, height } = anime;
+
+        const bitmap = await createImageBitmap(blob);
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = width;
+        tempCanvas.height = height;
+        const ctx = tempCanvas.getContext("2d");
+        if (!ctx) return;
+        // アンチエイリアス無効化（ドット絵向け）
+        ctx.imageSmoothingEnabled = false;
+
+        // 中央配置
+        const ratio = Math.min(width / bitmap.width, height / bitmap.height);
+        const w = bitmap.width * ratio;
+        const h = bitmap.height * ratio;
+        const offsetX = (width - w) / 2;
+        const offsetY = (height - h) / 2;
+        ctx.drawImage(bitmap, offsetX, offsetY, w, h);
+        const { data } = ctx.getImageData(0, 0, width, height);
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const index = (y * width + x) * 4;
+                const [r, g, b, a] = data.subarray(index, index + 4);
+                if (!a) continue;
+                oekaki.color.value = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+                activeLayer.drawByDot(x * dotSize, y * dotSize);
+                activeLayer.used = true;
+            }
+        }
+        activeLayer?.trace();
+    };
+    $effect(() => {
+        if (!upperLayer) return;
+        window.removeEventListener("paste", handlePaste);
+        window.addEventListener("paste", handlePaste);
+        return () => window.removeEventListener("paste", handlePaste);
     });
 
     const dropper = (x: number, y: number) => {
