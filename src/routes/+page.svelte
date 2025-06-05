@@ -606,7 +606,7 @@
             <span class="text-left">不透明度</span>
             <span class="text-right">{opacity}%</span>
         </div>
-        <div class="w-full basis-full max-w-[300px] mt-2">
+        <div class="my-2 w-full basis-full max-w-[300px] mt-2">
             <Slider
                 value={opacity}
                 onValueChange={(e) => (opacity = e.value)}
