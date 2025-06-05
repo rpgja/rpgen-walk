@@ -2,7 +2,7 @@
 
 A pixel art tool for creating RPG walking sprites.
 
-https://github.com/rpgja/rpgen-walk
+https://rpgja.github.io/rpgen-walk/
 
 ![image](https://github.com/user-attachments/assets/8705c4d1-8a57-4092-b74c-1bffe0335935)
 
