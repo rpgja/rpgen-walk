@@ -63,7 +63,7 @@
 						tabindex="0"
 						role="button"
 						onkeydown={() => {}}
-						class="flex items-center space-x-2"
+						class="flex flex-grow items-center space-x-2"
 						onclick={() => {
 							activeLayer = layer;
 						}}

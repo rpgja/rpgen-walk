@@ -573,11 +573,7 @@
                     if (
                         layerLocked ||
                         !activeLayer ||
-                        !confirm("全レイヤーを削除しますか？") ||
-                        !confirm(
-                            "一度消すと二度と復元できません。本当に消しますか？",
-                        ) ||
-                        !confirm("後悔しませんね？")
+                        !confirm("全レイヤーを削除しますか？")
                     )
                         return;
                     oekaki.setLayers([]);
