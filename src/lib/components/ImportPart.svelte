@@ -165,7 +165,7 @@
                             (v) => v.label === e.currentTarget.value,
                         );
                         if (!v) return;
-                        imageUrl = `https://api.allorigins.win/raw?url=${v.url}`;
+                        imageUrl = v.url;
                     }}
                 >
                     <option value="">自動入力</option>
@@ -211,7 +211,9 @@
             {#if imageUrl}
                 <div class="mt-4 max-h-96 overflow-auto border rounded p-2">
                     <img
-                        src={imageUrl}
+                        src={imageUrl.startsWith("http")
+                            ? `https://api.allorigins.win/raw?url=${imageUrl}`
+                            : imageUrl}
                         alt="インポート画像"
                         class="max-w-96 object-contain rounded border"
                         crossorigin="anonymous"
