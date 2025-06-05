@@ -445,7 +445,7 @@
         oekaki.flipped.value = flipped;
     });
     let isGrid = $state(true);
-    let isDark = $state(true);
+    let isDark = $state(false);
     $effect(() => {
         if (isDark) {
             document.body.classList.add("hg-paint-gimp-dark");
@@ -495,7 +495,15 @@
                 alt="Momoi Icon"
                 class="w-16 h-16 object-contain"
             />
-            HGペイント（歩行グラフィックペイント）
+            <!-- PCやタブレット幅で表示 -->
+            <span class="hidden sm:inline">
+                HGペイント（歩行グラフィックペイント）
+            </span>
+            <!-- スマホ幅で表示 -->
+            <span class="sm:hidden flex flex-col">
+                <span>HGペイント</span>
+                <span>（歩行グラフィックペイント）</span>
+            </span>
         </div>
 
         <!-- タイトル以降の要素を包むコンテナ、中央寄せ -->
