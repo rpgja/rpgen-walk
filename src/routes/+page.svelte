@@ -46,6 +46,8 @@
     import { Segment, Switch } from "@skeletonlabs/skeleton-svelte";
     import ColorPicker from "svelte-awesome-color-picker";
 
+    const isMobile = globalThis.innerWidth < 768;
+
     let pointerupTimestamp = $state(0);
     const updatePointerupTimestamp = () => {
         setTimeout(() => {
@@ -241,8 +243,10 @@
     let upperLayer: oekaki.LayeredCanvas | null = $state(null);
     let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
 
-    let width = 480;
-    const height = 480;
+    const height = isMobile
+        ? Math.floor((globalThis.innerWidth * 0.9) / 48) * 48
+        : 480;
+    let width = height;
     let initTimestamp = $state(0);
     $effect(() => {
         init();
@@ -620,12 +624,17 @@
 
         <!-- Main Canvas Area -->
         <main class="bg-white flex items-center justify-center gap-4">
-            <PreviewPart {initTimestamp} />
+            {#if !isMobile}
+                <PreviewPart {initTimestamp} />
+            {/if}
             <div
-                class={`relative ${isGrid ? "hg-paint-grid-mode" : ""}`}
+                class="relative"
+                class:hg-paint-grid-mode={isGrid}
                 bind:this={oekakiWrapper}
             ></div>
-            <InspoPart />
+            {#if !isMobile}
+                <InspoPart />
+            {/if}
         </main>
 
         <!-- Right Sidebar -->
