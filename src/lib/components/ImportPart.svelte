@@ -30,7 +30,7 @@
     }
 
     let opacity = $state([100]);
-    let isAddEmptyLayer = $state(true);
+    let isAddEmptyLayer = $state(false);
 
     const handleImportButton = async () => {
         if (!imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
