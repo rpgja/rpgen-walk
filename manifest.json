@@ -1,0 +1,16 @@
+{
+	"name": "HGペイント",
+	"short_name": "hg-paint",
+	"description": "歩行グラフィックペイント",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#003456",
+	"theme_color": "#f09199",
+	"icons": [
+		{
+			"src": "momoi.png",
+			"sizes": "480x480",
+			"type": "image/png"
+		}
+	]
+}
