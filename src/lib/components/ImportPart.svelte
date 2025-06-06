@@ -242,7 +242,7 @@
                     type="checkbox"
                     bind:checked={isAddEmptyLayer}
                 />
-                <p>トレース台</p>
+                <p>トレース台を追加する</p>
             </label>
 
             <div class="pt-2">
