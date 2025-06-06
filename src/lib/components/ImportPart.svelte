@@ -1,10 +1,10 @@
 <script lang="ts">
+    import * as anime from "$lib/anime";
     import { SearchIcon, Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
     import * as oekaki from "@onjmin/oekaki";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
     import { Slider } from "@skeletonlabs/skeleton-svelte";
-    import * as anime from "../anime";
 
     let {
         init,

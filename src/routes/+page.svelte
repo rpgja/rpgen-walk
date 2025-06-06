@@ -10,9 +10,16 @@
     import ManualPart from "$lib/components/ManualPart.svelte";
     import PreviewPart from "$lib/components/PreviewPart.svelte";
     import ResizePart from "$lib/components/ResizePart.svelte";
+    import { isOnionSkin } from "$lib/onion-skin";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
-    import { BombIcon, CheckIcon, MoonIcon, SunIcon } from "@lucide/svelte";
+    import {
+        BombIcon,
+        CheckIcon,
+        Layers2Icon,
+        MoonIcon,
+        SunIcon,
+    } from "@lucide/svelte";
     import { EyeIcon } from "@lucide/svelte";
     import { EditIcon } from "@lucide/svelte";
     import { LockIcon } from "@lucide/svelte";
@@ -216,7 +223,7 @@
         const hex = `#${Array.from(data.slice(index, index + 3))
             .map((v) => v.toString(16).padStart(2, "0"))
             .join("")}`;
-        color.update(() => hex);
+        color.set(hex);
     };
 
     const fill = async (x: number, y: number) => {
@@ -720,6 +727,20 @@
                 {/snippet}
                 {#snippet activeChild()}
                     <MoonIcon size="14" />
+                {/snippet}
+            </Switch>
+            <Switch
+                controlActive="bg-secondary-500"
+                checked={$isOnionSkin}
+                onCheckedChange={(e) => {
+                    isOnionSkin.set(e.checked);
+                }}
+            >
+                {#snippet inactiveChild()}
+                    <Layers2Icon size="14" />
+                {/snippet}
+                {#snippet activeChild()}
+                    <Layers2Icon size="14" />
                 {/snippet}
             </Switch>
         </nav>

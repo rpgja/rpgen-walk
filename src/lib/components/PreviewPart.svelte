@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as anime from "../anime";
+  import * as anime from "$lib/anime";
 
   let { initTimestamp } = $props();
 

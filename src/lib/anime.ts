@@ -6,6 +6,7 @@ export let frames: number;
 export let ways: number;
 export let waysOrder: Way[];
 export const toI = (x: number, y: number) => x + y * frames;
+export const toXY = (i: number) => [i % frames, Math.floor(i / frames)];
 export const init = (
 	_width: number,
 	_height: number,

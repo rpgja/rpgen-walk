@@ -1,4 +1,6 @@
 <script lang="ts">
+	import * as anime from "$lib/anime";
+	import { activeIndex } from "$lib/store";
 	import {
 		ArrowDownIcon,
 		ArrowLeftIcon,
@@ -6,7 +8,6 @@
 		ArrowUpIcon,
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
-	import * as anime from "../anime";
 
 	let {
 		activeLayer = $bindable(undefined),
@@ -14,18 +15,17 @@
 		pointerupTimestamp,
 	} = $props();
 
-	let activeIndex = $state(0);
 	let prevIndex = 0;
 	$effect(() => {
 		if (!initTimestamp) return;
-		activeIndex = 0;
+		activeIndex.set(0);
 		prevIndex = 0;
 	});
 
 	$effect(() => {
 		if (!initTimestamp) return;
 		anime.layersByI.set(prevIndex, oekaki.getLayers());
-		const now = anime.layersByI.get(activeIndex);
+		const now = anime.layersByI.get($activeIndex);
 		if (now) {
 			oekaki.setLayers(now);
 			activeLayer = now[now.length - 1];
@@ -46,9 +46,9 @@
 	$effect(() => {
 		if (!initTimestamp || !pointerupTimestamp) return;
 		const canvas = oekaki.render();
-		anime.canvasByI.set(activeIndex, canvas);
+		anime.canvasByI.set($activeIndex, canvas);
 		const dataURL = canvas.toDataURL("image/png");
-		anime.dataURLByI.set(activeIndex, dataURL);
+		anime.dataURLByI.set($activeIndex, dataURL);
 		pointerupTimestampAfter = performance.now();
 	});
 </script>
@@ -66,15 +66,15 @@
 								role="button"
 								onkeydown={() => {}}
 								class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
-									activeIndex === anime.toI(x, y)
+									$activeIndex === anime.toI(x, y)
 										? "ring-4 ring-primary-500 ring-offset-2"
 										: ""
 								}`}
 								onclick={() => {
 									const i = anime.toI(x, y);
-									if (activeIndex === i) return;
-									prevIndex = activeIndex;
-									activeIndex = i;
+									if ($activeIndex === i) return;
+									prevIndex = $activeIndex;
+									activeIndex.set(i);
 								}}
 							>
 								<!-- 左上バッジ -->

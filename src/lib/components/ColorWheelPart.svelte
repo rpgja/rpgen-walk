@@ -3,7 +3,7 @@
   import RCW from "reinvented-color-wheel";
   const ReinventedColorWheel = RCW as any;
 
-  import { color } from "../store.js";
+  import { color } from "$lib/store.js";
 
   let el = $state();
   type ColorWheel = { hex: string };
@@ -18,7 +18,7 @@
       handleDiameter: 16,
       wheelReflectsSaturation: false,
       onChange: (v: ColorWheel) => {
-        color.update(() => v.hex);
+        color.set(v.hex);
       },
     });
   });

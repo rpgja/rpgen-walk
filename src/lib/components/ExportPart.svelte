@@ -1,7 +1,7 @@
 <script lang="ts">
+    import * as anime from "$lib/anime";
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
-    import * as anime from "../anime";
 
     import JSZip from "jszip";
     const zip = new JSZip();
