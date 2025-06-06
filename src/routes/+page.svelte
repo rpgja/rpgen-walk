@@ -110,6 +110,10 @@
                 e.preventDefault();
                 isDark = !isDark;
                 break;
+            case "o":
+                e.preventDefault();
+                isOnionSkin.update((value) => !value);
+                break;
             case "z":
                 e.preventDefault();
                 doAction(tool.undo.label);

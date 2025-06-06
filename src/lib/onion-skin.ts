@@ -18,7 +18,7 @@ const draw = () => {
 		const i = anime.toI(prevX, y);
 		const canvas = anime.canvasByI.get(i);
 		if (!canvas) return;
-		lower.ctx.globalAlpha = 0.5;
+		lower.ctx.globalAlpha = 0.4;
 		lower.ctx.drawImage(canvas, 0, 0);
 	}
 };
