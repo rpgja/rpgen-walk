@@ -6,6 +6,7 @@
 		ArrowLeftIcon,
 		ArrowRightIcon,
 		ArrowUpIcon,
+		FileQuestion,
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
 
@@ -115,6 +116,8 @@
 						<ArrowUpIcon class="rotate-225" />
 					{:else if anime.waysOrder[y] === anime.way.c}
 						<ArrowUpIcon class="rotate-135" />
+					{:else}
+						<FileQuestion />
 					{/if}
 				</div>
 			</div>
