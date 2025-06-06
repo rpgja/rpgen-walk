@@ -1,4 +1,4 @@
-# rpgen-walk
+# HGペイント（歩行グラフィックペイント）
 
 A pixel art tool for creating RPG walking sprites.
 
@@ -9,7 +9,7 @@ https://rpgja.github.io/rpgen-walk/
 
 ## 概要 / Overview
 
-**rpgen-walk** は、RPG の歩行グラフィックを自作できるツールです。  
+**HGペイント（歩行グラフィックペイント）** は、RPG の歩行グラフィックを自作できるWebアプリです。  
 基本的な規格は [RPGEN](https://rpgen.org/) に準拠しており、 **RPGツクール** や **ウディタ** にも対応しています。
 
 ### 競合アプリに対する強み / Features
@@ -53,23 +53,23 @@ https://rpgja.github.io/rpgen-walk/
   - 🚧 外周1px黒塗り
   - 🚧 左右反転
 
-## ライセンス / License
+## Webアプリのライセンス / License
 
 - **MIT**  
-  本プロジェクト全体には MIT ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
+  Webアプリそのものには MIT ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
 
 > [!NOTE]
 > Although this application uses a library originally licensed under AGPLv3,
 > both the application and the library are authored by the same developer,
 > who hereby distributes this application under the MIT license.
 > 
-> このアプリケーションはもともとAGPLv3でライセンスされたライブラリを使用していますが、
-> アプリケーションとライブラリの両方が同じ開発者によって作成されており、
-> MITライセンスの下でこのアプリケーションを配布しています。
+> このWebアプリはもともとAGPLv3でライセンスされたライブラリを使用していますが、
+> Webアプリとライブラリの両方が同じ開発者によって作成されており、
+> MITライセンスの下でこのWebアプリを配布しています。
 
 ## 作品利用について / About Your Creations
 
-- このツールで作成した画像やデータの著作権および利用権は、すべて作成者（利用者）に帰属します。
+- このWebアプリで作成された画像やデータの著作権および利用権は、すべて作成者（利用者）に帰属します。
 - 商用・非商用を問わず、自由に利用・改変・配布いただけます。
 - 著作権表記や利用報告も一切不要です。
 - 安心してご活用ください。
