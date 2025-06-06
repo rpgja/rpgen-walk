@@ -89,6 +89,7 @@
                         layer.used = true;
                     }
                 }
+                layer.trace();
 
                 // 反映
                 const i = anime.toI(x, y);
