@@ -272,6 +272,7 @@
         lower?.canvas.classList.add("gimp-checkered-background");
         upperLayer = upper;
         lowerLayer = lower;
+        if (upper) upper.opacity = 32;
 
         oekaki.setDotSize(1, h);
         document.documentElement.style.setProperty(
@@ -281,6 +282,20 @@
 
         activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
     };
+
+    $effect(() => {
+        if (!upperLayer) return;
+        document.addEventListener(
+            "pointermove",
+            (e) => {
+                if (!upperLayer) return;
+                const [x, y] = oekaki.getXY(e);
+                upperLayer.clear();
+                upperLayer.drawByDot(x, y);
+            },
+            { passive: true },
+        );
+    });
 
     // 描画イベント登録
     $effect(() => {

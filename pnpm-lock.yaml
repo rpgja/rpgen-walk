@@ -15,8 +15,8 @@ importers:
         specifier: 7.4.47
         version: 7.4.47
       '@onjmin/oekaki':
-        specifier: 1.0.47
-        version: 1.0.47
+        specifier: 1.0.49
+        version: 1.0.49
       jszip:
         specifier: 3.10.1
         version: 3.10.1
@@ -321,8 +321,8 @@ packages:
   '@mdi/js@7.4.47':
     resolution: {integrity: sha512-KPnNOtm5i2pMabqZxpUz7iQf+mfrYZyKCZ8QNz85czgEt7cuHcGorWfdzUMWYA0SD+a6Hn4FmJ+YhzzzjkTZrQ==}
 
-  '@onjmin/oekaki@1.0.47':
-    resolution: {integrity: sha512-0HvsviAAzBb/uInTJ6udLEl2B/8Y/bYTdx6OpAV14UjUCycb676KywYkJqqd+Ts3je7T6EqjpXvljSqCq3SPSQ==}
+  '@onjmin/oekaki@1.0.49':
+    resolution: {integrity: sha512-hJpJMRkUVN5d6yr+EBXD1kzxwosoLsDgGx/9uE8K11H1VUxwZyXATiJ24wv7ZXzeA8+GIBLricV6qXn/5CsFzw==}
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -1232,7 +1232,7 @@ snapshots:
 
   '@mdi/js@7.4.47': {}
 
-  '@onjmin/oekaki@1.0.47': {}
+  '@onjmin/oekaki@1.0.49': {}
 
   '@polka/url@1.0.0-next.29': {}
 
