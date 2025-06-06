@@ -27,6 +27,16 @@
 
   <!-- Apple Touch Icon -->
   <link rel="apple-touch-icon" href="{base}/momoi.png" />
+
+  <!-- PWA 対応 -->
+  <link rel="manifest" href="{base}/manifest.json" />
+  <meta name="theme-color" content="#f09199" />
+
+  <!-- Google Site Verification -->
+  <meta
+    name="google-site-verification"
+    content="umOJryZRtZeDsWC10CFmGjDOJy7SjkpL3DWlXblOnyE"
+  />
 </svelte:head>
 
 {@render children()}
