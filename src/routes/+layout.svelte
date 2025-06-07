@@ -30,7 +30,7 @@
 
   <!-- PWA 対応 -->
   <link rel="manifest" href="{base}/manifest.json" />
-  <meta name="theme-color" content="#f09199" />
+  <meta name="theme-color" content="##6CBB5A" />
 </svelte:head>
 
 {@render children()}

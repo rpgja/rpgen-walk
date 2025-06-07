@@ -517,7 +517,7 @@
     <header class="bg-surface-100 shadow flex flex-wrap items-center gap-3">
         <!-- タイトルは左寄せ、固定幅 -->
         <div
-            class="flex-none px-8 bg-primary rounded select-none text-left font-bold text-error-700 flex items-center gap-2"
+            class="flex-none px-8 bg-primary rounded select-none text-left font-bold text-success-700 flex items-center gap-2"
             style="min-width: 180px;"
         >
             <img
