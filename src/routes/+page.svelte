@@ -517,7 +517,7 @@
             style="min-width: 180px;"
         >
             <img
-                src="{base}/momoi.png"
+                src="{base}/midori.png"
                 alt="Momoi Icon"
                 class="w-16 h-16 object-contain"
             />

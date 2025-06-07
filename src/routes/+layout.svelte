@@ -17,16 +17,16 @@
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{base}/" />
-  <meta property="og:image" content="{base}/momoi.png" />
+  <meta property="og:image" content="{base}/midori.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content="{base}/momoi.png" />
+  <meta name="twitter:image" content="{base}/midori.png" />
 
   <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="{base}/momoi.png" />
+  <link rel="apple-touch-icon" href="{base}/midori.png" />
 
   <!-- PWA 対応 -->
   <link rel="manifest" href="{base}/manifest.json" />
