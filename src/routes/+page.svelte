@@ -73,7 +73,11 @@
     const handleKeyDown = async (e: KeyboardEvent) => {
         if (notDrawing(e)) return;
         if (!e.ctrlKey) return;
-        switch (e.key) {
+        let key = e.key;
+        if (e.getModifierState("CapsLock")) {
+            key = /[a-z]/.test(key) ? key.toUpperCase() : key.toLowerCase();
+        }
+        switch (key) {
             case "1":
                 e.preventDefault();
                 choiced = tool.pen.label;
