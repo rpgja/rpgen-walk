@@ -522,7 +522,7 @@
         >
             <img
                 src="{base}/midori.png"
-                alt="Momoi Icon"
+                alt="Midori Icon"
                 class="w-16 h-16 object-contain"
             />
             <!-- PCやタブレット幅で表示 -->
