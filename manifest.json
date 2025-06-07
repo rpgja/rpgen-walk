@@ -5,7 +5,7 @@
 	"start_url": "/",
 	"display": "standalone",
 	"background_color": "#003456",
-	"theme_color": "#f09199",
+	"theme_color": "##6CBB5A",
 	"icons": [
 		{
 			"src": "midori.png",
