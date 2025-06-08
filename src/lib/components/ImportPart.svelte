@@ -128,6 +128,7 @@
         { label: "妹紅", url: "https://rpgen.cc/dq/sAnims/res/1874.png" },
         { label: "小鈴", url: "https://rpgen.cc/dq/sAnims/res/1526.png" },
         { label: "阿求", url: "https://rpgen.cc/dq/sAnims/res/1527.png" },
+        { label: "マミゾウ", url: "https://rpgen.cc/dq/sAnims/res/1882.png" },
     ];
 </script>
 
