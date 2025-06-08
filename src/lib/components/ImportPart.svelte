@@ -153,7 +153,14 @@
         </header>
         <article class="space-y-4">
             <p class="opacity-60">先にリサイズしてください</p>
-
+            <a
+                href="https://github.com/rpgja/rpgen-walk/tree/main?tab=readme-ov-file#%E5%90%8C%E6%A2%B1%E7%B4%A0%E6%9D%90%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6--about-included-assets"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-800 hover:underline"
+            >
+                同梱素材の利用規約はこちら
+            </a>
             <label class="flex flex-col">
                 <span class="label-text font-medium">テンプレ</span>
                 <select

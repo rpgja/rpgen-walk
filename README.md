@@ -89,7 +89,7 @@ https://rpgja.github.io/rpgen-walk/
   - [RPGEN](https://rpgen.org/dq/sprites/1958/)
   - [Pixiv](https://www.pixiv.net/users/356391)
 
-（※ワイの解釈：目/腕/足の位置をトレースして別キャラを描くなら改変・再配布に当たらない？）
+（※ワイの解釈：目/腕/足の位置をトレースして別キャラを描く程度なら改変・再配布に当たらない？）
 
 ## コントリビュート / Contributing
 
