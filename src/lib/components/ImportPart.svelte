@@ -128,9 +128,6 @@
         { label: "妹紅", url: "https://rpgen.cc/dq/sAnims/res/1874.png" },
         { label: "小鈴", url: "https://rpgen.cc/dq/sAnims/res/1526.png" },
         { label: "阿求", url: "https://rpgen.cc/dq/sAnims/res/1527.png" },
-        { label: "霊夢", url: "https://rpgen.cc/dq/sAnims/res/1053.png" },
-        { label: "魔理沙", url: "https://rpgen.cc/dq/sAnims/res/1888.png" },
-        { label: "パチュリー", url: "https://rpgen.cc/dq/sAnims/res/1273.png" },
     ];
 </script>
 
