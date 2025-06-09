@@ -9,7 +9,7 @@
     let previewMode = $state("歩行グラ");
 </script>
 
-<div class="max-w-xs mx-auto flex flex-col gap-4">
+<div class="max-w-xs flex flex-col gap-4">
     <label class="flex flex-col">
         <select
             class="select select-bordered w-full bg-white"

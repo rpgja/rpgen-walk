@@ -657,7 +657,7 @@
         </aside>
 
         <!-- Main Canvas Area -->
-        <main class="bg-white flex items-center justify-center gap-4">
+        <main class="bg-white flex items-center justify-center gap-4 px-4">
             {#if !isMobile}
                 <PreviewPart {initTimestamp} />
             {/if}
