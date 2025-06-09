@@ -139,7 +139,7 @@
         }
         gif.on("finished", (blob) => {
             const objectURL = URL.createObjectURL(blob);
-            download(objectURL, `frames_${i}.gif`);
+            download(objectURL, `frames_${i + 1}.gif`);
         });
         gif.render();
     };
