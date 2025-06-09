@@ -1,14 +1,65 @@
 <script lang="ts">
     import * as anime from "$lib/anime";
+    import { activeIndex } from "$lib/store";
+    import { randInt } from "$lib/util";
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
+    import GIF from "gif.js";
 
     import JSZip from "jszip";
     const zip = new JSZip();
 
+    let { width, height } = $props();
+
     let open = $state(false);
 
-    const handleEachExport = () => {
+    const download = (url: string, fileName: string) => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+    };
+
+    const handlePngExport = () => {
+        const { width, height, frames, ways } = anime;
+
+        // 出力先キャンバス（リサイズ用）
+        const joinedCanvas = document.createElement("canvas");
+        joinedCanvas.width = width * frames;
+        joinedCanvas.height = height * ways;
+        const ctx = joinedCanvas.getContext("2d");
+        if (!ctx) return;
+
+        // アンチエイリアス無効化（ドット絵向け）
+        ctx.imageSmoothingEnabled = false;
+
+        for (let y = 0; y < ways; y++) {
+            for (let x = 0; x < frames; x++) {
+                const i = anime.toI(x, y);
+                const sourceCanvas = anime.canvasByI.get(i);
+                if (!sourceCanvas) continue;
+
+                // 各フレームを指定位置に描画
+                ctx.drawImage(
+                    sourceCanvas,
+                    0,
+                    0,
+                    sourceCanvas.width,
+                    sourceCanvas.height, // 元サイズ
+                    x * width,
+                    y * height,
+                    width,
+                    height, // 出力位置とサイズ
+                );
+            }
+        }
+
+        // 画像としてエクスポート
+        const dataURL = joinedCanvas.toDataURL("image/png");
+        download(dataURL, "sprite_sheet.png");
+    };
+
+    const handleZipExport = () => {
         const { width, height, frames, ways } = anime;
 
         for (let y = 0; y < ways; y++) {
@@ -57,46 +108,40 @@
         });
     };
 
-    const handleJoinExport = () => {
-        const { width, height, frames, ways } = anime;
-
-        // 出力先キャンバス（リサイズ用）
-        const joinedCanvas = document.createElement("canvas");
-        joinedCanvas.width = width * frames;
-        joinedCanvas.height = height * ways;
-        const ctx = joinedCanvas.getContext("2d");
-        if (!ctx) return;
-
-        // アンチエイリアス無効化（ドット絵向け）
-        ctx.imageSmoothingEnabled = false;
-
-        for (let y = 0; y < ways; y++) {
-            for (let x = 0; x < frames; x++) {
-                const i = anime.toI(x, y);
-                const sourceCanvas = anime.canvasByI.get(i);
-                if (!sourceCanvas) continue;
-
-                // 各フレームを指定位置に描画
-                ctx.drawImage(
-                    sourceCanvas,
-                    0,
-                    0,
-                    sourceCanvas.width,
-                    sourceCanvas.height, // 元サイズ
-                    x * width,
-                    y * height,
-                    width,
-                    height, // 出力位置とサイズ
-                );
-            }
+    const fps = [2, 3, 4, 5, 6, 7, 8] as const;
+    let selectedFps = $state(2);
+    const handleGifExport = () => {
+        const { frames } = anime;
+        const i = Math.floor($activeIndex / frames) * frames;
+        const bg = `${[...Array(3)].map(() => randInt(0, 4).toString(16).padStart(2, "0")).join("")}`;
+        const gif = new GIF({
+            workers: 2,
+            quality: 10,
+            width,
+            height,
+            workerScript: "node_modules/gif.js/dist/gif.worker.js",
+            transparent: `0x${bg}`,
+        });
+        const delay = (1000 / selectedFps) | 0;
+        for (let x = 0; x < frames; x++) {
+            const emptyCanvas = document.createElement("canvas");
+            emptyCanvas.width = width;
+            emptyCanvas.height = height;
+            const ctx = emptyCanvas.getContext("2d", {
+                willReadFrequently: true,
+            });
+            if (!ctx) return;
+            ctx.fillStyle = `#${bg}`;
+            ctx.fillRect(0, 0, width, height);
+            const canvas = anime.canvasByI.get(i + x);
+            if (canvas) ctx.drawImage(canvas, 0, 0);
+            gif.addFrame(emptyCanvas, { delay });
         }
-
-        // 画像としてエクスポート
-        const dataURL = joinedCanvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = dataURL;
-        link.download = "sprite_sheet.png";
-        link.click();
+        gif.on("finished", (blob) => {
+            const objectURL = URL.createObjectURL(blob);
+            download(objectURL, `frames_${i}.gif`);
+        });
+        gif.render();
     };
 </script>
 
@@ -126,22 +171,49 @@
             <div class="pt-2">
                 <button
                     type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                    class="w-full px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
                     aria-label="submit"
-                    onclick={handleEachExport}
+                    onclick={handlePngExport}
                 >
-                    個別出力
+                    PNG出力
                 </button>
             </div>
 
             <div class="pt-2">
                 <button
                     type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
+                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
                     aria-label="submit"
-                    onclick={handleJoinExport}
+                    onclick={handleZipExport}
                 >
-                    結合出力
+                    Zip出力
+                </button>
+            </div>
+
+            <label class="flex flex-col">
+                <span class="label-text font-medium">その他拡張子</span>
+                <select
+                    class="select select-bordered w-full bg-white"
+                    onchange={(e) => {
+                        const { value } = e.currentTarget;
+                        const n = Number(value);
+                        selectedFps = n;
+                    }}
+                >
+                    {#each fps as v}
+                        <option value={v}>{v}fps</option>
+                    {/each}
+                </select>
+            </label>
+
+            <div class="pt-2">
+                <button
+                    type="button"
+                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                    aria-label="submit"
+                    onclick={handleGifExport}
+                >
+                    GIF出力
                 </button>
             </div>
         </article>

@@ -782,7 +782,7 @@
         <ManualPart />
         <ResizePart {init} />
         <ImportPart {init} bind:activeLayer bind:initTimestamp />
-        <ExportPart />
+        <ExportPart {width} {height} />
 
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
