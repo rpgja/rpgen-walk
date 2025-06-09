@@ -191,7 +191,7 @@
             </div>
 
             <label class="flex flex-col">
-                <span class="label-text font-medium">その他拡張子</span>
+                <span class="label-text font-medium">フレームレート</span>
                 <select
                     class="select select-bordered w-full bg-white"
                     onchange={(e) => {
