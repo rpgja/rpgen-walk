@@ -1,6 +1,7 @@
 <script lang="ts">
     import * as anime from "$lib/anime";
     import { activeIndex } from "$lib/store";
+    import { fps } from "$lib/store";
     import { randInt } from "$lib/util";
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
@@ -108,8 +109,6 @@
         });
     };
 
-    const fps = [2, 3, 4, 5, 6, 7, 8] as const;
-    let selectedFps = $state(2);
     const handleGifExport = () => {
         const { frames } = anime;
         const i = Math.floor($activeIndex / frames) * frames;
@@ -122,7 +121,7 @@
             workerScript: "node_modules/gif.js/dist/gif.worker.js",
             transparent: `0x${bg}`,
         });
-        const delay = (1000 / selectedFps) | 0;
+        const delay = (1000 / $fps) | 0;
         for (let x = 0; x < frames; x++) {
             const emptyCanvas = document.createElement("canvas");
             emptyCanvas.width = width;
@@ -171,11 +170,11 @@
             <div class="pt-2">
                 <button
                     type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
+                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
                     aria-label="submit"
-                    onclick={handlePngExport}
+                    onclick={handleGifExport}
                 >
-                    PNG出力
+                    GIF出力
                 </button>
             </div>
 
@@ -190,30 +189,14 @@
                 </button>
             </div>
 
-            <label class="flex flex-col">
-                <span class="label-text font-medium">フレームレート</span>
-                <select
-                    class="select select-bordered w-full bg-white"
-                    onchange={(e) => {
-                        const { value } = e.currentTarget;
-                        const n = Number(value);
-                        selectedFps = n;
-                    }}
-                >
-                    {#each fps as v}
-                        <option value={v}>{v}fps</option>
-                    {/each}
-                </select>
-            </label>
-
             <div class="pt-2">
                 <button
                     type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                    class="w-full px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
                     aria-label="submit"
-                    onclick={handleGifExport}
+                    onclick={handlePngExport}
                 >
-                    GIF出力
+                    PNG出力
                 </button>
             </div>
         </article>

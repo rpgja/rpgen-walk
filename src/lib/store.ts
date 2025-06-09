@@ -4,3 +4,4 @@ import * as unjStorage from "./unj-storage.js";
 
 export const color = writable(unjStorage.color.value ?? oekaki.color.value);
 export const activeIndex = writable(0);
+export const fps = writable(2);
