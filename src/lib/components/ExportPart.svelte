@@ -118,7 +118,7 @@
             quality: 10,
             width,
             height,
-            workerScript: "node_modules/gif.js/dist/gif.worker.js",
+            workerScript: "gif.worker.js",
             transparent: `0x${bg}`,
         });
         const delay = (1000 / $fps) | 0;
