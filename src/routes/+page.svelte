@@ -261,7 +261,7 @@
     const height = isMobile
         ? Math.floor((globalThis.innerWidth * 0.9) / 48) * 48
         : 480;
-    let width = height;
+    let width = $state(height);
     let initTimestamp = $state(0);
     $effect(() => {
         init();
@@ -271,8 +271,9 @@
         initTimestamp = performance.now();
         const w = anime.width;
         const h = anime.height;
-        width = Math.floor(height * (w / h));
-        oekaki.init(oekakiWrapper, width, height);
+        const _w = Math.floor(height * (w / h));
+        oekaki.init(oekakiWrapper, _w, height);
+        width = _w;
 
         const upper = oekaki.upperLayer.value;
         const lower = oekaki.lowerLayer.value;
@@ -351,7 +352,7 @@
             prevX = null;
             prevY = null;
             if (activeLayer?.locked) return;
-            if (choiced === tool.fill.label) fill(x, y);
+            if (choiced === tool.fill.label && (buttons & 2) === 0) fill(x, y);
             fin();
         });
         oekaki.onClick((x, y, buttons) => {});
