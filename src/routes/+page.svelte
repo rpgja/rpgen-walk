@@ -228,10 +228,16 @@
         if (!ctx) return;
         const { data } = ctx.getImageData(0, 0, width, height);
         const index = (y * width + x) * 4;
-        const hex = `#${Array.from(data.slice(index, index + 3))
-            .map((v) => v.toString(16).padStart(2, "0"))
-            .join("")}`;
-        color.set(hex);
+        const [r, g, b, a] = data.subarray(index, index + 4);
+        if (a) {
+            erasable = false;
+            const hex = `#${[r, g, b]
+                .map((v) => v.toString(16).padStart(2, "0"))
+                .join("")}`;
+            color.set(hex);
+        } else {
+            erasable = true;
+        }
     };
 
     const fill = async (x: number, y: number) => {
@@ -316,6 +322,7 @@
             if (prevY === null) prevY = y;
             if (choiced === tool.dropper.label || (buttons & 2) !== 0) {
                 dropper(x, y);
+                dropping = true;
             } else {
                 if (!activeLayer?.locked) {
                     if (choiced === tool.translate.label) {
@@ -348,11 +355,13 @@
                 addRecent();
             }
         };
+        let dropping = false;
         oekaki.onDrawn((x, y, buttons) => {
             prevX = null;
             prevY = null;
             if (activeLayer?.locked) return;
-            if (choiced === tool.fill.label && (buttons & 2) === 0) fill(x, y);
+            if (choiced === tool.fill.label && !dropping) fill(x, y);
+            dropping = false;
             fin();
         });
         oekaki.onClick((x, y, buttons) => {});
