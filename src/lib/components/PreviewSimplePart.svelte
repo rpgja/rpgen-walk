@@ -21,8 +21,7 @@
         const n = anime.frames;
         const elapsedSec = time / 1000;
         const step = (elapsedSec * $fps) | 0;
-        const frameIndex =
-            n === 1 ? 0 : n - 1 - Math.abs((step % ((n - 1) * 2)) - (n - 1));
+        const frameIndex = step % n;
 
         if (!i && i !== 0) return;
         if (!canvasRef) return;
