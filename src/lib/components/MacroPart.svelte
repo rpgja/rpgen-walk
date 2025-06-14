@@ -2,6 +2,7 @@
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
     import * as oekaki from "@onjmin/oekaki";
+    import * as anime from "$lib/anime";
 
     let { activeLayer = $bindable() } = $props();
 
@@ -28,6 +29,40 @@
 
     const drawOutline = () => {
         const canvas = oekaki.render();
+        const ctx = canvas.getContext("2d", {
+            willReadFrequently: true,
+        });
+        if (!ctx) return;
+        const { width, height } = anime;
+        const dotSize = oekaki.getDotSize();
+        const { data } = ctx.getImageData(
+            0,
+            0,
+            width * dotSize,
+            height * dotSize,
+        );
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const i = (x + width * y * dotSize) * dotSize * 4;
+                const [r, g, b, a] = data.subarray(i, i + 4);
+                if (a) continue;
+                // 周囲8マスを見る
+                for (let o = 0; o < 9; o++) {
+                    if (o === 4) continue;
+                    const xx = x + (o % 3) - 1;
+                    const yy = y + ((o / 3) | 0) - 1;
+                    if (xx < 0 || xx >= width) continue;
+                    if (yy < 0 || yy >= height) continue;
+                    const i = (xx + width * yy * dotSize) * dotSize * 4;
+                    const [r, g, b, a] = data.subarray(i, i + 4);
+                    if (a) {
+                        activeLayer.drawByDot(x * dotSize, y * dotSize);
+                        break;
+                    }
+                }
+            }
+        }
+        activeLayer.trace();
     };
 </script>
 
@@ -70,7 +105,7 @@
                     aria-label="submit"
                     onclick={drawOutline}
                 >
-                    外周1px黒塗り
+                    輪郭塗り
                 </button>
             </div>
         </article>

@@ -187,7 +187,9 @@
         const tempCanvas = document.createElement("canvas");
         tempCanvas.width = width;
         tempCanvas.height = height;
-        const ctx = tempCanvas.getContext("2d");
+        const ctx = tempCanvas.getContext("2d", {
+            willReadFrequently: true,
+        });
         if (!ctx) return;
         // アンチエイリアス無効化（ドット絵向け）
         ctx.imageSmoothingEnabled = false;

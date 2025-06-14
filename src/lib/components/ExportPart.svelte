@@ -28,7 +28,9 @@
         const joinedCanvas = document.createElement("canvas");
         joinedCanvas.width = width * frames;
         joinedCanvas.height = height * ways;
-        const ctx = joinedCanvas.getContext("2d");
+        const ctx = joinedCanvas.getContext("2d", {
+            willReadFrequently: true,
+        });
         if (!ctx) return;
 
         // アンチエイリアス無効化（ドット絵向け）
@@ -73,7 +75,9 @@
                 const resizedCanvas = document.createElement("canvas");
                 resizedCanvas.width = width;
                 resizedCanvas.height = height;
-                const ctx = resizedCanvas.getContext("2d");
+                const ctx = resizedCanvas.getContext("2d", {
+                    willReadFrequently: true,
+                });
                 if (!ctx) continue;
 
                 // アンチエイリアス無効化（ドット絵向け）
