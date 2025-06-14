@@ -52,6 +52,7 @@ https://rpgja.github.io/rpgen-walk/
 - ✅ 打ち込み補助マクロ
   - ✅ 左右反転
   - ✅ 輪郭塗り
+- 🚧 ツクールMV用の同梱素材を作る
 
 ## Webアプリのライセンス / License
 
