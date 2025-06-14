@@ -21,7 +21,7 @@
         link.click();
     };
 
-    const handlePngExport = () => {
+    const exportAsPNG = () => {
         const { width, height, frames, ways } = anime;
 
         // 出力先キャンバス（リサイズ用）
@@ -60,7 +60,7 @@
         download(dataURL, "sprite_sheet.png");
     };
 
-    const handleZipExport = () => {
+    const exportAsZIP = () => {
         const { width, height, frames, ways } = anime;
 
         for (let y = 0; y < ways; y++) {
@@ -109,7 +109,7 @@
         });
     };
 
-    const handleGifExport = () => {
+    const exportAsGIF = () => {
         const { frames } = anime;
         const i = Math.floor($activeIndex / frames) * frames;
         const bg = `${[...Array(3)].map(() => randInt(0, 4).toString(16).padStart(2, "0")).join("")}`;
@@ -166,35 +166,32 @@
         </header>
         <article class="space-y-4">
             <p class="opacity-60">ダウンロードします</p>
-
             <div class="pt-2">
                 <button
                     type="button"
                     class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
                     aria-label="submit"
-                    onclick={handleGifExport}
+                    onclick={exportAsGIF}
                 >
                     GIF出力
                 </button>
             </div>
-
             <div class="pt-2">
                 <button
                     type="button"
                     class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
                     aria-label="submit"
-                    onclick={handleZipExport}
+                    onclick={exportAsZIP}
                 >
                     Zip出力
                 </button>
             </div>
-
             <div class="pt-2">
                 <button
                     type="button"
                     class="w-full px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
                     aria-label="submit"
-                    onclick={handlePngExport}
+                    onclick={exportAsPNG}
                 >
                     PNG出力
                 </button>

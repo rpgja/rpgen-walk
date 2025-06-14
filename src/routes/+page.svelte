@@ -7,6 +7,7 @@
     import ImportPart from "$lib/components/ImportPart.svelte";
     import InspoPart from "$lib/components/InspoPart.svelte";
     import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
+    import MacroPart from "$lib/components/MacroPart.svelte";
     import ManualPart from "$lib/components/ManualPart.svelte";
     import PreviewPart from "$lib/components/PreviewPart.svelte";
     import ResizePart from "$lib/components/ResizePart.svelte";
@@ -793,6 +794,7 @@
         <ResizePart {init} />
         <ImportPart {init} bind:activeLayer bind:initTimestamp />
         <ExportPart {width} {height} />
+        <MacroPart bind:activeLayer />
 
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">
