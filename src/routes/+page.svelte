@@ -164,26 +164,13 @@
         );
     };
 
-    /**
-     * PC版ショートカット
-     */
-    const handlePaste = async (e: ClipboardEvent) => {
-        if (notDrawing(e)) return;
+    const importFile = async (file: File) => {
         if (!activeLayer || activeLayer?.locked) return;
-        let imageItem: DataTransferItem | null = null;
-        for (const v of e.clipboardData?.items ?? []) {
-            if (v.kind === "file" && v.type.startsWith("image/")) {
-                imageItem = v;
-            }
-        }
-        if (!imageItem) return;
-        const blob = imageItem.getAsFile();
-        if (!blob) return;
 
         const dotSize = oekaki.getDotSize();
         const { width, height } = anime;
 
-        const bitmap = await createImageBitmap(blob);
+        const bitmap = await createImageBitmap(file);
         const tempCanvas = document.createElement("canvas");
         tempCanvas.width = width;
         tempCanvas.height = height;
@@ -216,11 +203,51 @@
         activeLayer?.trace();
         updatePointerupTimestamp();
     };
+
+    /**
+     * PC版ショートカット
+     */
+    const handlePaste = (e: ClipboardEvent) => {
+        if (notDrawing(e)) return;
+        if (!activeLayer || activeLayer?.locked) return;
+        let imageItem: DataTransferItem | null = null;
+        for (const v of e.clipboardData?.items ?? []) {
+            if (v.kind === "file" && v.type.startsWith("image/")) {
+                imageItem = v;
+            }
+        }
+        if (!imageItem) return;
+        const file = imageItem.getAsFile();
+        if (file) importFile(file);
+    };
     $effect(() => {
         if (!upperLayer) return;
         window.removeEventListener("paste", handlePaste);
         window.addEventListener("paste", handlePaste);
         return () => window.removeEventListener("paste", handlePaste);
+    });
+
+    $effect(() => {
+        if (!oekakiWrapper) return;
+        oekakiWrapper;
+
+        // ドラッグ中にデフォルト動作を無効にする
+        oekakiWrapper.addEventListener("dragover", (event) => {
+            event.preventDefault(); // これがないと drop イベントが発火しない
+            if (oekakiWrapper) oekakiWrapper.classList.add("dragover");
+        });
+
+        oekakiWrapper.addEventListener("dragleave", () => {
+            if (oekakiWrapper) oekakiWrapper.classList.remove("dragover");
+        });
+
+        oekakiWrapper.addEventListener("drop", (event) => {
+            event.preventDefault(); // デフォルト動作（例：ブラウザで画像が開く）を防ぐ
+            if (oekakiWrapper) oekakiWrapper.classList.remove("dragover");
+            if (!event.dataTransfer) return;
+            const [file] = event.dataTransfer.files;
+            if (file.type.startsWith("image/")) importFile(file);
+        });
     });
 
     const dropper = (x: number, y: number) => {
