@@ -42,6 +42,7 @@
             <p>Ctrl + S：保存</p>
             <p>Ctrl + C：コピー</p>
             <p>Ctrl + V：貼り付け</p>
+            <p>画像ドロップ：貼り付け</p>
             <p>モニターサイズは24インチ以上推奨</p>
         </article>
     {/snippet}
