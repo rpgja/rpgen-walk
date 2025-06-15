@@ -42,7 +42,7 @@
 </script>
 
 <div
-	class="p-4 bg-white rounded shadow-md w-full max-w-md mx-auto max-h-[50vh] flex flex-col"
+	class="p-4 bg-white rounded shadow-md w-full max-w-md mx-auto max-h-[50vh] flex flex-col select-none"
 >
 	<div class="flex items-center text-xs text-gray-500">
 		<ArrowUpIcon class="w-4 h-4 mr-1" />
@@ -64,9 +64,7 @@
 						role="button"
 						onkeydown={() => {}}
 						class="flex flex-grow items-center space-x-2"
-						onclick={() => {
-							activeLayer = layer;
-						}}
+						onclick={() => (activeLayer = layer)}
 					>
 						<div
 							class="gimp-checkered-background relative w-8 h-8 rounded overflow-hidden"
@@ -88,14 +86,26 @@
 								class="flex items-center text-xs text-gray-500 space-x-1"
 							>
 								{#if layer.locked}
-									<LockIcon class="w-3 h-3" />
+									<LockIcon
+										class="w-3 h-3"
+										onclick={() => (layer.locked = false)}
+									/>
 								{:else}
-									<LockOpenIcon class="w-3 h-3" />
+									<LockOpenIcon
+										class="w-3 h-3"
+										onclick={() => (layer.locked = true)}
+									/>
 								{/if}
 								{#if layer.visible}
-									<EyeIcon class="w-3 h-3" />
+									<EyeIcon
+										class="w-3 h-3"
+										onclick={() => (layer.visible = false)}
+									/>
 								{:else}
-									<EyeClosedIcon class="w-3 h-3" />
+									<EyeClosedIcon
+										class="w-3 h-3"
+										onclick={() => (layer.visible = true)}
+									/>
 								{/if}
 								<span>{layer.opacity}%</span>
 							</div>
