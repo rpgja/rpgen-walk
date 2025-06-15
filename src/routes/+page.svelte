@@ -227,6 +227,7 @@
         return () => window.removeEventListener("paste", handlePaste);
     });
 
+    let isDragover = $state(false);
     $effect(() => {
         if (!oekakiWrapper) return;
         oekakiWrapper;
@@ -234,16 +235,16 @@
         // ドラッグ中にデフォルト動作を無効にする
         oekakiWrapper.addEventListener("dragover", (event) => {
             event.preventDefault(); // これがないと drop イベントが発火しない
-            if (oekakiWrapper) oekakiWrapper.classList.add("dragover");
+            isDragover = true;
         });
 
         oekakiWrapper.addEventListener("dragleave", () => {
-            if (oekakiWrapper) oekakiWrapper.classList.remove("dragover");
+            isDragover = false;
         });
 
         oekakiWrapper.addEventListener("drop", (event) => {
             event.preventDefault(); // デフォルト動作（例：ブラウザで画像が開く）を防ぐ
-            if (oekakiWrapper) oekakiWrapper.classList.remove("dragover");
+            isDragover = false;
             if (!event.dataTransfer) return;
             const [file] = event.dataTransfer.files;
             if (file.type.startsWith("image/")) importFile(file);
@@ -704,6 +705,7 @@
             <div
                 class="relative"
                 class:hg-paint-grid-mode={isGrid}
+                class:hg-paint-dragover={isDragover}
                 bind:this={oekakiWrapper}
             ></div>
             {#if !isMobile}
@@ -867,5 +869,8 @@
         background-image: linear-gradient(to right, gray 1px, transparent 1px),
             linear-gradient(to bottom, gray 1px, transparent 1px);
         background-size: var(--grid-cell-size) var(--grid-cell-size);
+    }
+    :global(.hg-paint-dragover) {
+        outline: 4px dashed #4db8ff;
     }
 </style>
