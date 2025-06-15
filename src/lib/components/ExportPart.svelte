@@ -187,7 +187,7 @@
                     aria-label="submit"
                     onclick={exportAsZIP}
                 >
-                    Zip出力
+                    ZIP出力
                 </button>
             </div>
             <div class="pt-2">
