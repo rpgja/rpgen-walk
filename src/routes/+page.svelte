@@ -230,18 +230,13 @@
     let isDragover = $state(false);
     $effect(() => {
         if (!oekakiWrapper) return;
-        oekakiWrapper;
-
-        // ドラッグ中にデフォルト動作を無効にする
         oekakiWrapper.addEventListener("dragover", (event) => {
             event.preventDefault(); // これがないと drop イベントが発火しない
             isDragover = true;
         });
-
         oekakiWrapper.addEventListener("dragleave", () => {
             isDragover = false;
         });
-
         oekakiWrapper.addEventListener("drop", (event) => {
             event.preventDefault(); // デフォルト動作（例：ブラウザで画像が開く）を防ぐ
             isDragover = false;
