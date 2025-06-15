@@ -47,3 +47,6 @@ class UnjStorage {
 // oekaki
 export const tool = new UnjStorage("tool");
 export const color = new UnjStorage("color");
+
+// anime
+export const standard = new UnjStorage("standard");

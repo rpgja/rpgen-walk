@@ -37,10 +37,10 @@
 	});
 
 	anime.init(
-		anime.RPGEN.w,
-		anime.RPGEN.h,
-		anime.RPGEN.frames,
-		anime.waysToStr(anime.RPGEN.ways),
+		anime.defaultStandard.w,
+		anime.defaultStandard.h,
+		anime.defaultStandard.frames,
+		anime.waysToStr(anime.defaultStandard.ways),
 	);
 
 	let pointerupTimestampAfter = $state(0);

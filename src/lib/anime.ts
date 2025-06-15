@@ -1,3 +1,4 @@
+import * as unjStorage from "$lib/unj-storage.js";
 import type * as oekaki from "@onjmin/oekaki";
 
 export let width: number;
@@ -106,3 +107,6 @@ export const standards = [
 	RPGMakerVX,
 	RPGMakerMV,
 ];
+
+export const defaultStandard =
+	standards.find((v) => v.label === unjStorage.standard.value) ?? RPGEN;

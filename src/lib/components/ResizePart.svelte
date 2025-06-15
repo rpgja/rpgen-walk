@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as anime from "$lib/anime";
+  import * as unjStorage from "$lib/unj-storage.js";
   import IconX from "@lucide/svelte/icons/x";
   import { Popover } from "@skeletonlabs/skeleton-svelte";
   import * as v from "valibot";
@@ -8,10 +9,11 @@
 
   let open = $state(false);
 
-  let width = $state(anime.RPGEN.w);
-  let height = $state(anime.RPGEN.h);
-  let frames = $state(anime.RPGEN.frames);
-  let ways = $state(anime.waysToStr(anime.RPGEN.ways));
+  let selectedStandard = $state<string>();
+  let width = $state(anime.defaultStandard.w);
+  let height = $state(anime.defaultStandard.h);
+  let frames = $state(anime.defaultStandard.frames);
+  let ways = $state(anime.waysToStr(anime.defaultStandard.ways));
 
   let errors = $state(new Set<string>());
 
@@ -76,6 +78,7 @@
         <span class="label-text font-medium">テンプレ</span>
         <select
           class="select select-bordered w-full bg-white"
+          value={selectedStandard ?? anime.defaultStandard.label}
           onchange={(e) => {
             const template = anime.standards.find(
               (v) => v.label === e.currentTarget.value,
@@ -85,6 +88,7 @@
               height = template.h;
               frames = template.frames;
               ways = anime.waysToStr(template.ways);
+              selectedStandard = template.label;
             }
           }}
         >
@@ -172,6 +176,7 @@
               param.output.ways,
             );
             init();
+            if (selectedStandard) unjStorage.standard.value = selectedStandard;
           }}
         >
           初期化の実行
