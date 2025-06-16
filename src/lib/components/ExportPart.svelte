@@ -56,10 +56,8 @@
                 );
             }
         }
-
-        // 画像としてエクスポート
-        const dataURL = joinedCanvas.toDataURL("image/png");
-        download(dataURL, "sprite_sheet.png");
+        const url = joinedCanvas.toDataURL("image/png");
+        download(url, "sprite_sheet.png");
     };
 
     const exportAsZIP = () => {
@@ -106,10 +104,8 @@
         }
 
         zip.generateAsync({ type: "blob" }).then((blob) => {
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "frames.zip";
-            link.click();
+            const url = URL.createObjectURL(blob);
+            download(url, "frames.zip");
         });
     };
 
@@ -141,8 +137,8 @@
             gif.addFrame(emptyCanvas, { delay });
         }
         gif.on("finished", (blob) => {
-            const objectURL = URL.createObjectURL(blob);
-            download(objectURL, `frames_${i + 1}.gif`);
+            const url = URL.createObjectURL(blob);
+            download(url, `frames_${i + 1}.gif`);
         });
         gif.render();
     };
