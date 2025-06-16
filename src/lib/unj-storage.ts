@@ -50,3 +50,5 @@ export const color = new UnjStorage("color");
 
 // anime
 export const standard = new UnjStorage("standard");
+export const fps = new UnjStorage("fps");
+export const previewMode = new UnjStorage("previewMode");
