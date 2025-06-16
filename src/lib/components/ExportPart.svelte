@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { exportAsAniPerWayZIP } from "$lib/ani";
     import * as anime from "$lib/anime";
     import { activeIndex } from "$lib/store";
     import { fps } from "$lib/store";
@@ -6,9 +7,7 @@
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
     import GIF from "gif.js";
-
     import JSZip from "jszip";
-    const zip = new JSZip();
 
     let { width, height } = $props();
 
@@ -62,6 +61,7 @@
 
     const exportAsZIP = () => {
         const { width, height, frames, ways } = anime;
+        const zip = new JSZip();
 
         for (let y = 0; y < ways; y++) {
             for (let x = 0; x < frames; x++) {
@@ -142,6 +142,12 @@
         });
         gif.render();
     };
+
+    const exportAsAni = async () => {
+        const blob = await exportAsAniPerWayZIP(anime);
+        const url = URL.createObjectURL(blob);
+        download(url, "cursors.zip");
+    };
 </script>
 
 <Popover
@@ -166,6 +172,16 @@
         </header>
         <article class="space-y-4">
             <p class="opacity-60">ダウンロードします</p>
+            <div class="pt-2">
+                <button
+                    type="button"
+                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                    aria-label="submit"
+                    onclick={exportAsAni}
+                >
+                    ANI出力
+                </button>
+            </div>
             <div class="pt-2">
                 <button
                     type="button"
