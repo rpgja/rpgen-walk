@@ -131,7 +131,8 @@
         { label: "小鈴", url: "https://rpgen.cc/dq/sAnims/res/1526.png" },
         { label: "阿求", url: "https://rpgen.cc/dq/sAnims/res/1527.png" },
         { label: "マミゾウ", url: "https://rpgen.cc/dq/sAnims/res/1882.png" },
-        { label: "袿姫", url: "https://rpgen.cc/dq/sAnims/res/2115.png" },
+        { label: "袿姫", url: "https://rpgen.cc/dq/sAnims/res/2116.png" },
+        { label: "残無", url: "https://rpgen.cc/dq/sAnims/res/2115.png" },
     ];
 </script>
 
