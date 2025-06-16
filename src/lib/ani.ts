@@ -1,4 +1,6 @@
+import { fps } from "$lib/store";
 import JSZip from "jszip";
+import { get } from "svelte/store";
 
 /*------------------------------------------------
  型定義（anime オブジェクト用）
@@ -73,9 +75,9 @@ const makeListChunk = (listId: string, parts: Uint8Array[]): Uint8Array => {
 /*------------------------------------------------
   修正版 buildAni
 ------------------------------------------------*/
-const buildAni = (cursors: Uint8Array[], rateMs = 60): Uint8Array => {
+const buildAni = (cursors: Uint8Array[]): Uint8Array => {
 	const n = cursors.length;
-	const jif = Math.round(rateMs / (1000 / 60));
+	const jif = Math.max(1, Math.round(60 / get(fps))); // jifは最低1以上
 
 	/* ---- anih ---- */
 	const anih = new ArrayBuffer(36);
@@ -172,7 +174,7 @@ export const exportAsAniPerWayZIP = async (anime: Anime): Promise<Blob> => {
 			cursors.push(createCur(png, width, height));
 		}
 
-		const ani = buildAni(cursors, 60);
+		const ani = buildAni(cursors);
 		zip.file(`cursor_${y + 1}.ani`, ani);
 	}
 
