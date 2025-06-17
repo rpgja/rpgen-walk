@@ -18,10 +18,10 @@
 
   let open = $state(false);
   let selectedStandard = $state<string>();
-  let width = $state(anime.defaultStandard.w);
-  let height = $state(anime.defaultStandard.h);
-  let frames = $state(anime.defaultStandard.frames);
-  let ways = $state(anime.waysToStr(anime.defaultStandard.ways));
+  let width = $state(0);
+  let height = $state(0);
+  let frames = $state(0);
+  let ways = $state("");
   let errors = $state(new Set<string>());
 
   $effect(() => {
@@ -32,13 +32,25 @@
       ways: page.url.searchParams.get("ways"),
     });
     if (param.success) {
-      width = param.output.width;
-      height = param.output.height;
-      frames = param.output.frames;
-      ways = param.output.ways;
+      anime.init(
+        param.output.width,
+        param.output.height,
+        param.output.frames,
+        param.output.ways,
+      );
+    } else {
+      anime.init(
+        anime.defaultStandard.w,
+        anime.defaultStandard.h,
+        anime.defaultStandard.frames,
+        anime.waysToStr(anime.defaultStandard.ways),
+      );
     }
-    anime.init(width, height, frames, ways);
     init();
+    width = anime.width;
+    height = anime.height;
+    frames = anime.frames;
+    ways = anime.waysToStr(anime.waysOrder);
 
     const _url = v.safeParse(schema.ImageURL, page.url.searchParams.get("url"));
     if (_url.success) {
