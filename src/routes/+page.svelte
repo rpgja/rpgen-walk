@@ -686,7 +686,7 @@
     <div class="grid grid-cols-1 md:grid-cols-[auto_1fr_auto]">
         <!-- Left Sidebar -->
         <aside
-            class="bg-surface-200 p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-4rem)]"
+            class="bg-surface-200 p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-12rem)]"
         >
             <CharaChipPanelPart
                 bind:activeLayer
