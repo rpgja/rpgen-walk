@@ -7,9 +7,8 @@ import * as unjStorage from "./unj-storage.js";
 export const color = writable(unjStorage.color.value ?? oekaki.color.value);
 export const activeIndex = writable(0);
 
-export const fps = writable(
-	v.safeParse(schema.Fps, unjStorage.fps.value).output ?? 2,
-);
-export const mode = writable(
-	v.safeParse(schema.Mode, unjStorage.mode.value).output ?? 1,
-);
+const _fps = v.safeParse(schema.Fps, unjStorage.fps.value);
+export const fps = writable(_fps.success ? _fps.output : 2);
+
+const _mode = v.safeParse(schema.Mode, unjStorage.mode.value);
+export const mode = writable(_mode.success ? _mode.output : 1);
