@@ -21,7 +21,7 @@
         params.set("ways", anime.waysToStr(anime.waysOrder));
         params.set("fps", String($fps));
         params.set("mode", String($mode));
-        if (imageUrl) params.set("url", imageUrl);
+        if (imageUrl) params.set("url", encodeURIComponent(imageUrl));
         sharedUrl = `${window.location.origin}${base}/?${params.toString()}`;
     };
 </script>

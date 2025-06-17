@@ -53,7 +53,10 @@
     frames = anime.frames;
     ways = anime.waysToStr(anime.waysOrder);
 
-    const _url = v.safeParse(schema.ImageURL, page.url.searchParams.get("url"));
+    const _url = v.safeParse(
+      schema.ImageURL,
+      decodeURIComponent(page.url.searchParams.get("url") ?? ""),
+    );
     if (_url.success) {
       (async () => {
         const image = await new Promise<HTMLImageElement>((resolve) => {
