@@ -32,20 +32,12 @@
       ways: page.url.searchParams.get("ways"),
     });
     if (param.success) {
-      anime.init(
-        param.output.width,
-        param.output.height,
-        param.output.frames,
-        param.output.ways,
-      );
-    } else {
-      anime.init(
-        anime.defaultStandard.w,
-        anime.defaultStandard.h,
-        anime.defaultStandard.frames,
-        anime.waysToStr(anime.defaultStandard.ways),
-      );
+      width = param.output.width;
+      height = param.output.height;
+      frames = param.output.frames;
+      ways = param.output.ways;
     }
+    anime.init(width, height, frames, ways);
     init();
 
     const _url = v.safeParse(schema.ImageURL, page.url.searchParams.get("url"));

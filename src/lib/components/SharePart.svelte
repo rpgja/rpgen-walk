@@ -17,7 +17,7 @@
         params.set("w", String(anime.width));
         params.set("h", String(anime.height));
         params.set("frames", String(anime.frames));
-        params.set("ways", String(anime.ways));
+        params.set("ways", anime.waysToStr(anime.waysOrder));
         params.set("fps", String($fps));
         params.set("mode", String($mode));
         if (imageUrl) params.set("url", imageUrl);
