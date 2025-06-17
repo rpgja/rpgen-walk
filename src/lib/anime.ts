@@ -1,6 +1,7 @@
 import * as unjStorage from "$lib/unj-storage.js";
 import type * as oekaki from "@onjmin/oekaki";
 
+export let ready = false;
 export let width: number;
 export let height: number;
 export let frames: number;
@@ -14,6 +15,7 @@ export const init = (
 	_frames: number,
 	_waysStr: string,
 ) => {
+	ready = true;
 	width = _width;
 	height = _height;
 	const _ways = strToWays(_waysStr);

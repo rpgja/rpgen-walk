@@ -1,13 +1,15 @@
 <script lang="ts">
-    import { fps } from "$lib/store";
+    import { fps, mode } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
     import PreviewSimplePart from "./PreviewSimplePart.svelte";
     import PreviewWalkPart from "./PreviewWalkPart.svelte";
 
     let { initTimestamp } = $props();
 
-    const list = ["歩行グラ", "シンプル"];
-    let previewMode = $state(unjStorage.previewMode.value ?? "歩行グラ");
+    const list = [
+        { value: 0, label: "シンプル" },
+        { value: 1, label: "歩行グラ" },
+    ];
 </script>
 
 <div class="max-w-xs flex flex-col gap-4">
@@ -31,22 +33,23 @@
     <label class="flex flex-col">
         <select
             class="select select-bordered w-full bg-white"
-            value={previewMode}
+            value={$mode}
             onchange={(e) => {
                 const { value } = e.currentTarget;
-                previewMode = value;
-                unjStorage.previewMode.value = value;
+                const n = Number(value);
+                mode.set(n);
+                unjStorage.mode.value = value;
             }}
         >
             {#each list as v}
-                <option value={v}>{v}</option>
+                <option value={v.value}>{v.label}</option>
             {/each}
         </select>
     </label>
 
-    {#if previewMode === "歩行グラ"}
-        <PreviewWalkPart {initTimestamp} />
-    {:else if previewMode === "シンプル"}
+    {#if $mode === 0}
         <PreviewSimplePart {initTimestamp} />
+    {:else if $mode === 1}
+        <PreviewWalkPart {initTimestamp} />
     {/if}
 </div>

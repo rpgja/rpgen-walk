@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { page } from "$app/state";
   import * as anime from "$lib/anime";
+  import * as schema from "$lib/schema";
+  import { fps, mode } from "$lib/store";
   import * as unjStorage from "$lib/unj-storage.js";
   import IconX from "@lucide/svelte/icons/x";
   import { Popover } from "@skeletonlabs/skeleton-svelte";
@@ -14,40 +17,44 @@
   let height = $state(anime.defaultStandard.h);
   let frames = $state(anime.defaultStandard.frames);
   let ways = $state(anime.waysToStr(anime.defaultStandard.ways));
-
   let errors = $state(new Set<string>());
 
-  export const ParamSchema = v.strictObject({
-    width: v.pipe(
-      v.unknown(),
-      v.transform((input) => Number(input)),
-      v.number(),
-      v.integer(),
-      v.minValue(16),
-      v.maxValue(256),
-    ),
-    height: v.pipe(
-      v.unknown(),
-      v.transform((input) => Number(input)),
-      v.number(),
-      v.integer(),
-      v.minValue(16),
-      v.maxValue(256),
-    ),
-    frames: v.pipe(
-      v.unknown(),
-      v.transform((input) => Number(input)),
-      v.number(),
-      v.integer(),
-      v.minValue(1),
-      v.maxValue(8),
-    ),
-    ways: v.pipe(
-      v.string(),
-      v.trim(),
-      v.regex(/^[a-z]+$/),
-      v.check((input) => input.length === new Set(input).size),
-    ),
+  $effect(() => {
+    const param = v.safeParse(ParamSchema, {
+      width: page.url.searchParams.get("w"),
+      height: page.url.searchParams.get("h"),
+      frames: page.url.searchParams.get("frames"),
+      ways: page.url.searchParams.get("ways"),
+    });
+    if (param.success) {
+      anime.init(
+        param.output.width,
+        param.output.height,
+        param.output.frames,
+        param.output.ways,
+      );
+    } else {
+      anime.init(
+        anime.defaultStandard.w,
+        anime.defaultStandard.h,
+        anime.defaultStandard.frames,
+        anime.waysToStr(anime.defaultStandard.ways),
+      );
+    }
+    init();
+
+    const _fps = v.safeParse(schema.Fps, page.url.searchParams.get("fps"));
+    if (_fps.success) fps.set(_fps.output);
+
+    const _mode = v.safeParse(schema.Mode, page.url.searchParams.get("mode"));
+    if (_mode.success) mode.set(_mode.output);
+  });
+
+  const ParamSchema = v.strictObject({
+    width: schema.Width,
+    height: schema.Height,
+    frames: schema.Frames,
+    ways: schema.Ways,
   });
 </script>
 

@@ -53,6 +53,7 @@ https://rpgja.github.io/rpgen-walk/
   - ✅ 左右反転
   - ✅ 輪郭塗り
 - 🚧 ツクールMV用の同梱素材を作る
+- 🚧 多言語対応（英語、中国語、韓国語）
 
 ## Webアプリのライセンス / License
 

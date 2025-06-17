@@ -36,13 +36,6 @@
 		}
 	});
 
-	anime.init(
-		anime.defaultStandard.w,
-		anime.defaultStandard.h,
-		anime.defaultStandard.frames,
-		anime.waysToStr(anime.defaultStandard.ways),
-	);
-
 	let pointerupTimestampAfter = $state(0);
 	$effect(() => {
 		if (!initTimestamp || !pointerupTimestamp) return;
@@ -56,71 +49,73 @@
 
 <section class="space-y-4">
 	{#key initTimestamp}
-		{#each Array(anime.ways) as _, y}
-			<div class="flex items-center gap-4">
-				<!-- フレーム -->
-				<div class="flex gap-4">
-					{#each Array(anime.frames) as __, x}
-						{#key anime.toI(x, y)}
-							<div
-								tabindex="0"
-								role="button"
-								onkeydown={() => {}}
-								class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
-									$activeIndex === anime.toI(x, y)
-										? "ring-4 ring-primary-500 ring-offset-2"
-										: ""
-								}`}
-								onclick={() => {
-									const i = anime.toI(x, y);
-									if ($activeIndex === i) return;
-									prevIndex = $activeIndex;
-									activeIndex.set(i);
-								}}
-							>
-								<!-- 左上バッジ -->
+		{#if anime.ready}
+			{#each Array(anime.ways) as _, y}
+				<div class="flex items-center gap-4">
+					<!-- フレーム -->
+					<div class="flex gap-4">
+						{#each Array(anime.frames) as __, x}
+							{#key anime.toI(x, y)}
 								<div
-									class="absolute top-1 left-1 bg-primary-600/80 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+									tabindex="0"
+									role="button"
+									onkeydown={() => {}}
+									class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
+										$activeIndex === anime.toI(x, y)
+											? "ring-4 ring-primary-500 ring-offset-2"
+											: ""
+									}`}
+									onclick={() => {
+										const i = anime.toI(x, y);
+										if ($activeIndex === i) return;
+										prevIndex = $activeIndex;
+										activeIndex.set(i);
+									}}
 								>
-									{anime.toI(x, y) + 1}
+									<!-- 左上バッジ -->
+									<div
+										class="absolute top-1 left-1 bg-primary-600/80 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+									>
+										{anime.toI(x, y) + 1}
+									</div>
+									{#key pointerupTimestampAfter}
+										<img
+											alt="frame"
+											src={anime.dataURLByI.get(
+												anime.toI(x, y),
+											) ??
+												"https://placehold.co/32x32?text=new"}
+											class="gimp-checkered-background w-full h-full object-cover bg-surface-500"
+										/>
+									{/key}
 								</div>
-								{#key pointerupTimestampAfter}
-									<img
-										alt="frame"
-										src={anime.dataURLByI.get(
-											anime.toI(x, y),
-										) ??
-											"https://placehold.co/32x32?text=new"}
-										class="gimp-checkered-background w-full h-full object-cover bg-surface-500"
-									/>
-								{/key}
-							</div>
-						{/key}
-					{/each}
+							{/key}
+						{/each}
+					</div>
+					<!-- 行ラベル -->
+					<div class="w-6 text-sm font-semibold">
+						{#if anime.waysOrder[y] === anime.way.w}
+							<ArrowUpIcon />
+						{:else if anime.waysOrder[y] === anime.way.a}
+							<ArrowLeftIcon />
+						{:else if anime.waysOrder[y] === anime.way.s}
+							<ArrowDownIcon />
+						{:else if anime.waysOrder[y] === anime.way.d}
+							<ArrowRightIcon />
+						{:else if anime.waysOrder[y] === anime.way.q}
+							<ArrowUpIcon class="rotate-315" />
+						{:else if anime.waysOrder[y] === anime.way.e}
+							<ArrowUpIcon class="rotate-45" />
+						{:else if anime.waysOrder[y] === anime.way.z}
+							<ArrowUpIcon class="rotate-225" />
+						{:else if anime.waysOrder[y] === anime.way.c}
+							<ArrowUpIcon class="rotate-135" />
+						{:else}
+							<FileQuestion />
+						{/if}
+					</div>
 				</div>
-				<!-- 行ラベル -->
-				<div class="w-6 text-sm font-semibold">
-					{#if anime.waysOrder[y] === anime.way.w}
-						<ArrowUpIcon />
-					{:else if anime.waysOrder[y] === anime.way.a}
-						<ArrowLeftIcon />
-					{:else if anime.waysOrder[y] === anime.way.s}
-						<ArrowDownIcon />
-					{:else if anime.waysOrder[y] === anime.way.d}
-						<ArrowRightIcon />
-					{:else if anime.waysOrder[y] === anime.way.q}
-						<ArrowUpIcon class="rotate-315" />
-					{:else if anime.waysOrder[y] === anime.way.e}
-						<ArrowUpIcon class="rotate-45" />
-					{:else if anime.waysOrder[y] === anime.way.z}
-						<ArrowUpIcon class="rotate-225" />
-					{:else if anime.waysOrder[y] === anime.way.c}
-						<ArrowUpIcon class="rotate-135" />
-					{:else}
-						<FileQuestion />
-					{/if}
-				</div>
-			</div>
-		{/each}
+			{/each}
+		{/if}
 	{/key}
 </section>
