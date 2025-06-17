@@ -17,7 +17,6 @@
   } = $props();
 
   let open = $state(false);
-
   let selectedStandard = $state<string>();
   let width = $state(anime.defaultStandard.w);
   let height = $state(anime.defaultStandard.h);
@@ -52,7 +51,13 @@
     const _url = v.safeParse(schema.ImageURL, page.url.searchParams.get("url"));
     if (_url.success) {
       (async () => {
-        importImage(await _url.output);
+        const image = await new Promise<HTMLImageElement>((resolve) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.crossOrigin = "anonymous";
+          image.src = `https://api.allorigins.win/raw?url=${_url.output}`;
+        });
+        importImage(image);
         const now = anime.layersByI.get(0);
         if (now) {
           oekaki.setLayers(now);

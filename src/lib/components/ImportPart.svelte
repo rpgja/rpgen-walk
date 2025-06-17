@@ -14,9 +14,8 @@
     } = $props();
 
     let open = $state(false);
-
     let imageUrl = $state("");
-    let imageRef: HTMLImageElement | undefined = $state();
+    let imageRef = $state<HTMLImageElement>();
     let fileInput: HTMLInputElement;
 
     function handleFileChange(event: Event) {

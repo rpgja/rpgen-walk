@@ -1,7 +1,7 @@
 import * as v from "valibot";
 
 export const Width = v.pipe(
-	v.string(),
+	v.union([v.string(), v.number()]),
 	v.transform((input) => Number(input)),
 	v.number(),
 	v.integer(),
@@ -10,7 +10,7 @@ export const Width = v.pipe(
 );
 
 export const Height = v.pipe(
-	v.string(),
+	v.union([v.string(), v.number()]),
 	v.transform((input) => Number(input)),
 	v.number(),
 	v.integer(),
@@ -19,7 +19,7 @@ export const Height = v.pipe(
 );
 
 export const Frames = v.pipe(
-	v.string(),
+	v.union([v.string(), v.number()]),
 	v.transform((input) => Number(input)),
 	v.number(),
 	v.integer(),
@@ -52,16 +52,4 @@ export const Mode = v.pipe(
 	v.maxValue(1),
 );
 
-export const ImageURL = v.pipe(
-	v.string(),
-	v.url(),
-	v.transform(
-		(input) =>
-			new Promise<HTMLImageElement>((resolve) => {
-				const image = new Image();
-				image.onload = () => resolve(image);
-				image.crossOrigin = "anonymous";
-				image.src = `https://api.allorigins.win/raw?url=${input}`;
-			}),
-	),
-);
+export const ImageURL = v.pipe(v.string(), v.url());

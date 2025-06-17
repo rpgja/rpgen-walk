@@ -11,6 +11,7 @@
     import ManualPart from "$lib/components/ManualPart.svelte";
     import PreviewPart from "$lib/components/PreviewPart.svelte";
     import ResizePart from "$lib/components/ResizePart.svelte";
+    import SharePart from "$lib/components/SharePart.svelte";
     import { isOnionSkin } from "$lib/onion-skin";
     import { color } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
@@ -821,6 +822,7 @@
         <ImportPart {init} bind:activeLayer bind:initTimestamp />
         <ExportPart {width} {height} />
         <MacroPart bind:activeLayer />
+        <SharePart />
 
         <!-- カラーピッカー UI -->
         <div class="w-full text-left flex flex-wrap items-center gap-4">

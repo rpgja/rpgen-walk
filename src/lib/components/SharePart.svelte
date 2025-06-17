@@ -1,10 +1,28 @@
 <script lang="ts">
+    import { base } from "$app/paths";
+    import * as anime from "$lib/anime";
+    import { fps, mode } from "$lib/store";
+    import { Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
 
     let open = $state(false);
+    let imageUrl = $state("");
+    let imageRef = $state<HTMLImageElement>();
+    let sharedUrl = $state("");
 
-    const genURL = () => {};
+    const genURL = () => {
+        if (imageUrl && (!imageRef || imageRef.naturalWidth === 0)) return;
+        const params = new URLSearchParams();
+        params.set("w", String(anime.width));
+        params.set("h", String(anime.height));
+        params.set("frames", String(anime.frames));
+        params.set("ways", String(anime.ways));
+        params.set("fps", String($fps));
+        params.set("mode", String($mode));
+        if (imageUrl) params.set("url", imageUrl);
+        sharedUrl = `${base}/?${params.toString()}`;
+    };
 </script>
 
 <Popover
@@ -28,7 +46,43 @@
             >
         </header>
         <article class="space-y-4">
-            <p class="opacity-60">※レイヤー情報は共有できません</p>
+            <div>
+                <p class="opacity-60">URL無しの場合</p>
+                <p class="opacity-60">キャンバスサイズだけが共有されます。</p>
+                <p class="opacity-60">※レイヤー情報は共有できません</p>
+            </div>
+
+            <div class="relative flex-1">
+                <input
+                    name="url"
+                    type="url"
+                    placeholder="画像のURLを入力"
+                    class="input input-bordered w-full pr-8 bg-white"
+                    bind:value={imageUrl}
+                />
+                <Trash2Icon
+                    class="absolute right-2 top-2.5 text-gray-400"
+                    size={16}
+                    onclick={() => {
+                        imageUrl = "";
+                    }}
+                />
+            </div>
+
+            <!-- Preview -->
+            {#if imageUrl}
+                <div class="mt-4 max-h-96 overflow-auto border rounded p-2">
+                    <img
+                        src={imageUrl.startsWith("http")
+                            ? `https://api.allorigins.win/raw?url=${imageUrl}`
+                            : imageUrl}
+                        alt="インポート画像"
+                        class="max-w-96 object-contain rounded border"
+                        crossorigin="anonymous"
+                        bind:this={imageRef}
+                    />
+                </div>
+            {/if}
 
             <div class="pt-2">
                 <button
@@ -40,6 +94,13 @@
                     共有リンク生成
                 </button>
             </div>
+
+            <a
+                href={sharedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-800 hover:underline">{sharedUrl}</a
+            >
         </article>
     {/snippet}
 </Popover>
