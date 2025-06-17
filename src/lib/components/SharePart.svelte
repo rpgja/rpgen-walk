@@ -47,10 +47,22 @@
         </header>
         <article class="space-y-4">
             <div>
-                <p class="opacity-60">URL無しの場合</p>
+                <p class="opacity-60">画像URL無しの場合</p>
                 <p class="opacity-60">キャンバスサイズだけが共有されます。</p>
-                <p class="opacity-60">※レイヤー情報は共有できません</p>
             </div>
+
+            <div>
+                <b>使用可能な画像URL</b>
+                <p class="opacity-60">右クリック、画像リンクをコピー</p>
+                <p class="opacity-60">※レイヤー情報は共有できません。</p>
+            </div>
+
+            <a
+                href="https://imgur.com/upload"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-800 hover:underline">画像アップローダー</a
+            >
 
             <div class="relative flex-1">
                 <input
