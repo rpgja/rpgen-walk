@@ -2,6 +2,7 @@
     import { base } from "$app/paths";
     import * as anime from "$lib/anime";
     import { fps, mode } from "$lib/store";
+    import { sanitizeImageURL } from "$lib/url";
     import { Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
@@ -85,9 +86,7 @@
             {#if imageUrl}
                 <div class="mt-4 max-h-96 overflow-auto border rounded p-2">
                     <img
-                        src={imageUrl.startsWith("http")
-                            ? `https://api.allorigins.win/raw?url=${imageUrl}`
-                            : imageUrl}
+                        src={sanitizeImageURL(imageUrl)}
                         alt="インポート画像"
                         class="max-w-96 object-contain rounded border"
                         crossorigin="anonymous"

@@ -5,6 +5,7 @@
   import * as schema from "$lib/schema";
   import { fps, mode } from "$lib/store";
   import * as unjStorage from "$lib/unj-storage.js";
+  import { sanitizeImageURL } from "$lib/url";
   import IconX from "@lucide/svelte/icons/x";
   import * as oekaki from "@onjmin/oekaki";
   import { Popover } from "@skeletonlabs/skeleton-svelte";
@@ -59,7 +60,7 @@
           const image = new Image();
           image.onload = () => resolve(image);
           image.crossOrigin = "anonymous";
-          image.src = `https://api.allorigins.win/raw?url=${_url.output}`;
+          image.src = sanitizeImageURL(_url.output);
         });
         importImage(image);
         const now = anime.layersByI.get(0);
