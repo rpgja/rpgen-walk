@@ -21,7 +21,7 @@
         params.set("fps", String($fps));
         params.set("mode", String($mode));
         if (imageUrl) params.set("url", imageUrl);
-        sharedUrl = `${base}/?${params.toString()}`;
+        sharedUrl = `${window.location.origin}${base}/?${params.toString()}`;
     };
 </script>
 
@@ -99,7 +99,8 @@
                 href={sharedUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-blue-800 hover:underline">{sharedUrl}</a
+                class="block min-h-[2rem] max-w-full truncate text-blue-800 hover:underline"
+                >{sharedUrl}</a
             >
         </article>
     {/snippet}
