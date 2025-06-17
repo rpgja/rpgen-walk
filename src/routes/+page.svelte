@@ -817,7 +817,7 @@
         </nav>
 
         <ManualPart />
-        <ResizePart {init} />
+        <ResizePart {init} bind:activeLayer bind:initTimestamp />
         <ImportPart {init} bind:activeLayer bind:initTimestamp />
         <ExportPart {width} {height} />
         <MacroPart bind:activeLayer />

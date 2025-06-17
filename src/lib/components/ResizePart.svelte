@@ -1,14 +1,20 @@
 <script lang="ts">
   import { page } from "$app/state";
   import * as anime from "$lib/anime";
+  import { importImage } from "$lib/init";
   import * as schema from "$lib/schema";
   import { fps, mode } from "$lib/store";
   import * as unjStorage from "$lib/unj-storage.js";
   import IconX from "@lucide/svelte/icons/x";
+  import * as oekaki from "@onjmin/oekaki";
   import { Popover } from "@skeletonlabs/skeleton-svelte";
   import * as v from "valibot";
 
-  let { init } = $props();
+  let {
+    init,
+    activeLayer = $bindable(),
+    initTimestamp = $bindable(),
+  } = $props();
 
   let open = $state(false);
 
@@ -42,6 +48,19 @@
       );
     }
     init();
+
+    const _url = v.safeParse(schema.ImageURL, page.url.searchParams.get("url"));
+    if (_url.success) {
+      (async () => {
+        importImage(await _url.output);
+        const now = anime.layersByI.get(0);
+        if (now) {
+          oekaki.setLayers(now);
+          activeLayer = now[now.length - 1];
+          initTimestamp = performance.now();
+        }
+      })();
+    }
 
     const _fps = v.safeParse(schema.Fps, page.url.searchParams.get("fps"));
     if (_fps.success) fps.set(_fps.output);

@@ -51,3 +51,17 @@ export const Mode = v.pipe(
 	v.minValue(0),
 	v.maxValue(1),
 );
+
+export const ImageURL = v.pipe(
+	v.string(),
+	v.url(),
+	v.transform(
+		(input) =>
+			new Promise<HTMLImageElement>((resolve) => {
+				const image = new Image();
+				image.onload = () => resolve(image);
+				image.crossOrigin = "anonymous";
+				image.src = `https://api.allorigins.win/raw?url=${input}`;
+			}),
+	),
+);
