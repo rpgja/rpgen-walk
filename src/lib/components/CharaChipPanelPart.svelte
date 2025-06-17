@@ -47,7 +47,9 @@
 	});
 </script>
 
-<section class="space-y-4">
+<section
+	class="space-y-4 p-4 max-h-[70vh] overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable]"
+>
 	{#key initTimestamp}
 		{#if anime.ready}
 			{#each Array(anime.ways) as _, y}
