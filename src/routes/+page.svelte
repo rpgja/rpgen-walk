@@ -183,12 +183,14 @@
         ctx.imageSmoothingEnabled = false;
 
         // 中央配置
-        const ratio = Math.min(width / bitmap.width, height / bitmap.height);
-        const w = bitmap.width * ratio;
-        const h = bitmap.height * ratio;
-        const offsetX = (width - w) / 2;
-        const offsetY = (height - h) / 2;
-        ctx.drawImage(bitmap, offsetX, offsetY, w, h);
+        const srcW = bitmap.width;
+        const srcH = bitmap.height;
+        const ratio = Math.min(width / srcW, height / srcH);
+        const dstW = srcW * ratio;
+        const dstH = srcH * ratio;
+        const offsetX = (width - dstW) / 2;
+        const offsetY = (height - dstH) / 2;
+        ctx.drawImage(bitmap, offsetX, offsetY, dstW, dstH);
         const { data } = ctx.getImageData(0, 0, width, height);
 
         for (let y = 0; y < height; y++) {

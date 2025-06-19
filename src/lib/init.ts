@@ -11,17 +11,33 @@ export const importImage = (
 	const { width, height, frames, ways } = anime;
 
 	const canvas = document.createElement("canvas");
-	canvas.width = width * frames;
-	canvas.height = height * ways;
+	canvas.width = isSimple ? width : width * frames;
+	canvas.height = isSimple ? height : height * ways;
 	const ctx = canvas.getContext("2d", {
 		willReadFrequently: true,
 	});
 	if (!ctx) return;
-	ctx.drawImage(image, 0, 0);
+	// アンチエイリアス無効化（ドット絵向け）
+	ctx.imageSmoothingEnabled = false;
+
+	if (isSimple) {
+		const srcW = image.naturalWidth;
+		const srcH = image.naturalHeight;
+		const ratio = Math.min(width / srcW, height / srcH);
+		const dstW = srcW * ratio;
+		const dstH = srcH * ratio;
+		const offsetX = (width - dstW) / 2;
+		const offsetY = (height - dstH) / 2;
+		ctx.drawImage(image, offsetX, offsetY, dstW, dstH);
+	} else {
+		ctx.drawImage(image, 0, 0);
+	}
 	const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-	for (let y = 0; y < ways; y++) {
-		for (let x = 0; x < frames; x++) {
+	const yEnd = isSimple ? 1 : ways;
+	const xEnd = isSimple ? 1 : frames;
+	for (let y = 0; y < yEnd; y++) {
+		for (let x = 0; x < xEnd; x++) {
 			const layerTran = new oekaki.LayeredCanvas("半透明");
 			const layerOpa = new oekaki.LayeredCanvas("不透明");
 			let tranSum = 0;
