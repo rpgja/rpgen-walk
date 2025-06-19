@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fps, mode } from "$lib/store";
+    import { fps, preview } from "$lib/store";
     import * as unjStorage from "$lib/unj-storage.js";
     import PreviewSimplePart from "./PreviewSimplePart.svelte";
     import PreviewWalkPart from "./PreviewWalkPart.svelte";
@@ -7,8 +7,8 @@
     let { initTimestamp } = $props();
 
     const list = [
-        { value: 0, label: "シンプル" },
-        { value: 1, label: "歩行グラ" },
+        { value: 0, label: "歩行グラ" },
+        { value: 1, label: "シンプル" },
     ];
 </script>
 
@@ -33,12 +33,12 @@
     <label class="flex flex-col">
         <select
             class="select select-bordered w-full bg-white"
-            value={$mode}
+            value={$preview}
             onchange={(e) => {
                 const { value } = e.currentTarget;
                 const n = Number(value);
-                mode.set(n);
-                unjStorage.mode.value = value;
+                preview.set(n);
+                unjStorage.preview.value = value;
             }}
         >
             {#each list as v}
@@ -47,9 +47,9 @@
         </select>
     </label>
 
-    {#if $mode === 0}
-        <PreviewSimplePart {initTimestamp} />
-    {:else if $mode === 1}
+    {#if $preview === 0}
         <PreviewWalkPart {initTimestamp} />
+    {:else if $preview === 1}
+        <PreviewSimplePart {initTimestamp} />
     {/if}
 </div>

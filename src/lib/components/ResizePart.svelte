@@ -3,7 +3,7 @@
   import * as anime from "$lib/anime";
   import { importImage } from "$lib/init";
   import * as schema from "$lib/schema";
-  import { fps, mode } from "$lib/store";
+  import { fps, preview } from "$lib/store";
   import * as unjStorage from "$lib/unj-storage.js";
   import { sanitizeImageURL } from "$lib/url";
   import IconX from "@lucide/svelte/icons/x";
@@ -65,7 +65,11 @@
           image.crossOrigin = "anonymous";
           image.src = sanitizeImageURL(_url.output);
         });
-        importImage(image);
+        const _opacity = page.url.searchParams.get("opacity");
+        const opacity = _opacity === null ? undefined : Number(_opacity);
+        const isAddEmptyLayer = page.url.searchParams.get("trace") === "1";
+        const isSimple = page.url.searchParams.get("anime") === "0";
+        importImage(image, opacity, isAddEmptyLayer, isSimple);
         const now = anime.layersByI.get(0);
         if (now) {
           oekaki.setLayers(now);
@@ -78,8 +82,11 @@
     const _fps = v.safeParse(schema.Fps, page.url.searchParams.get("fps"));
     if (_fps.success) fps.set(_fps.output);
 
-    const _mode = v.safeParse(schema.Mode, page.url.searchParams.get("mode"));
-    if (_mode.success) mode.set(_mode.output);
+    const _mode = v.safeParse(
+      schema.Preview,
+      page.url.searchParams.get("mode"),
+    );
+    if (_mode.success) preview.set(_mode.output);
   });
 
   const ParamSchema = v.strictObject({

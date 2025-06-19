@@ -18,6 +18,9 @@
     let imageUrl = $state("");
     let imageRef = $state<HTMLImageElement>();
     let fileInput: HTMLInputElement;
+    let opacity = $state([100]);
+    let isAddEmptyLayer = $state(false);
+    let isSimple = $state(false);
 
     function handleFileChange(event: Event) {
         const file = (event.target as HTMLInputElement)?.files?.[0];
@@ -30,15 +33,12 @@
         }
     }
 
-    let opacity = $state([100]);
-    let isAddEmptyLayer = $state(false);
-
     const handleImportButton = async () => {
         if (!imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
         init();
-        importImage(imageRef, opacity[0], isAddEmptyLayer);
+        importImage(imageRef, opacity[0], isAddEmptyLayer, isSimple);
         const now = anime.layersByI.get(0);
         if (now) {
             oekaki.setLayers(now);
@@ -184,6 +184,15 @@
                     bind:checked={isAddEmptyLayer}
                 />
                 <p>トレース台を追加する</p>
+            </label>
+
+            <label class="flex items-center space-x-2">
+                <input
+                    class="checkbox"
+                    type="checkbox"
+                    bind:checked={isSimple}
+                />
+                <p>1枚絵として読み込む</p>
             </label>
 
             <div class="pt-2">

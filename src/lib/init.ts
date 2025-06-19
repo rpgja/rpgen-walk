@@ -5,6 +5,7 @@ export const importImage = (
 	image: HTMLImageElement,
 	opacity = 100,
 	isAddEmptyLayer = false,
+	isSimple = false,
 ) => {
 	const dotSize = oekaki.getDotSize();
 	const { width, height, frames, ways } = anime;

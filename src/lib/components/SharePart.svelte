@@ -1,16 +1,20 @@
 <script lang="ts">
     import { base } from "$app/paths";
     import * as anime from "$lib/anime";
-    import { fps, mode } from "$lib/store";
+    import { fps, preview } from "$lib/store";
     import { sanitizeImageURL } from "$lib/url";
     import { Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
+    import { Slider } from "@skeletonlabs/skeleton-svelte";
 
     let open = $state(false);
     let imageUrl = $state("");
     let imageRef = $state<HTMLImageElement>();
     let sharedUrl = $state("");
+    let opacity = $state([100]);
+    let isAddEmptyLayer = $state(false);
+    let isSimple = $state(false);
 
     const genURL = () => {
         if (imageUrl && (!imageRef || imageRef.naturalWidth === 0)) return;
@@ -20,7 +24,10 @@
         params.set("frames", String(anime.frames));
         params.set("ways", anime.waysToStr(anime.waysOrder));
         params.set("fps", String($fps));
-        params.set("mode", String($mode));
+        params.set("mode", String($preview));
+        if (opacity[0] !== 100) params.set("opacity", String(opacity[0] | 0));
+        if (isAddEmptyLayer) params.set("trace", "1");
+        if (isSimple) params.set("anime", "0");
         if (imageUrl) params.set("url", encodeURIComponent(imageUrl));
         sharedUrl = `${window.location.origin}${base}/?${params.toString()}`;
     };
@@ -94,6 +101,38 @@
                     />
                 </div>
             {/if}
+
+            <div class="flex items-center gap-4 max-w-[360px]">
+                <div
+                    class="w-[20ch] flex justify-between font-mono text-sm tabular-nums"
+                >
+                    <span class="text-left">不透明度</span>
+                    <span class="text-right">{opacity}%</span>
+                </div>
+                <Slider
+                    value={opacity}
+                    onValueChange={(e) => (opacity = e.value)}
+                    markers={[25, 50, 75]}
+                />
+            </div>
+
+            <label class="flex items-center space-x-2">
+                <input
+                    class="checkbox"
+                    type="checkbox"
+                    bind:checked={isAddEmptyLayer}
+                />
+                <p>トレース台を追加する</p>
+            </label>
+
+            <label class="flex items-center space-x-2">
+                <input
+                    class="checkbox"
+                    type="checkbox"
+                    bind:checked={isSimple}
+                />
+                <p>1枚絵として読み込む</p>
+            </label>
 
             <div class="pt-2">
                 <button

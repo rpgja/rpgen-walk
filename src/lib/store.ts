@@ -10,5 +10,5 @@ export const activeIndex = writable(0);
 const _fps = v.safeParse(schema.Fps, unjStorage.fps.value);
 export const fps = writable(_fps.success ? _fps.output : 2);
 
-const _mode = v.safeParse(schema.Mode, unjStorage.mode.value);
-export const mode = writable(_mode.success ? _mode.output : 1);
+const _preview = v.safeParse(schema.Preview, unjStorage.preview.value);
+export const preview = writable(_preview.success ? _preview.output : 0);

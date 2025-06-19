@@ -43,7 +43,7 @@ export const Fps = v.pipe(
 	v.maxValue(8),
 );
 
-export const Mode = v.pipe(
+export const Preview = v.pipe(
 	v.string(),
 	v.transform((input) => Number(input)),
 	v.number(),
