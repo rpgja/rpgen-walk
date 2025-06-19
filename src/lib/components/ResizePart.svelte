@@ -82,11 +82,11 @@
     const _fps = v.safeParse(schema.Fps, page.url.searchParams.get("fps"));
     if (_fps.success) fps.set(_fps.output);
 
-    const _mode = v.safeParse(
+    const _preview = v.safeParse(
       schema.Preview,
-      page.url.searchParams.get("mode"),
+      page.url.searchParams.get("preview"),
     );
-    if (_mode.success) preview.set(_mode.output);
+    if (_preview.success) preview.set(_preview.output);
   });
 
   const ParamSchema = v.strictObject({

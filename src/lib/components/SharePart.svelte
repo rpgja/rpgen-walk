@@ -24,7 +24,7 @@
         params.set("frames", String(anime.frames));
         params.set("ways", anime.waysToStr(anime.waysOrder));
         params.set("fps", String($fps));
-        params.set("mode", String($preview));
+        params.set("preview", String($preview));
         if (opacity[0] !== 100) params.set("opacity", String(opacity[0] | 0));
         if (isAddEmptyLayer) params.set("trace", "1");
         if (isSimple) params.set("anime", "0");
