@@ -4,13 +4,13 @@ import * as v from "valibot";
 export const sanitizeImageURL = (url: string) => {
 	const _url = v.safeParse(schema.ImageURL, url);
 	if (!_url.success) return "";
-	let hostname = "";
 	const { output } = _url;
 	try {
-		hostname = new URL(output).hostname;
+		const url = new URL(output);
+		if (url.protocol === "data:") return output;
+		if (url.hostname === "i.imgur.com") return output;
 	} catch (err) {
 		return "";
 	}
-	if (hostname === "i.imgur.com") return output;
 	return `https://api.allorigins.win/raw?url=${output}`;
 };

@@ -21,8 +21,10 @@ export const importImage = (
 
 	for (let y = 0; y < ways; y++) {
 		for (let x = 0; x < frames; x++) {
-			const layer = new oekaki.LayeredCanvas("素材の味");
-			layer.opacity = opacity;
+			const layerTran = new oekaki.LayeredCanvas("半透明");
+			const layerOpa = new oekaki.LayeredCanvas("不透明");
+			let tranSum = 0;
+			let tranCount = 0;
 
 			// 全体シートの横幅ピクセル数
 			const sheetWidth = width * frames; // 例: width=48, frames=8 なら 48*8 = 384px
@@ -55,17 +57,32 @@ export const importImage = (
 
 					const [r, g, b, a] = data.subarray(index, index + 4);
 					if (!a) continue;
-					oekaki.color.value = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
-					layer.drawByDot(p * dotSize, o * dotSize);
-					layer.used = true;
+					if (a === 255) {
+						oekaki.color.value = `rgb(${r}, ${g}, ${b})`;
+						layerOpa.drawByDot(p * dotSize, o * dotSize);
+						layerOpa.used = true;
+					} else {
+						oekaki.color.value = `rgb(${r}, ${g}, ${b})`;
+						layerTran.drawByDot(p * dotSize, o * dotSize);
+						layerTran.used = true;
+						tranSum += a;
+						tranCount++;
+					}
 				}
 			}
-			layer.trace();
+			layerOpa.trace();
+			layerTran.trace();
+			layerOpa.opacity = opacity;
+			if (tranCount)
+				layerTran.opacity = ((opacity * tranSum) / tranCount / 255) | 0;
 
 			// 反映
 			const i = anime.toI(x, y);
-			const layers = [layer];
-			if (isAddEmptyLayer) layers.push(new oekaki.LayeredCanvas("トレース台"));
+			const layers = [
+				layerTran.used ? layerTran : [],
+				layerOpa,
+				isAddEmptyLayer ? new oekaki.LayeredCanvas("トレース台") : [],
+			].flat();
 			anime.layersByI.set(i, layers);
 			const canvas = oekaki.render();
 			anime.canvasByI.set(i, canvas);
