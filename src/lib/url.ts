@@ -1,5 +1,6 @@
 import * as schema from "$lib/schema";
 import * as v from "valibot";
+import { randArray } from "./util";
 
 const CORS_FREE_HOSTS = [
 	(h: string) => h === "i.imgur.com", // imgur画像はCORS許可あり
@@ -25,5 +26,9 @@ export const sanitizeImageURL = (url: string) => {
 	} catch (err) {
 		return "";
 	}
-	return `https://api.allorigins.win/raw?url=${output}`;
+	return randArray([
+		`https://api.allorigins.win/raw?url=${output}`,
+		`https://corsproxy.io/?${output}`,
+		`https://api.codetabs.com/v1/proxy?quest=${output}`,
+	]);
 };
