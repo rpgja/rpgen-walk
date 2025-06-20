@@ -4,7 +4,12 @@
   import { importImage } from "$lib/init";
   import * as schema from "$lib/schema";
   import { fps, preview } from "$lib/store";
-  import { isAddEmptyLayer, isSimpleImport, opacity } from "$lib/store";
+  import {
+    imageUrl,
+    isAddEmptyLayer,
+    isSimpleImport,
+    opacity,
+  } from "$lib/store";
   import * as unjStorage from "$lib/unj-storage.js";
   import { sanitizeImageURL } from "$lib/url";
   import IconX from "@lucide/svelte/icons/x";
@@ -54,6 +59,11 @@
     frames = anime.frames;
     ways = anime.waysToStr(anime.waysOrder);
 
+    const _opacity = page.url.searchParams.get("opacity");
+    if (_opacity !== null) opacity.set(Number(_opacity));
+    isAddEmptyLayer.set(page.url.searchParams.get("trace") === "1");
+    isSimpleImport.set(page.url.searchParams.get("anime") === "0");
+
     const _url = v.safeParse(
       schema.ImageURL,
       decodeURIComponent(page.url.searchParams.get("url") ?? ""),
@@ -66,10 +76,7 @@
           image.crossOrigin = "anonymous";
           image.src = sanitizeImageURL(_url.output);
         });
-        const _opacity = page.url.searchParams.get("opacity");
-        if (_opacity !== null) opacity.set(Number(_opacity));
-        isAddEmptyLayer.set(page.url.searchParams.get("trace") === "1");
-        isSimpleImport.set(page.url.searchParams.get("anime") === "0");
+        imageUrl.set(_url.output);
         importImage(image);
         const now = anime.layersByI.get(0);
         if (now) {

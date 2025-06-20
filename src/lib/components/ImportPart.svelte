@@ -1,13 +1,20 @@
 <script lang="ts">
     import * as anime from "$lib/anime";
     import { importImage } from "$lib/init";
-    import { isAddEmptyLayer, isSimpleImport, opacity } from "$lib/store";
+    import * as schema from "$lib/schema";
+    import {
+        imageUrl,
+        isAddEmptyLayer,
+        isSimpleImport,
+        opacity,
+    } from "$lib/store";
     import { sanitizeImageURL } from "$lib/url";
     import { Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
     import * as oekaki from "@onjmin/oekaki";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
     import { Slider } from "@skeletonlabs/skeleton-svelte";
+    import * as v from "valibot";
 
     let {
         init,
@@ -16,7 +23,6 @@
     } = $props();
 
     let open = $state(false);
-    let imageUrl = $state("");
     let imageRef = $state<HTMLImageElement>();
     let fileInput: HTMLInputElement;
 
@@ -25,14 +31,15 @@
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                imageUrl = reader.result as string;
+                const result = v.safeParse(schema.ImageURL, reader.result);
+                if (result.success) $imageUrl = result.output;
             };
             reader.readAsDataURL(file);
         }
     }
 
     const handleImportButton = async () => {
-        if (!imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
+        if (!$imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
         init();
@@ -106,7 +113,7 @@
                             (v) => v.label === e.currentTarget.value,
                         );
                         if (!v) return;
-                        imageUrl = v.url;
+                        $imageUrl = v.url;
                     }}
                 >
                     <option value="">自動入力</option>
@@ -122,13 +129,13 @@
                     type="url"
                     placeholder="画像のURLを入力"
                     class="input input-bordered w-full pr-8 bg-white"
-                    bind:value={imageUrl}
+                    bind:value={$imageUrl}
                 />
                 <Trash2Icon
                     class="absolute right-2 top-2.5 text-gray-400"
                     size={16}
                     onclick={() => {
-                        imageUrl = "";
+                        $imageUrl = "";
                     }}
                 />
             </div>
@@ -149,10 +156,10 @@
             </div>
 
             <!-- Preview -->
-            {#if imageUrl}
+            {#if $imageUrl}
                 <div class="mt-4 max-h-32 overflow-auto border rounded p-2">
                     <img
-                        src={sanitizeImageURL(imageUrl)}
+                        src={sanitizeImageURL($imageUrl)}
                         alt="インポート画像"
                         class="max-w-96 object-contain rounded border"
                         crossorigin="anonymous"

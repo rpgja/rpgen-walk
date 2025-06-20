@@ -2,7 +2,12 @@
     import { base } from "$app/paths";
     import * as anime from "$lib/anime";
     import { fps, preview } from "$lib/store";
-    import { isAddEmptyLayer, isSimpleImport, opacity } from "$lib/store";
+    import {
+        imageUrl,
+        isAddEmptyLayer,
+        isSimpleImport,
+        opacity,
+    } from "$lib/store";
     import { sanitizeImageURL } from "$lib/url";
     import { Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
@@ -10,12 +15,11 @@
     import { Slider } from "@skeletonlabs/skeleton-svelte";
 
     let open = $state(false);
-    let imageUrl = $state("");
     let imageRef = $state<HTMLImageElement>();
     let sharedUrl = $state("");
 
     const genURL = () => {
-        if (imageUrl && (!imageRef || imageRef.naturalWidth === 0)) return;
+        if ($imageUrl && (!imageRef || imageRef.naturalWidth === 0)) return;
         const params = new URLSearchParams();
         params.set("w", String(anime.width));
         params.set("h", String(anime.height));
@@ -26,7 +30,7 @@
         if ($opacity !== 100) params.set("opacity", String($opacity | 0));
         if ($isAddEmptyLayer) params.set("trace", "1");
         if ($isSimpleImport) params.set("anime", "0");
-        if (imageUrl) params.set("url", encodeURIComponent(imageUrl));
+        if ($imageUrl) params.set("url", encodeURIComponent($imageUrl));
         sharedUrl = `${window.location.origin}${base}/?${params.toString()}`;
     };
 </script>
@@ -76,22 +80,22 @@
                     type="url"
                     placeholder="画像のURLを入力"
                     class="input input-bordered w-full pr-8 bg-white"
-                    bind:value={imageUrl}
+                    bind:value={$imageUrl}
                 />
                 <Trash2Icon
                     class="absolute right-2 top-2.5 text-gray-400"
                     size={16}
                     onclick={() => {
-                        imageUrl = "";
+                        $imageUrl = "";
                     }}
                 />
             </div>
 
             <!-- Preview -->
-            {#if imageUrl}
+            {#if $imageUrl}
                 <div class="mt-4 max-h-32 overflow-auto border rounded p-2">
                     <img
-                        src={sanitizeImageURL(imageUrl)}
+                        src={sanitizeImageURL($imageUrl)}
                         alt="インポート画像"
                         class="max-w-96 object-contain rounded border"
                         crossorigin="anonymous"
