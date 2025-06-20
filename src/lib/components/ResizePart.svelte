@@ -4,6 +4,7 @@
   import { importImage } from "$lib/init";
   import * as schema from "$lib/schema";
   import { fps, preview } from "$lib/store";
+  import { isAddEmptyLayer, isSimpleImport, opacity } from "$lib/store";
   import * as unjStorage from "$lib/unj-storage.js";
   import { sanitizeImageURL } from "$lib/url";
   import IconX from "@lucide/svelte/icons/x";
@@ -66,10 +67,10 @@
           image.src = sanitizeImageURL(_url.output);
         });
         const _opacity = page.url.searchParams.get("opacity");
-        const opacity = _opacity === null ? undefined : Number(_opacity);
-        const isAddEmptyLayer = page.url.searchParams.get("trace") === "1";
-        const isSimple = page.url.searchParams.get("anime") === "0";
-        importImage(image, opacity, isAddEmptyLayer, isSimple);
+        if (_opacity !== null) opacity.set(Number(_opacity));
+        isAddEmptyLayer.set(page.url.searchParams.get("trace") === "1");
+        isSimpleImport.set(page.url.searchParams.get("anime") === "0");
+        importImage(image);
         const now = anime.layersByI.get(0);
         if (now) {
           oekaki.setLayers(now);

@@ -12,3 +12,8 @@ export const fps = writable(_fps.success ? _fps.output : 2);
 
 const _preview = v.safeParse(schema.Preview, unjStorage.preview.value);
 export const preview = writable(_preview.success ? _preview.output : 0);
+
+export const opacity = writable(100);
+export const isAddEmptyLayer = writable(false);
+export const isSimpleImport = writable(false);
+export const imageUrl = writable("");

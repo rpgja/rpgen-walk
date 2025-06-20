@@ -1,18 +1,15 @@
 import * as anime from "$lib/anime";
+import { isAddEmptyLayer, isSimpleImport, opacity } from "$lib/store";
 import * as oekaki from "@onjmin/oekaki";
+import { get } from "svelte/store";
 
-export const importImage = (
-	image: HTMLImageElement,
-	opacity = 100,
-	isAddEmptyLayer = false,
-	isSimple = false,
-) => {
+export const importImage = (image: HTMLImageElement) => {
 	const dotSize = oekaki.getDotSize();
 	const { width, height, frames, ways } = anime;
 
 	const canvas = document.createElement("canvas");
-	canvas.width = isSimple ? width : width * frames;
-	canvas.height = isSimple ? height : height * ways;
+	canvas.width = get(isSimpleImport) ? width : width * frames;
+	canvas.height = get(isSimpleImport) ? height : height * ways;
 	const ctx = canvas.getContext("2d", {
 		willReadFrequently: true,
 	});
@@ -20,7 +17,7 @@ export const importImage = (
 	// アンチエイリアス無効化（ドット絵向け）
 	ctx.imageSmoothingEnabled = false;
 
-	if (isSimple) {
+	if (get(isSimpleImport)) {
 		const srcW = image.naturalWidth;
 		const srcH = image.naturalHeight;
 		const ratio = Math.min(width / srcW, height / srcH);
@@ -34,8 +31,8 @@ export const importImage = (
 	}
 	const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-	const yEnd = isSimple ? 1 : ways;
-	const xEnd = isSimple ? 1 : frames;
+	const yEnd = get(isSimpleImport) ? 1 : ways;
+	const xEnd = get(isSimpleImport) ? 1 : frames;
 	for (let y = 0; y < yEnd; y++) {
 		for (let x = 0; x < xEnd; x++) {
 			const layerTran = new oekaki.LayeredCanvas("半透明");
@@ -89,16 +86,16 @@ export const importImage = (
 			}
 			layerOpa.trace();
 			layerTran.trace();
-			layerOpa.opacity = opacity;
+			layerOpa.opacity = get(opacity);
 			if (tranCount)
-				layerTran.opacity = ((opacity * tranSum) / tranCount / 255) | 0;
+				layerTran.opacity = ((get(opacity) * tranSum) / tranCount / 255) | 0;
 
 			// 反映
 			const i = anime.toI(x, y);
 			const layers = [
 				layerTran.used ? layerTran : [],
 				layerOpa,
-				isAddEmptyLayer ? new oekaki.LayeredCanvas("トレース台") : [],
+				get(isAddEmptyLayer) ? new oekaki.LayeredCanvas("トレース台") : [],
 			].flat();
 			anime.layersByI.set(i, layers);
 			const canvas = oekaki.render();

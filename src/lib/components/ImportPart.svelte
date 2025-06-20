@@ -1,6 +1,7 @@
 <script lang="ts">
     import * as anime from "$lib/anime";
     import { importImage } from "$lib/init";
+    import { isAddEmptyLayer, isSimpleImport, opacity } from "$lib/store";
     import { sanitizeImageURL } from "$lib/url";
     import { Trash2Icon } from "@lucide/svelte";
     import IconX from "@lucide/svelte/icons/x";
@@ -18,9 +19,6 @@
     let imageUrl = $state("");
     let imageRef = $state<HTMLImageElement>();
     let fileInput: HTMLInputElement;
-    let opacity = $state([100]);
-    let isAddEmptyLayer = $state(false);
-    let isSimple = $state(false);
 
     function handleFileChange(event: Event) {
         const file = (event.target as HTMLInputElement)?.files?.[0];
@@ -38,7 +36,7 @@
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
         init();
-        importImage(imageRef, opacity[0], isAddEmptyLayer, isSimple);
+        importImage(imageRef);
         const now = anime.layersByI.get(0);
         if (now) {
             oekaki.setLayers(now);
@@ -169,11 +167,11 @@
                         class="w-[20ch] flex justify-between font-mono text-sm tabular-nums"
                     >
                         <span class="text-left">不透明度</span>
-                        <span class="text-right">{opacity}%</span>
+                        <span class="text-right">{$opacity}%</span>
                     </div>
                     <Slider
-                        value={opacity}
-                        onValueChange={(e) => (opacity = e.value)}
+                        value={[$opacity]}
+                        onValueChange={(e) => opacity.set(e.value[0])}
                         markers={[25, 50, 75]}
                     />
                 </div>
@@ -181,7 +179,7 @@
                     <input
                         class="checkbox"
                         type="checkbox"
-                        bind:checked={isAddEmptyLayer}
+                        bind:checked={$isAddEmptyLayer}
                     />
                     <p>トレース台を追加する</p>
                 </label>
@@ -189,7 +187,7 @@
                     <input
                         class="checkbox"
                         type="checkbox"
-                        bind:checked={isSimple}
+                        bind:checked={$isSimpleImport}
                     />
                     <p>1枚絵として読み込む</p>
                 </label>
