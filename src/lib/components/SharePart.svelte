@@ -42,7 +42,7 @@
     arrow
     arrowBackground="!bg-surface-300 dark:!bg-surface-800"
 >
-    {#snippet trigger()}シェア{/snippet}
+    {#snippet trigger()}共有{/snippet}
     {#snippet content()}
         <header class="flex justify-between">
             <p class="font-bold text-xl">共同編集用</p>
