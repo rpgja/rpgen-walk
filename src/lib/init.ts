@@ -44,7 +44,7 @@ export const importImage = (
 			let tranCount = 0;
 
 			// 全体シートの横幅ピクセル数
-			const sheetWidth = width * frames; // 例: width=48, frames=8 なら 48*8 = 384px
+			const sheetWidth = width * xEnd; // 例: width=48, frames=8 なら 48*8 = 384px
 
 			// 描画
 			for (let o = 0; o < height; o++) {
