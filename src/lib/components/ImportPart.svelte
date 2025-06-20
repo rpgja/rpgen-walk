@@ -74,7 +74,7 @@
     onOpenChange={(e) => (open = e.open)}
     positioning={{ placement: "top" }}
     triggerBase="btn preset-tonal"
-    contentBase="card bg-surface-300 p-4 space-y-4 max-w-[320px]"
+    contentBase="card bg-surface-300 p-4 space-y-4 max-w-[320px] w-[320px]"
     arrow
     arrowBackground="!bg-surface-300 dark:!bg-surface-800"
 >
@@ -152,7 +152,7 @@
 
             <!-- Preview -->
             {#if imageUrl}
-                <div class="mt-4 max-h-96 overflow-auto border rounded p-2">
+                <div class="mt-4 max-h-32 overflow-auto border rounded p-2">
                     <img
                         src={sanitizeImageURL(imageUrl)}
                         alt="インポート画像"
@@ -163,37 +163,37 @@
                 </div>
             {/if}
 
-            <div class="flex items-center gap-4 max-w-[360px]">
-                <div
-                    class="w-[20ch] flex justify-between font-mono text-sm tabular-nums"
-                >
-                    <span class="text-left">不透明度</span>
-                    <span class="text-right">{opacity}%</span>
+            <div class="space-y-0">
+                <div class="flex items-center gap-4 max-w-[360px]">
+                    <div
+                        class="w-[20ch] flex justify-between font-mono text-sm tabular-nums"
+                    >
+                        <span class="text-left">不透明度</span>
+                        <span class="text-right">{opacity}%</span>
+                    </div>
+                    <Slider
+                        value={opacity}
+                        onValueChange={(e) => (opacity = e.value)}
+                        markers={[25, 50, 75]}
+                    />
                 </div>
-                <Slider
-                    value={opacity}
-                    onValueChange={(e) => (opacity = e.value)}
-                    markers={[25, 50, 75]}
-                />
+                <label class="flex items-center space-x-2">
+                    <input
+                        class="checkbox"
+                        type="checkbox"
+                        bind:checked={isAddEmptyLayer}
+                    />
+                    <p>トレース台を追加する</p>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input
+                        class="checkbox"
+                        type="checkbox"
+                        bind:checked={isSimple}
+                    />
+                    <p>1枚絵として読み込む</p>
+                </label>
             </div>
-
-            <label class="flex items-center space-x-2">
-                <input
-                    class="checkbox"
-                    type="checkbox"
-                    bind:checked={isAddEmptyLayer}
-                />
-                <p>トレース台を追加する</p>
-            </label>
-
-            <label class="flex items-center space-x-2">
-                <input
-                    class="checkbox"
-                    type="checkbox"
-                    bind:checked={isSimple}
-                />
-                <p>1枚絵として読み込む</p>
-            </label>
 
             <div class="pt-2">
                 <button
