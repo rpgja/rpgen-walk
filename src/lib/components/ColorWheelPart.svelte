@@ -18,7 +18,7 @@
       handleDiameter: 16,
       wheelReflectsSaturation: false,
       onChange: (v: ColorWheel) => {
-        color.set(v.hex);
+        $color = v.hex;
       },
     });
   });

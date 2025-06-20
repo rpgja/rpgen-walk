@@ -178,7 +178,7 @@
                     </div>
                     <Slider
                         value={[$opacity]}
-                        onValueChange={(e) => opacity.set(e.value[0])}
+                        onValueChange={(e) => ($opacity = e.value[0])}
                         markers={[25, 50, 75]}
                     />
                 </div>

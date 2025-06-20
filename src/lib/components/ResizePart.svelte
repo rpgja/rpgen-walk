@@ -60,9 +60,9 @@
     ways = anime.waysToStr(anime.waysOrder);
 
     const _opacity = page.url.searchParams.get("opacity");
-    if (_opacity !== null) opacity.set(Number(_opacity));
-    isAddEmptyLayer.set(page.url.searchParams.get("trace") === "1");
-    isSimpleImport.set(page.url.searchParams.get("anime") === "0");
+    if (_opacity !== null) $opacity = Number(_opacity);
+    $isAddEmptyLayer = page.url.searchParams.get("trace") === "1";
+    $isSimpleImport = page.url.searchParams.get("anime") === "0";
 
     const _url = v.safeParse(
       schema.ImageURL,
@@ -76,7 +76,7 @@
           image.crossOrigin = "anonymous";
           image.src = sanitizeImageURL(_url.output);
         });
-        imageUrl.set(_url.output);
+        $imageUrl = _url.output;
         importImage(image);
         const now = anime.layersByI.get(0);
         if (now) {
@@ -88,13 +88,13 @@
     }
 
     const _fps = v.safeParse(schema.Fps, page.url.searchParams.get("fps"));
-    if (_fps.success) fps.set(_fps.output);
+    if (_fps.success) $fps = _fps.output;
 
     const _preview = v.safeParse(
       schema.Preview,
       page.url.searchParams.get("preview"),
     );
-    if (_preview.success) preview.set(_preview.output);
+    if (_preview.success) $preview = _preview.output;
   });
 
   const ParamSchema = v.strictObject({

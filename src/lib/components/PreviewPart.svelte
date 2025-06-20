@@ -20,7 +20,7 @@
             onchange={(e) => {
                 const { value } = e.currentTarget;
                 const n = Number(value);
-                fps.set(n);
+                $fps = n;
                 unjStorage.fps.value = String(n);
             }}
         >
@@ -37,7 +37,7 @@
             onchange={(e) => {
                 const { value } = e.currentTarget;
                 const n = Number(value);
-                preview.set(n);
+                $preview = n;
                 unjStorage.preview.value = value;
             }}
         >

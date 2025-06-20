@@ -19,7 +19,7 @@
 	let prevIndex = 0;
 	$effect(() => {
 		if (!initTimestamp) return;
-		activeIndex.set(0);
+		$activeIndex = 0;
 		prevIndex = 0;
 	});
 
@@ -71,7 +71,7 @@
 										const i = anime.toI(x, y);
 										if ($activeIndex === i) return;
 										prevIndex = $activeIndex;
-										activeIndex.set(i);
+										$activeIndex = i;
 									}}
 								>
 									<!-- 左上バッジ -->

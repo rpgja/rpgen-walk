@@ -263,7 +263,7 @@
             const hex = `#${[r, g, b]
                 .map((v) => v.toString(16).padStart(2, "0"))
                 .join("")}`;
-            color.set(hex);
+            $color = hex;
         } else {
             erasable = true;
         }
@@ -848,7 +848,7 @@
                         aria-label="Select color"
                         class="w-8 h-8 rounded-full ring-2 ring-gray-200 hover:ring-primary-500 transition"
                         style="background-color:{_color};"
-                        onclick={() => color.set(_color)}
+                        onclick={() => ($color = _color)}
                     ></button>
                 {/each}
             </div>
