@@ -20,6 +20,7 @@
     { label: "ドレミー", url: "https://i.imgur.com/vENwj1P.png" },
     { label: "八雲紫", url: "https://i.imgur.com/OLpXzvs.png" },
     { label: "カナ", url: "https://i.imgur.com/rgekbAz.png" },
+    { label: "天子", url: "https://i.imgur.com/R6oYJge.png" },
   ];
 </script>
 
