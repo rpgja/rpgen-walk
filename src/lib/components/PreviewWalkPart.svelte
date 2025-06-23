@@ -42,8 +42,7 @@
     const n = anime.frames;
     const elapsedSec = time / 1000;
     const step = (elapsedSec * $fps) | 0;
-    const frameIndex =
-      n === 1 ? 0 : n - 1 - Math.abs((step % ((n - 1) * 2)) - (n - 1));
+    const frameIndex = n !== 3 ? step % n : 2 - Math.abs(2 - (step % 4));
 
     // ぐるぐる
     const rotateStep = (step / (8 / n)) | 0;
