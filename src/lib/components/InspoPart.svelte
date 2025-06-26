@@ -21,7 +21,8 @@
     { label: "八雲紫", url: "https://i.imgur.com/OLpXzvs.png" },
     { label: "カナ", url: "https://i.imgur.com/rgekbAz.png" },
     { label: "天子", url: "https://i.imgur.com/R6oYJge.png" },
-    { label: "フラン", url: "https://i.imgur.com/lataf4w.png" },
+    { label: "フラン", url: "https://i.imgur.com/Y126OqA.png" },
+    { label: "パチュリー", url: "https://i.imgur.com/L0e0hxG.png" },
   ];
 </script>
 
