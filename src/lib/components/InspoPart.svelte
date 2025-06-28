@@ -22,7 +22,6 @@
     { label: "カナ", url: "https://i.imgur.com/rgekbAz.png" },
     { label: "天子", url: "https://i.imgur.com/R6oYJge.png" },
     { label: "フラン", url: "https://i.imgur.com/Y126OqA.png" },
-    { label: "パチュリー", url: "https://i.imgur.com/azs1Ko1.png" },
   ];
 </script>
 
