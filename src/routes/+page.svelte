@@ -245,7 +245,8 @@
             isDragover = false;
             if (!event.dataTransfer) return;
             const [file] = event.dataTransfer.files;
-            if (file.type.startsWith("image/")) importFile(file);
+            if (file.type.startsWith("image/") || file.name.endsWith(".cur"))
+                importFile(file);
         });
     });
 
