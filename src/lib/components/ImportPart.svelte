@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { combineAniIconsToDataUrl } from "$lib/ani";
     import * as anime from "$lib/anime";
     import { importImage } from "$lib/init";
     import * as schema from "$lib/schema";
@@ -26,17 +27,23 @@
     let imageRef = $state<HTMLImageElement>();
     let fileInput: HTMLInputElement;
 
-    function handleFileChange(event: Event) {
+    const handleFileChange = (event: Event) => {
         const file = (event.target as HTMLInputElement)?.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
                 const result = v.safeParse(schema.ImageURL, reader.result);
-                if (result.success) $imageUrl = result.output;
+                if (!result.success) return;
+                if (/\.ani$/i.test(file.name)) {
+                    const buffer = await file.arrayBuffer();
+                    $imageUrl = await combineAniIconsToDataUrl(buffer);
+                } else {
+                    $imageUrl = result.output;
+                }
             };
             reader.readAsDataURL(file);
         }
-    }
+    };
 
     const handleImportButton = async () => {
         if (!$imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
@@ -148,7 +155,7 @@
                     <input
                         class="input"
                         type="file"
-                        accept="image/*"
+                        accept="image/*,.cur,.ani"
                         bind:this={fileInput}
                         onchange={handleFileChange}
                     />

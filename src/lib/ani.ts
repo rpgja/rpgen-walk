@@ -180,3 +180,80 @@ export const exportAsAniPerWayZIP = async (anime: Anime): Promise<Blob> => {
 
 	return zip.generateAsync({ type: "blob" });
 };
+
+const parseAniIcons = (buffer: ArrayBuffer): Uint8Array[] => {
+	const view = new DataView(buffer);
+	const decoder = new TextDecoder();
+	let offset = 12; // skip 'RIFF' (4) + size (4) + 'ACON' (4)
+
+	const icons: Uint8Array[] = [];
+
+	while (offset + 8 <= buffer.byteLength) {
+		const chunkId = decoder.decode(new Uint8Array(buffer, offset, 4));
+		const chunkSize = view.getUint32(offset + 4, true);
+		const dataOffset = offset + 8;
+
+		if (chunkId === "LIST") {
+			const listType = decoder.decode(new Uint8Array(buffer, dataOffset, 4));
+			if (listType === "fram") {
+				let subOffset = dataOffset + 4;
+				const endOffset = offset + 8 + chunkSize;
+				while (subOffset + 8 <= endOffset) {
+					const subId = decoder.decode(new Uint8Array(buffer, subOffset, 4));
+					const subSize = view.getUint32(subOffset + 4, true);
+					const subDataOffset = subOffset + 8;
+					if (subId === "icon") {
+						const iconData = new Uint8Array(buffer, subDataOffset, subSize);
+						icons.push(new Uint8Array(iconData)); // copy
+					}
+					subOffset += 8 + subSize + (subSize % 2);
+				}
+			}
+		}
+
+		offset += 8 + chunkSize + (chunkSize % 2);
+	}
+
+	return icons;
+};
+
+/**
+ * .ani の buffer から横並び画像を生成し、Data URL を返す
+ */
+export const combineAniIconsToDataUrl = async (
+	aniBuffer: ArrayBuffer,
+): Promise<string> => {
+	const icons = parseAniIcons(aniBuffer);
+
+	// .cur → Image に変換
+	const images: HTMLImageElement[] = [];
+	for (const cur of icons) {
+		const blob = new Blob([cur], { type: "image/x-icon" });
+		const url = URL.createObjectURL(blob);
+		const img = new Image();
+		img.src = url;
+		await img.decode();
+		images.push(img);
+	}
+
+	if (images.length === 0) throw new Error("No frames in ANI file");
+
+	const frameWidth = images[0].width;
+	const frameHeight = images[0].height;
+
+	// 横並び canvas を生成
+	const canvas = document.createElement("canvas");
+	canvas.width = frameWidth * images.length;
+	canvas.height = frameHeight;
+
+	const ctx = canvas.getContext("2d");
+	if (!ctx) throw new Error("getContext 2d error");
+	ctx.imageSmoothingEnabled = false;
+
+	images.forEach((img, i) => {
+		ctx.drawImage(img, i * frameWidth, 0);
+	});
+
+	// canvas → data URL
+	return canvas.toDataURL("image/png");
+};
