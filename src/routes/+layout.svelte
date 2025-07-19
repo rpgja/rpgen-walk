@@ -30,7 +30,7 @@
 
   <!-- PWA 対応 -->
   <link rel="manifest" href="{base}/manifest.json" />
-  <meta name="theme-color" content="##6CBB5A" />
+  <meta name="theme-color" content="#6CBB5A" />
 
   <script
     src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"
