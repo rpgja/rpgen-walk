@@ -14,6 +14,9 @@ importers:
       '@mdi/js':
         specifier: 7.4.47
         version: 7.4.47
+      '@onjmin/cors-killer':
+        specifier: 1.0.6
+        version: 1.0.6
       '@onjmin/oekaki':
         specifier: 1.0.49
         version: 1.0.49
@@ -323,6 +326,9 @@ packages:
 
   '@mdi/js@7.4.47':
     resolution: {integrity: sha512-KPnNOtm5i2pMabqZxpUz7iQf+mfrYZyKCZ8QNz85czgEt7cuHcGorWfdzUMWYA0SD+a6Hn4FmJ+YhzzzjkTZrQ==}
+
+  '@onjmin/cors-killer@1.0.6':
+    resolution: {integrity: sha512-m7LurTNk/wO1GtH+XeP85kAZ/u/+0y2wiaydzmq0A9wLNBPL4jnNNE2M7JTq+vbGUlXG4I+2Q9KJO3w+1sTKzQ==}
 
   '@onjmin/oekaki@1.0.49':
     resolution: {integrity: sha512-hJpJMRkUVN5d6yr+EBXD1kzxwosoLsDgGx/9uE8K11H1VUxwZyXATiJ24wv7ZXzeA8+GIBLricV6qXn/5CsFzw==}
@@ -1243,6 +1249,8 @@ snapshots:
       svelte: 5.33.4
 
   '@mdi/js@7.4.47': {}
+
+  '@onjmin/cors-killer@1.0.6': {}
 
   '@onjmin/oekaki@1.0.49': {}
 

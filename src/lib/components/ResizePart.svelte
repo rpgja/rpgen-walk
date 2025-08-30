@@ -11,8 +11,8 @@
     opacity,
   } from "$lib/store";
   import * as unjStorage from "$lib/unj-storage.js";
-  import { sanitizeImageURL } from "$lib/url";
   import IconX from "@lucide/svelte/icons/x";
+  import { corsKiller } from "@onjmin/cors-killer";
   import * as oekaki from "@onjmin/oekaki";
   import { Popover } from "@skeletonlabs/skeleton-svelte";
   import * as v from "valibot";
@@ -74,7 +74,7 @@
           const image = new Image();
           image.onload = () => resolve(image);
           image.crossOrigin = "anonymous";
-          image.src = sanitizeImageURL(_url.output);
+          image.src = corsKiller(_url.output);
         });
         $imageUrl = _url.output;
         importImage(image);
