@@ -7,6 +7,11 @@
 @source "../node_modules/@skeletonlabs/skeleton-svelte/dist";
 @plugin "@tailwindcss/forms";
 
+/* SkeletonのPopover用 */
+[data-scope="popover"][data-part="positioner"] {
+	--z-index: 114514 !important;
+}
+
 /* GIMPの背景のアレ */
 .gimp-checkered-background {
 	background-color: #fff;
@@ -27,9 +32,4 @@ body.hg-paint-gimp-dark .gimp-checkered-background {
 		linear-gradient(-45deg, transparent 75%, #4c4c4c 75%);
 	background-size: 16px 16px;
 	background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-}
-
-/* SkeletonのPopover用 */
-[data-scope="popover"][data-part="positioner"] {
-	--z-index: 114514 !important;
 }
