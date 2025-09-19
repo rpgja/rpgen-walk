@@ -71,9 +71,9 @@
 						>
 							<div
 								class="w-full h-full bg-center bg-cover"
-								style="background-image: url({layer.used
-									? layer.canvas.toDataURL('image/png')
-									: 'https://placehold.co/32x32?text=new'});"
+								style="background-image: url({layer.canvas.toDataURL(
+									'image/png',
+								)});"
 							></div>
 						</div>
 						<div>
