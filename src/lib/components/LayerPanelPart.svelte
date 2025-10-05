@@ -4,9 +4,8 @@
 		ArrowUpIcon,
 		EyeClosedIcon,
 		EyeIcon,
-		LockIcon,
-		LockOpenIcon,
 		PlusIcon,
+		Trash2Icon,
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
 
@@ -85,28 +84,34 @@
 							<div
 								class="flex items-center text-xs text-gray-500 space-x-1"
 							>
-								{#if layer.locked}
-									<LockIcon
-										class="w-3 h-3"
-										onclick={() => (layer.locked = false)}
-									/>
-								{:else}
-									<LockOpenIcon
-										class="w-3 h-3"
-										onclick={() => (layer.locked = true)}
-									/>
-								{/if}
 								{#if layer.visible}
 									<EyeIcon
-										class="w-3 h-3"
+										class="w-4 h-4"
 										onclick={() => (layer.visible = false)}
 									/>
 								{:else}
 									<EyeClosedIcon
-										class="w-3 h-3"
+										class="w-4 h-4"
 										onclick={() => (layer.visible = true)}
 									/>
 								{/if}
+								<Trash2Icon
+									class="w-4 h-4"
+									onclick={() => {
+										if (
+											layer.locked ||
+											(layer.used &&
+												!confirm(
+													`${layer.name}を削除しますか？`,
+												))
+										)
+											return;
+										layer.delete();
+										const { prev, next } = layer;
+										if (next) activeLayer = next;
+										else if (prev) activeLayer = prev;
+									}}
+								/>
 								<span>{layer.opacity}%</span>
 							</div>
 						</div>
