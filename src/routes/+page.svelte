@@ -166,7 +166,7 @@
     };
 
     const importFile = async (file: File) => {
-        if (!activeLayer || activeLayer?.locked) return;
+        if (!activeLayer || !activeLayer.editable) return;
 
         const dotSize = oekaki.getDotSize();
         const { width, height } = anime;
@@ -212,7 +212,7 @@
      */
     const handlePaste = (e: ClipboardEvent) => {
         if (notDrawing(e)) return;
-        if (!activeLayer || activeLayer?.locked) return;
+        if (!activeLayer || !activeLayer.editable) return;
         let imageItem: DataTransferItem | null = null;
         for (const v of e.clipboardData?.items ?? []) {
             if (v.kind === "file" && v.type.startsWith("image/")) {
@@ -354,25 +354,23 @@
                 dropper(x, y);
                 dropping = true;
             } else {
-                if (!activeLayer?.locked) {
-                    if (choiced === tool.translate.label) {
-                        activeLayer?.translateByDot(x - prevX, y - prevY);
-                    } else {
-                        const lerps = oekaki.lerp(x, y, prevX, prevY);
-                        switch (choiced) {
-                            case tool.pen.label:
-                                for (const [x, y] of lerps) {
-                                    erasable
-                                        ? activeLayer?.eraseByDot(x, y)
-                                        : activeLayer?.drawByDot(x, y);
-                                }
-                                break;
-                            case tool.eraser.label:
-                                for (const [x, y] of lerps) {
-                                    activeLayer?.eraseByDot(x, y);
-                                }
-                                break;
-                        }
+                if (choiced === tool.translate.label) {
+                    activeLayer?.translateByDot(x - prevX, y - prevY);
+                } else {
+                    const lerps = oekaki.lerp(x, y, prevX, prevY);
+                    switch (choiced) {
+                        case tool.pen.label:
+                            for (const [x, y] of lerps) {
+                                erasable
+                                    ? activeLayer?.eraseByDot(x, y)
+                                    : activeLayer?.drawByDot(x, y);
+                            }
+                            break;
+                        case tool.eraser.label:
+                            for (const [x, y] of lerps) {
+                                activeLayer?.eraseByDot(x, y);
+                            }
+                            break;
                     }
                 }
             }
@@ -389,7 +387,7 @@
         oekaki.onDrawn((x, y, buttons) => {
             prevX = null;
             prevY = null;
-            if (activeLayer?.locked) return;
+            if (!activeLayer?.editable) return;
             if (choiced === tool.fill.label && !dropping) fill(x, y);
             dropping = false;
             fin();
