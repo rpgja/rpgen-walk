@@ -166,7 +166,7 @@
     };
 
     const importFile = async (file: File) => {
-        if (!activeLayer || !activeLayer.editable) return;
+        if (!activeLayer?.editable) return;
 
         const dotSize = oekaki.getDotSize();
         const { width, height } = anime;
@@ -212,7 +212,7 @@
      */
     const handlePaste = (e: ClipboardEvent) => {
         if (notDrawing(e)) return;
-        if (!activeLayer || !activeLayer.editable) return;
+        if (!activeLayer?.editable) return;
         let imageItem: DataTransferItem | null = null;
         for (const v of e.clipboardData?.items ?? []) {
             if (v.kind === "file" && v.type.startsWith("image/")) {
