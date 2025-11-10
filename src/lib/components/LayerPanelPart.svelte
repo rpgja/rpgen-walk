@@ -18,17 +18,17 @@
 	});
 
 	const moveLayerUp = (layer: oekaki.LayeredCanvas) => {
-		const { prev } = layer;
-		if (prev) {
-			layer.swap(prev.index);
+		const { below } = layer;
+		if (below) {
+			layer.swap(below.index);
 			layers = oekaki.getLayers();
 		}
 	};
 
 	const moveLayerDown = (layer: oekaki.LayeredCanvas) => {
-		const { next } = layer;
-		if (next) {
-			layer.swap(next.index);
+		const { above } = layer;
+		if (above) {
+			layer.swap(above.index);
 			layers = oekaki.getLayers();
 		}
 	};
@@ -107,9 +107,9 @@
 										)
 											return;
 										layer.delete();
-										const { prev, next } = layer;
-										if (next) activeLayer = next;
-										else if (prev) activeLayer = prev;
+										const { above, below } = layer;
+										if (above) activeLayer = above;
+										else if (below) activeLayer = below;
 									}}
 								/>
 								<span>{layer.opacity}%</span>
