@@ -12,20 +12,14 @@
 	let { activeLayer = $bindable(undefined), pointerupTimestamp } = $props();
 
 	let layers: oekaki.LayeredCanvas[] = $state([]);
+	let reversedLayers = $derived([...layers].reverse());
+
 	$effect(() => {
 		if (!activeLayer) return;
 		layers = oekaki.getLayers();
 	});
 
 	const moveLayerUp = (layer: oekaki.LayeredCanvas) => {
-		const { below } = layer;
-		if (below) {
-			layer.swap(below.index);
-			layers = oekaki.getLayers();
-		}
-	};
-
-	const moveLayerDown = (layer: oekaki.LayeredCanvas) => {
 		const { above } = layer;
 		if (above) {
 			layer.swap(above.index);
@@ -33,24 +27,35 @@
 		}
 	};
 
+	const moveLayerDown = (layer: oekaki.LayeredCanvas) => {
+		const { below } = layer;
+		if (below) {
+			layer.swap(below.index);
+			layers = oekaki.getLayers();
+		}
+	};
+
 	const addLayer = () => {
-		activeLayer = new oekaki.LayeredCanvas(
-			`レイヤー #${layers.length + 1}`,
-		);
+		const newLayer = new oekaki.LayeredCanvas();
+		newLayer.name = `レイヤー #${newLayer.index + 1}`;
+		activeLayer = newLayer;
 	};
 </script>
 
 <div
 	class="p-4 bg-white rounded shadow-md w-full max-w-md mx-auto max-h-[50vh] flex flex-col select-none"
 >
-	<div class="flex items-center text-xs text-gray-500">
-		<ArrowUpIcon class="w-4 h-4 mr-1" />
-		最背面
-	</div>
+	<button
+		class="flex items-center justify-center py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+		onclick={addLayer}
+	>
+		<PlusIcon class="w-4 h-4 mr-2" />
+		レイヤー追加
+	</button>
 
 	<!-- レイヤーリスト（スクロール可能部分） -->
 	<ul class="divide-y divide-gray-200 overflow-auto flex-1 min-h-0">
-		{#each layers as layer}
+		{#each reversedLayers as layer}
 			{#key activeLayer === layer ? pointerupTimestamp : "noop"}
 				<li
 					class="flex items-center justify-between p-2 cursor-pointer {activeLayer ===
@@ -134,17 +139,4 @@
 			{/key}
 		{/each}
 	</ul>
-
-	<div class="flex items-center text-xs text-gray-500">
-		<ArrowDownIcon class="w-4 h-4 mr-1" />
-		最前面
-	</div>
-
-	<button
-		class="flex items-center justify-center py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-		onclick={addLayer}
-	>
-		<PlusIcon class="w-4 h-4 mr-2" />
-		レイヤー追加
-	</button>
 </div>
