@@ -29,12 +29,14 @@ export const init = (
 	layersByI.clear();
 	canvasByI.clear();
 	dataURLByI.clear();
+	activatedByI.clear();
 };
 
 export const iByWay = new Map<Way, number>();
 export const layersByI = new Map<number, oekaki.LayeredCanvas[]>();
 export const canvasByI = new Map<number, HTMLCanvasElement>();
 export const dataURLByI = new Map<number, string>();
+export const activatedByI = new Map<number, oekaki.LayeredCanvas>();
 
 type Way = {
 	key: string;

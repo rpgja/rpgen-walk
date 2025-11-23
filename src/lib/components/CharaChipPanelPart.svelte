@@ -29,10 +29,21 @@
 		const now = anime.layersByI.get($activeIndex);
 		if (now) {
 			oekaki.setLayers(now);
-			activeLayer = now[now.length - 1];
 		} else {
 			oekaki.setLayers([]);
 			activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+		}
+	});
+
+	// キャラチップ切り替え時に元のレイヤーを選び直す実装
+	// TODO: レイヤーが1枚しかないときの新規レイヤー追加時にバグあり
+	$effect(() => {
+		const activatedLayer = anime.activatedByI.get($activeIndex);
+		if (!activatedLayer || $activeIndex === prevIndex) {
+			anime.activatedByI.set($activeIndex, activeLayer);
+		} else {
+			activeLayer = activatedLayer;
+			prevIndex = $activeIndex;
 		}
 	});
 
