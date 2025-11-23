@@ -56,18 +56,7 @@ https://rpgja.github.io/rpgen-walk/
 - 🚧 多言語対応（英語、中国語、韓国語）
 
 ## Webアプリのライセンス / License
-
-- **MIT**  
-  Webアプリそのものには MIT ライセンスが適用されます。詳細は [`LICENSE`](./LICENSE) をご覧ください。
-
-> [!NOTE]
-> Although this application uses a library originally licensed under AGPLv3,
-> both the application and the library are authored by the same developer,
-> who hereby distributes this application under the MIT license.
-> 
-> このWebアプリはもともとAGPLv3でライセンスされたライブラリを使用していますが、
-> Webアプリとライブラリの両方が同じ開発者によって作成されており、
-> MITライセンスの下でこのWebアプリを配布しています。
+- [MIT](./LICENSE)
 
 ## 作品利用について / About Your Creations
 
