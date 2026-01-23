@@ -296,7 +296,7 @@
 
     const height = isMobile
         ? Math.floor((globalThis.innerWidth * 0.9) / 48) * 48
-        : 480;
+        : 384; // 48と64の最小公倍数 * 2
     let width = $state(height);
     let initTimestamp = $state(0);
     $effect(() => {
