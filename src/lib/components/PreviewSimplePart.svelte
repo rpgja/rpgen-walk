@@ -2,7 +2,7 @@
     import * as anime from "$lib/anime";
     import { activeIndex, fps } from "$lib/store";
 
-    let { initTimestamp } = $props();
+    let { initTimestamp, stop = true } = $props();
 
     const width = 48 * 4;
     let height = $state(0);
@@ -18,10 +18,15 @@
         const i = Math.floor($activeIndex / frames) * frames;
 
         // 足踏み
-        const n = anime.frames;
-        const elapsedSec = time / 1000;
-        const step = (elapsedSec * $fps) | 0;
-        const frameIndex = step % n;
+        let frameIndex: number;
+        if (stop) {
+            frameIndex = $activeIndex % frames;
+        } else {
+            const n = anime.frames;
+            const elapsedSec = time / 1000;
+            const step = (elapsedSec * $fps) | 0;
+            frameIndex = step % n;
+        }
 
         if (!i && i !== 0) return;
         if (!canvasRef) return;

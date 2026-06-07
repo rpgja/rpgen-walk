@@ -9,6 +9,7 @@
     const list = [
         { value: 0, label: "歩行グラ" },
         { value: 1, label: "シンプル" },
+        { value: 2, label: "静画" },
     ];
 </script>
 
@@ -51,5 +52,7 @@
         <PreviewWalkPart {initTimestamp} />
     {:else if $preview === 1}
         <PreviewSimplePart {initTimestamp} />
+    {:else if $preview === 2}
+        <PreviewSimplePart {initTimestamp} stop />
     {/if}
 </div>
