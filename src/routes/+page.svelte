@@ -847,7 +847,10 @@
                         aria-label="Select color"
                         class="w-8 h-8 rounded-full ring-2 ring-gray-200 hover:ring-primary-500 transition"
                         style="background-color:{_color};"
-                        onclick={() => ($color = _color)}
+                        onclick={() => {
+                            $color = _color;
+                            erasable = false;
+                        }}
                     ></button>
                 {/each}
             </div>
