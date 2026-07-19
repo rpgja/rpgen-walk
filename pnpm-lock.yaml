@@ -18,8 +18,8 @@ importers:
         specifier: 1.0.16
         version: 1.0.16
       '@onjmin/oekaki':
-        specifier: 1.0.59
-        version: 1.0.59
+        specifier: 1.0.60
+        version: 1.0.60
       gif.js:
         specifier: 0.2.0
         version: 0.2.0
@@ -330,8 +330,8 @@ packages:
   '@onjmin/cors-killer@1.0.16':
     resolution: {integrity: sha512-77nbQ9M0zeetO5+45lZHEQtwfKaAHfPwrfzvvVHL23s7TgqsO367stPWS7BSz6ZLKsH49CS9u1zZTlslD8KNNw==}
 
-  '@onjmin/oekaki@1.0.59':
-    resolution: {integrity: sha512-p+2M8FuySg1tTZQpKi1YWqV1hFoRyba52vScjnYg3Epz9YzNTC5Z9uHiqJ0C++UbyhKum0bahsrC3STcEB6S5A==}
+  '@onjmin/oekaki@1.0.60':
+    resolution: {integrity: sha512-H5d4XwqMWf8DPo6dhY6u5KEsiA5ch45v3NwV8OzrevTLbCv1dhKZvQHnz0VdnSoeJphDXmKUTJMRSx5FVWS61Q==}
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -1252,7 +1252,7 @@ snapshots:
 
   '@onjmin/cors-killer@1.0.16': {}
 
-  '@onjmin/oekaki@1.0.59': {}
+  '@onjmin/oekaki@1.0.60': {}
 
   '@polka/url@1.0.0-next.29': {}
 
