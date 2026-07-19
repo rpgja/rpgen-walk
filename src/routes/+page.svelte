@@ -1,553 +1,760 @@
 <script lang="ts">
-    import { base } from "$app/paths";
-    import * as anime from "$lib/anime";
-    import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
-    import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
-    import ExportPart from "$lib/components/ExportPart.svelte";
-    import ImportPart from "$lib/components/ImportPart.svelte";
-    import InspoPart from "$lib/components/InspoPart.svelte";
-    import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
-    import MacroPart from "$lib/components/MacroPart.svelte";
-    import ManualPart from "$lib/components/ManualPart.svelte";
-    import PreviewPart from "$lib/components/PreviewPart.svelte";
-    import ResizePart from "$lib/components/ResizePart.svelte";
-    import SharePart from "$lib/components/SharePart.svelte";
-    import { isOnionSkin } from "$lib/onion-skin";
-    import { color } from "$lib/store";
-    import * as unjStorage from "$lib/unj-storage.js";
-    import {
-        BombIcon,
-        CheckIcon,
-        Layers2Icon,
-        MoonIcon,
-        SunIcon,
-    } from "@lucide/svelte";
-    import { EyeIcon } from "@lucide/svelte";
-    import { EditIcon } from "@lucide/svelte";
-    import { LockIcon } from "@lucide/svelte";
-    import IconEraser from "@lucide/svelte/icons/eraser";
-    import IconFlipHorizontal from "@lucide/svelte/icons/flip-horizontal-2";
-    import IconGrid from "@lucide/svelte/icons/grid";
-    import IconMove from "@lucide/svelte/icons/move";
-    import IconPaintBucket from "@lucide/svelte/icons/paint-bucket";
-    import IconPen from "@lucide/svelte/icons/pen";
-    import IconPipette from "@lucide/svelte/icons/pipette";
-    import IconRedo from "@lucide/svelte/icons/redo";
-    import IconSave from "@lucide/svelte/icons/save";
-    import IconTrash2 from "@lucide/svelte/icons/trash-2";
-    import IconUndo from "@lucide/svelte/icons/undo";
-    import {
-        mdiContentSaveOutline,
-        mdiEraser,
-        mdiEraserVariant,
-        mdiEyedropper,
-        mdiFlipHorizontal,
-        mdiFormatColorFill,
-        mdiGrid,
-        mdiHandBackRight,
-        mdiPen,
-        mdiRedo,
-        mdiTrashCanOutline,
-        mdiUndo,
-    } from "@mdi/js";
-    import * as oekaki from "@onjmin/oekaki";
-    import { Slider } from "@skeletonlabs/skeleton-svelte";
-    import { Segment, Switch } from "@skeletonlabs/skeleton-svelte";
-    import ColorPicker from "svelte-awesome-color-picker";
+import { base } from "$app/paths";
+import * as anime from "$lib/anime";
+import CharaChipPanelPart from "$lib/components/CharaChipPanelPart.svelte";
+import ColorWheelPart from "$lib/components/ColorWheelPart.svelte";
+import ExportPart from "$lib/components/ExportPart.svelte";
+import ImportPart from "$lib/components/ImportPart.svelte";
+import InspoPart from "$lib/components/InspoPart.svelte";
+import LayerPanelPart from "$lib/components/LayerPanelPart.svelte";
+import MacroPart from "$lib/components/MacroPart.svelte";
+import ManualPart from "$lib/components/ManualPart.svelte";
+import PreviewPart from "$lib/components/PreviewPart.svelte";
+import ResizePart from "$lib/components/ResizePart.svelte";
+import SharePart from "$lib/components/SharePart.svelte";
+import { isOnionSkin } from "$lib/onion-skin";
+import { color } from "$lib/store";
+import * as unjStorage from "$lib/unj-storage.js";
+import {
+	BombIcon,
+	CheckIcon,
+	Layers2Icon,
+	MoonIcon,
+	SunIcon,
+} from "@lucide/svelte";
+import { EyeIcon } from "@lucide/svelte";
+import { EditIcon } from "@lucide/svelte";
+import { LockIcon } from "@lucide/svelte";
+import IconBoxSelect from "@lucide/svelte/icons/box-select";
+import IconCopy from "@lucide/svelte/icons/copy";
+import IconEraser from "@lucide/svelte/icons/eraser";
+import IconFlipHorizontal from "@lucide/svelte/icons/flip-horizontal-2";
+import IconGrid from "@lucide/svelte/icons/grid";
+import IconMove from "@lucide/svelte/icons/move";
+import IconPaintBucket from "@lucide/svelte/icons/paint-bucket";
+import IconPen from "@lucide/svelte/icons/pen";
+import IconPipette from "@lucide/svelte/icons/pipette";
+import IconRedo from "@lucide/svelte/icons/redo";
+import IconSave from "@lucide/svelte/icons/save";
+import IconScissors from "@lucide/svelte/icons/scissors";
+import IconTrash2 from "@lucide/svelte/icons/trash-2";
+import IconUndo from "@lucide/svelte/icons/undo";
+import {
+	mdiContentSaveOutline,
+	mdiEraser,
+	mdiEraserVariant,
+	mdiEyedropper,
+	mdiFlipHorizontal,
+	mdiFormatColorFill,
+	mdiGrid,
+	mdiHandBackRight,
+	mdiPen,
+	mdiRedo,
+	mdiSelectionDrag,
+	mdiTrashCanOutline,
+	mdiUndo,
+} from "@mdi/js";
+import * as oekaki from "@onjmin/oekaki";
+import { Slider } from "@skeletonlabs/skeleton-svelte";
+import { Segment, Switch } from "@skeletonlabs/skeleton-svelte";
+import ColorPicker from "svelte-awesome-color-picker";
 
-    const isMobile = globalThis.innerWidth < 768;
+const isMobile = globalThis.innerWidth < 768;
 
-    let pointerupTimestamp = $state(0);
-    const updatePointerupTimestamp = () => {
-        setTimeout(() => {
-            pointerupTimestamp = performance.now();
-        });
-    };
-    $effect(() => {
-        document.addEventListener("pointerup", updatePointerupTimestamp);
-        return () =>
-            document.removeEventListener("pointerup", updatePointerupTimestamp);
-    });
+let pointerupTimestamp = $state(0);
+const updatePointerupTimestamp = () => {
+	setTimeout(() => {
+		pointerupTimestamp = performance.now();
+	});
+};
+$effect(() => {
+	document.addEventListener("pointerup", updatePointerupTimestamp);
+	return () =>
+		document.removeEventListener("pointerup", updatePointerupTimestamp);
+});
 
-    /**
-     * PC版ショートカット
-     */
-    const handleKeyDown = async (e: KeyboardEvent) => {
-        if (notDrawing(e)) return;
-        if (!e.ctrlKey) return;
-        let key = e.key;
-        if (e.getModifierState("CapsLock")) {
-            key = /[a-z]/.test(key) ? key.toUpperCase() : key.toLowerCase();
-        }
-        switch (key) {
-            case "1":
-                e.preventDefault();
-                choiced = tool.pen.label;
-                break;
-            case "2":
-                e.preventDefault();
-                choiced = tool.eraser.label;
-                break;
-            case "3":
-                e.preventDefault();
-                choiced = tool.dropper.label;
-                break;
-            case "4":
-                e.preventDefault();
-                choiced = tool.fill.label;
-                break;
-            case "5":
-                e.preventDefault();
-                choiced = tool.translate.label;
-                break;
-            case "e":
-                e.preventDefault();
-                erasable = !erasable;
-                break;
-            case "f":
-                e.preventDefault();
-                flipped = !flipped;
-                break;
-            case "g":
-                e.preventDefault();
-                isGrid = !isGrid;
-                break;
-            case "d":
-                e.preventDefault();
-                isDark = !isDark;
-                break;
-            case "o":
-                e.preventDefault();
-                isOnionSkin.update((value) => !value);
-                break;
-            case "z":
-                e.preventDefault();
-                doAction(tool.undo.label);
-                break;
-            case "Z":
-                e.preventDefault();
-                doAction(tool.redo.label);
-                break;
-            case "s":
-                e.preventDefault();
-                doAction(tool.save.label);
-                break;
-            case "c": // クリップボードにコピー
-                {
-                    e.preventDefault();
-                    const blob = await new Promise<Blob | null>((resolve) =>
-                        oekaki.render().toBlob(resolve),
-                    );
-                    if (!blob) return;
-                    const item = new ClipboardItem({ "image/png": blob });
-                    await navigator.clipboard.write([item]);
-                }
-                break;
-        }
-    };
-    $effect(() => {
-        if (!upperLayer) return;
-        window.removeEventListener("keydown", handleKeyDown);
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    });
+/**
+ * PC版ショートカット
+ */
+const handleKeyDown = async (e: KeyboardEvent) => {
+	if (notDrawing(e)) return;
+	if (!e.ctrlKey) return;
+	let key = e.key;
+	if (e.getModifierState("CapsLock")) {
+		key = /[a-z]/.test(key) ? key.toUpperCase() : key.toLowerCase();
+	}
+	switch (key) {
+		case "1":
+			e.preventDefault();
+			choiced = tool.pen.label;
+			break;
+		case "2":
+			e.preventDefault();
+			choiced = tool.eraser.label;
+			break;
+		case "3":
+			e.preventDefault();
+			choiced = tool.dropper.label;
+			break;
+		case "4":
+			e.preventDefault();
+			choiced = tool.fill.label;
+			break;
+		case "5":
+			e.preventDefault();
+			choiced = tool.translate.label;
+			break;
+		case "6":
+			e.preventDefault();
+			choiced = tool.select.label;
+			break;
+		case "e":
+			e.preventDefault();
+			erasable = !erasable;
+			break;
+		case "f":
+			e.preventDefault();
+			flipped = !flipped;
+			break;
+		case "g":
+			e.preventDefault();
+			isGrid = !isGrid;
+			break;
+		case "d":
+			e.preventDefault();
+			isDark = !isDark;
+			break;
+		case "o":
+			e.preventDefault();
+			isOnionSkin.update((value) => !value);
+			break;
+		case "z":
+			e.preventDefault();
+			doAction(tool.undo.label);
+			break;
+		case "Z":
+			e.preventDefault();
+			doAction(tool.redo.label);
+			break;
+		case "s":
+			e.preventDefault();
+			doAction(tool.save.label);
+			break;
+		case "c": // クリップボードにコピー
+			{
+				e.preventDefault();
+				if (activeLayer?.selection) {
+					const copy = activeLayer.copySelection();
+					if (copy) internalClipboard = copy;
+					break;
+				}
+				const blob = await new Promise<Blob | null>((resolve) =>
+					oekaki.render().toBlob(resolve),
+				);
+				if (!blob) return;
+				const item = new ClipboardItem({ "image/png": blob });
+				await navigator.clipboard.write([item]);
+			}
+			break;
+		case "x": // 選択範囲の切り取り
+			{
+				if (!activeLayer?.editable || !activeLayer.selection) break;
+				e.preventDefault();
+				const copy = activeLayer.copySelection();
+				if (copy) internalClipboard = copy;
+				activeLayer.deleteSelection();
+				fin();
+				updateSelectionState();
+			}
+			break;
+	}
+};
+/**
+ * 選択範囲用のショートカット（Ctrl不要）
+ */
+const handleSelectionKeyDown = (e: KeyboardEvent) => {
+	if (notDrawing(e)) return;
+	if (!activeLayer?.editable || !activeLayer.selection) return;
+	if (e.key === "Delete" || e.key === "Backspace") {
+		e.preventDefault();
+		activeLayer.deleteSelection();
+		fin();
+		updateSelectionState();
+	} else if (e.key === "Escape") {
+		e.preventDefault();
+		activeLayer.deselect();
+		updateSelectionState();
+	} else if (
+		["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)
+	) {
+		e.preventDefault();
+		const step = isGrid ? oekaki.getDotSize() : e.shiftKey ? 10 : 1;
+		const dx =
+			e.key === "ArrowLeft" ? -step : e.key === "ArrowRight" ? step : 0;
+		const dy = e.key === "ArrowUp" ? -step : e.key === "ArrowDown" ? step : 0;
+		activeLayer.moveSelection(dx, dy);
+		fin();
+		drawSelectionHandle();
+	}
+};
+$effect(() => {
+	if (!upperLayer) return;
+	window.removeEventListener("keydown", handleKeyDown);
+	window.addEventListener("keydown", handleKeyDown);
+	return () => window.removeEventListener("keydown", handleKeyDown);
+});
+$effect(() => {
+	if (!upperLayer) return;
+	window.removeEventListener("keydown", handleSelectionKeyDown);
+	window.addEventListener("keydown", handleSelectionKeyDown);
+	return () => window.removeEventListener("keydown", handleSelectionKeyDown);
+});
 
-    /**
-     * 別の作業中
-     */
-    const notDrawing = (e: Event) => {
-        const target = e.target as HTMLElement;
-        return (
-            !getSelection()?.isCollapsed ||
-            target.tagName === "INPUT" ||
-            target.tagName === "TEXTAREA" ||
-            target.isContentEditable
-        );
-    };
+/**
+ * 別の作業中
+ */
+const notDrawing = (e: Event) => {
+	const target = e.target as HTMLElement;
+	return (
+		!getSelection()?.isCollapsed ||
+		target.tagName === "INPUT" ||
+		target.tagName === "TEXTAREA" ||
+		target.isContentEditable
+	);
+};
 
-    const importFile = async (file: File) => {
-        if (!activeLayer?.editable) return;
+const importFile = async (file: File) => {
+	if (!activeLayer?.editable) return;
 
-        const dotSize = oekaki.getDotSize();
-        const { width, height } = anime;
+	const dotSize = oekaki.getDotSize();
+	const { width, height } = anime;
 
-        const bitmap = await createImageBitmap(file);
-        const tempCanvas = document.createElement("canvas");
-        tempCanvas.width = width;
-        tempCanvas.height = height;
-        const ctx = tempCanvas.getContext("2d", {
-            willReadFrequently: true,
-        });
-        if (!ctx) return;
-        // アンチエイリアス無効化（ドット絵向け）
-        ctx.imageSmoothingEnabled = false;
+	const bitmap = await createImageBitmap(file);
+	const tempCanvas = document.createElement("canvas");
+	tempCanvas.width = width;
+	tempCanvas.height = height;
+	const ctx = tempCanvas.getContext("2d", {
+		willReadFrequently: true,
+	});
+	if (!ctx) return;
+	// アンチエイリアス無効化（ドット絵向け）
+	ctx.imageSmoothingEnabled = false;
 
-        // 中央配置
-        const srcW = bitmap.width;
-        const srcH = bitmap.height;
-        const ratio = Math.min(width / srcW, height / srcH);
-        const dstW = srcW * ratio;
-        const dstH = srcH * ratio;
-        const offsetX = (width - dstW) / 2;
-        const offsetY = (height - dstH) / 2;
-        ctx.drawImage(bitmap, offsetX, offsetY, dstW, dstH);
-        const { data } = ctx.getImageData(0, 0, width, height);
+	// 中央配置
+	const srcW = bitmap.width;
+	const srcH = bitmap.height;
+	const ratio = Math.min(width / srcW, height / srcH);
+	const dstW = srcW * ratio;
+	const dstH = srcH * ratio;
+	const offsetX = (width - dstW) / 2;
+	const offsetY = (height - dstH) / 2;
+	ctx.drawImage(bitmap, offsetX, offsetY, dstW, dstH);
+	const { data } = ctx.getImageData(0, 0, width, height);
 
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                const index = (y * width + x) * 4;
-                const [r, g, b, a] = data.subarray(index, index + 4);
-                if (!a) continue;
-                oekaki.color.value = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
-                activeLayer.drawByDot(x * dotSize, y * dotSize);
-                activeLayer.used = true;
-            }
-        }
-        activeLayer?.trace();
-        updatePointerupTimestamp();
-    };
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			const index = (y * width + x) * 4;
+			const [r, g, b, a] = data.subarray(index, index + 4);
+			if (!a) continue;
+			oekaki.color.value = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+			activeLayer.drawByDot(x * dotSize, y * dotSize);
+			activeLayer.used = true;
+		}
+	}
+	activeLayer?.trace();
+	updatePointerupTimestamp();
+};
 
-    /**
-     * PC版ショートカット
-     */
-    const handlePaste = (e: ClipboardEvent) => {
-        if (notDrawing(e)) return;
-        if (!activeLayer?.editable) return;
-        let imageItem: DataTransferItem | null = null;
-        for (const v of e.clipboardData?.items ?? []) {
-            if (v.kind === "file" && v.type.startsWith("image/")) {
-                imageItem = v;
-            }
-        }
-        if (!imageItem) return;
-        const file = imageItem.getAsFile();
-        if (file) importFile(file);
-    };
-    $effect(() => {
-        if (!upperLayer) return;
-        window.removeEventListener("paste", handlePaste);
-        window.addEventListener("paste", handlePaste);
-        return () => window.removeEventListener("paste", handlePaste);
-    });
+/**
+ * PC版ショートカット
+ */
+const handlePaste = async (e: ClipboardEvent) => {
+	if (notDrawing(e)) return;
+	if (!activeLayer?.editable) return;
+	let bitmap: ImageBitmap | null = null;
+	for (const v of e.clipboardData?.items ?? []) {
+		if (v.kind === "file" && v.type.startsWith("image/")) {
+			const file = v.getAsFile();
+			if (file) bitmap = await createImageBitmap(file);
+		}
+	}
+	if (!bitmap && internalClipboard) {
+		bitmap = await createImageBitmap(internalClipboard);
+	}
+	if (!bitmap) return;
+	activeLayer.paste(bitmap);
+	fin();
+	updateSelectionState();
+	drawSelectionHandle();
+};
+$effect(() => {
+	if (!upperLayer) return;
+	window.removeEventListener("paste", handlePaste);
+	window.addEventListener("paste", handlePaste);
+	return () => window.removeEventListener("paste", handlePaste);
+});
 
-    let isDragover = $state(false);
-    $effect(() => {
-        if (!oekakiWrapper) return;
-        oekakiWrapper.addEventListener("dragover", (event) => {
-            event.preventDefault(); // これがないと drop イベントが発火しない
-            isDragover = true;
-        });
-        oekakiWrapper.addEventListener("dragleave", () => {
-            isDragover = false;
-        });
-        oekakiWrapper.addEventListener("drop", (event) => {
-            event.preventDefault(); // デフォルト動作（例：ブラウザで画像が開く）を防ぐ
-            isDragover = false;
-            if (!event.dataTransfer) return;
-            const [file] = event.dataTransfer.files;
-            if (file.type.startsWith("image/") || file.name.endsWith(".cur"))
-                importFile(file);
-        });
-    });
+let isDragover = $state(false);
+$effect(() => {
+	if (!oekakiWrapper) return;
+	oekakiWrapper.addEventListener("dragover", (event) => {
+		event.preventDefault(); // これがないと drop イベントが発火しない
+		isDragover = true;
+	});
+	oekakiWrapper.addEventListener("dragleave", () => {
+		isDragover = false;
+	});
+	oekakiWrapper.addEventListener("drop", (event) => {
+		event.preventDefault(); // デフォルト動作（例：ブラウザで画像が開く）を防ぐ
+		isDragover = false;
+		if (!event.dataTransfer) return;
+		const [file] = event.dataTransfer.files;
+		if (file.type.startsWith("image/") || file.name.endsWith(".cur"))
+			importFile(file);
+	});
+});
 
-    const dropper = (x: number, y: number) => {
-        if (!activeLayer) return;
-        const ctx = oekaki
-            .render()
-            .getContext("2d", { willReadFrequently: true });
-        if (!ctx) return;
-        const { data } = ctx.getImageData(0, 0, width, height);
-        const index = (y * width + x) * 4;
-        const [r, g, b, a] = data.subarray(index, index + 4);
-        if (a) {
-            erasable = false;
-            const hex = `#${[r, g, b]
-                .map((v) => v.toString(16).padStart(2, "0"))
-                .join("")}`;
-            $color = hex;
-        } else {
-            erasable = true;
-        }
-    };
+const dropper = (x: number, y: number) => {
+	if (!activeLayer) return;
+	const ctx = oekaki.render().getContext("2d", { willReadFrequently: true });
+	if (!ctx) return;
+	const { data } = ctx.getImageData(0, 0, width, height);
+	const index = (y * width + x) * 4;
+	const [r, g, b, a] = data.subarray(index, index + 4);
+	if (a) {
+		erasable = false;
+		const hex = `#${[r, g, b]
+			.map((v) => v.toString(16).padStart(2, "0"))
+			.join("")}`;
+		$color = hex;
+	} else {
+		erasable = true;
+	}
+};
 
-    const fill = async (x: number, y: number) => {
-        if (!activeLayer) return;
-        const rgb = $color
-            .slice(1)
-            .match(/.{2}/g)
-            ?.map((v) => Number.parseInt(v, 16));
-        if (rgb?.length !== 3) return;
-        const [r, g, b] = rgb;
-        const data = oekaki.floodFill(
-            activeLayer.data,
-            width,
-            height,
-            x,
-            y,
-            erasable ? [0, 0, 0, 0] : [r, g, b, 255],
-        );
-        if (data) activeLayer.data = data;
-    };
+const fill = async (x: number, y: number) => {
+	if (!activeLayer) return;
+	const rgb = $color
+		.slice(1)
+		.match(/.{2}/g)
+		?.map((v) => Number.parseInt(v, 16));
+	if (rgb?.length !== 3) return;
+	const [r, g, b] = rgb;
+	const data = oekaki.floodFill(
+		activeLayer.data,
+		width,
+		height,
+		x,
+		y,
+		erasable ? [0, 0, 0, 0] : [r, g, b, 255],
+	);
+	if (data) activeLayer.data = data;
+};
 
-    let oekakiWrapper: HTMLElement | undefined = $state();
-    let activeLayer: oekaki.LayeredCanvas | undefined = $state();
-    let upperLayer: oekaki.LayeredCanvas | null = $state(null);
-    let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
+let oekakiWrapper: HTMLElement | undefined = $state();
+let activeLayer: oekaki.LayeredCanvas | undefined = $state();
+let upperLayer: oekaki.LayeredCanvas | null = $state(null);
+let lowerLayer: oekaki.LayeredCanvas | null = $state(null);
 
-    const height = isMobile
-        ? Math.floor((globalThis.innerWidth * 0.9) / 48) * 48
-        : 384; // 48と64の最小公倍数 * 2
-    let width = $state(height);
-    let initTimestamp = $state(0);
-    $effect(() => {
-        init();
-    });
-    const init = async () => {
-        if (!oekakiWrapper) return;
-        initTimestamp = performance.now();
-        const w = anime.width;
-        const h = anime.height;
-        const _w = Math.floor(height * (w / h));
-        oekaki.init(oekakiWrapper, _w, height);
-        width = _w;
+const height = isMobile
+	? Math.floor((globalThis.innerWidth * 0.9) / 48) * 48
+	: 384; // 48と64の最小公倍数 * 2
+let width = $state(height);
+let initTimestamp = $state(0);
+$effect(() => {
+	init();
+});
+const init = async () => {
+	if (!oekakiWrapper) return;
+	initTimestamp = performance.now();
+	const w = anime.width;
+	const h = anime.height;
+	const _w = Math.floor(height * (w / h));
+	oekaki.init(oekakiWrapper, _w, height);
+	width = _w;
 
-        const upper = oekaki.upperLayer.value;
-        const lower = oekaki.lowerLayer.value;
-        upper?.canvas.classList.add("upper-canvas");
-        lower?.canvas.classList.add("gimp-checkered-background");
-        upperLayer = upper;
-        lowerLayer = lower;
-        if (upper) upper.opacity = 32;
+	const upper = oekaki.upperLayer.value;
+	const lower = oekaki.lowerLayer.value;
+	upper?.canvas.classList.add("upper-canvas");
+	lower?.canvas.classList.add("gimp-checkered-background");
+	upperLayer = upper;
+	lowerLayer = lower;
+	if (upper) upper.opacity = 32;
 
-        oekaki.setDotSize(1, h);
-        document.documentElement.style.setProperty(
-            "--grid-cell-size",
-            `${oekaki.getDotSize()}px`,
-        );
+	oekaki.setDotSize(1, h);
+	document.documentElement.style.setProperty(
+		"--grid-cell-size",
+		`${oekaki.getDotSize()}px`,
+	);
 
-        activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
-    };
+	activeLayer = new oekaki.LayeredCanvas("レイヤー #1");
+};
 
-    $effect(() => {
-        if (!upperLayer) return;
-        document.addEventListener(
-            "pointermove",
-            (e) => {
-                if (!upperLayer) return;
-                const [x, y] = oekaki.getXY(e);
-                upperLayer.clear();
-                upperLayer.drawByDot(x, y);
-            },
-            { passive: true },
-        );
-    });
+$effect(() => {
+	if (!upperLayer) return;
+	document.addEventListener(
+		"pointermove",
+		(e) => {
+			if (!upperLayer) return;
+			if (choiced === tool.select.label) {
+				if (selectDragMode !== null || e.buttons !== 0) return;
+				const sel = activeLayer?.selection;
+				if (!sel) {
+					upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(mdiSelectionDrag)}') 3 21, auto`;
+					return;
+				}
+				const [x, y] = oekaki.getXY(e);
+				if (isNearSelectionHandle(sel, x, y)) {
+					upperLayer.canvas.style.cursor = "nwse-resize";
+				} else if (isInsideSelection(sel, x, y)) {
+					upperLayer.canvas.style.cursor = "move";
+				} else {
+					upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(mdiSelectionDrag)}') 3 21, auto`;
+				}
+				drawSelectionHandle();
+				return;
+			}
+			const [x, y] = oekaki.getXY(e);
+			upperLayer.clear();
+			upperLayer.drawByDot(x, y);
+		},
+		{ passive: true },
+	);
+});
 
-    // 描画イベント登録
-    $effect(() => {
-        if (!upperLayer) return;
-        let prevX: number | null = null;
-        let prevY: number | null = null;
-        oekaki.onDraw((x, y, buttons) => {
-            if (prevX === null) prevX = x;
-            if (prevY === null) prevY = y;
-            if (choiced === tool.dropper.label || (buttons & 2) !== 0) {
-                dropper(x, y);
-                dropping = true;
-            } else {
-                if (choiced === tool.translate.label) {
-                    activeLayer?.translateByDot(x - prevX, y - prevY);
-                } else {
-                    const lerps = oekaki.lerp(x, y, prevX, prevY);
-                    switch (choiced) {
-                        case tool.pen.label:
-                            for (const [x, y] of lerps) {
-                                erasable
-                                    ? activeLayer?.eraseByDot(x, y)
-                                    : activeLayer?.drawByDot(x, y);
-                            }
-                            break;
-                        case tool.eraser.label:
-                            for (const [x, y] of lerps) {
-                                activeLayer?.eraseByDot(x, y);
-                            }
-                            break;
-                    }
-                }
-            }
-            prevX = x;
-            prevY = y;
-        });
-        const fin = () => {
-            if (activeLayer?.modified()) {
-                activeLayer.trace();
-                addRecent();
-            }
-        };
-        let dropping = false;
-        oekaki.onDrawn((x, y, buttons) => {
-            prevX = null;
-            prevY = null;
-            if (!activeLayer?.editable) return;
-            if (choiced === tool.fill.label && !dropping) fill(x, y);
-            dropping = false;
-            fin();
-        });
-        oekaki.onClick((x, y, buttons) => {});
-    });
+const fin = () => {
+	if (activeLayer?.modified()) {
+		activeLayer.trace();
+		addRecent();
+	}
+};
 
-    // activeLayerが変わったときにstateを同期する
-    $effect(() => {
-        if (!activeLayer) return;
-        opacity = [activeLayer.opacity];
-        layerVisible = activeLayer.visible;
-        layerName = activeLayer.name;
-        layerNameDisabled = true;
-        layerLocked = activeLayer.locked;
-    });
+// 描画イベント登録
+$effect(() => {
+	if (!upperLayer) return;
+	let prevX: number | null = null;
+	let prevY: number | null = null;
+	oekaki.onDraw((x, y, buttons) => {
+		if (prevX === null) prevX = x;
+		if (prevY === null) prevY = y;
+		if (choiced === tool.dropper.label || (buttons & 2) !== 0) {
+			dropper(x, y);
+			dropping = true;
+		} else if (choiced === tool.select.label) {
+			if (!activeLayer?.editable) return;
+			if (selectDragMode === null) {
+				const sel = activeLayer?.selection;
+				if (sel && isNearSelectionHandle(sel, x, y)) {
+					selectDragMode = "resize";
+					selectAnchorX = sel.x;
+					selectAnchorY = sel.y;
+				} else if (sel && isInsideSelection(sel, x, y)) {
+					selectDragMode = "move";
+					selectAccDx = 0;
+					selectAccDy = 0;
+					selectSnappedDx = 0;
+					selectSnappedDy = 0;
+				} else {
+					selectDragMode = "new";
+					selectStartX = x;
+					selectStartY = y;
+				}
+			}
+			if (selectDragMode === "move") {
+				if (isGrid) {
+					const size = oekaki.getDotSize();
+					selectAccDx += x - (prevX ?? 0);
+					selectAccDy += y - (prevY ?? 0);
+					const snappedDx = Math.round(selectAccDx / size) * size;
+					const snappedDy = Math.round(selectAccDy / size) * size;
+					const dx = snappedDx - selectSnappedDx;
+					const dy = snappedDy - selectSnappedDy;
+					if (dx !== 0 || dy !== 0) {
+						activeLayer?.moveSelection(dx, dy);
+						selectSnappedDx = snappedDx;
+						selectSnappedDy = snappedDy;
+					}
+				} else {
+					activeLayer?.moveSelection(x - (prevX ?? 0), y - (prevY ?? 0));
+				}
+			} else if (selectDragMode === "resize") {
+				let w = x - selectAnchorX;
+				let h = y - selectAnchorY;
+				if (isGrid) {
+					const size = oekaki.getDotSize();
+					w = Math.round(w / size) * size;
+					h = Math.round(h / size) * size;
+					w = Math.max(size, w);
+					h = Math.max(size, h);
+				}
+				activeLayer?.resizeSelection(w, h);
+			} else {
+				activeLayer?.select(
+					selectStartX,
+					selectStartY,
+					x - selectStartX,
+					y - selectStartY,
+				);
+			}
+			drawSelectionHandle();
+		} else {
+			if (choiced === tool.translate.label) {
+				activeLayer?.translateByDot(x - prevX, y - prevY);
+			} else {
+				const lerps = oekaki.lerp(x, y, prevX, prevY);
+				switch (choiced) {
+					case tool.pen.label:
+						for (const [x, y] of lerps) {
+							erasable
+								? activeLayer?.eraseByDot(x, y)
+								: activeLayer?.drawByDot(x, y);
+						}
+						break;
+					case tool.eraser.label:
+						for (const [x, y] of lerps) {
+							activeLayer?.eraseByDot(x, y);
+						}
+						break;
+				}
+			}
+		}
+		prevX = x;
+		prevY = y;
+	});
+	let dropping = false;
+	oekaki.onDrawn((x, y, buttons) => {
+		prevX = null;
+		prevY = null;
+		if (choiced === tool.select.label && selectDragMode !== null) {
+			selectDragMode = null;
+			updateSelectionState();
+		}
+		if (!activeLayer?.editable) return;
+		if (choiced === tool.fill.label && !dropping) fill(x, y);
+		dropping = false;
+		fin();
+	});
+	oekaki.onClick((x, y, buttons) => {});
+});
 
-    let opacity = $state([100]);
-    let layerVisible = $state(true);
-    let layerName = $state("");
-    let layerNameDisabled = $state(true);
-    let layerLocked = $state(false);
-    $effect(() => {
-        if (activeLayer) activeLayer.opacity = opacity[0];
-    });
-    $effect(() => {
-        if (activeLayer) activeLayer.visible = layerVisible;
-    });
-    $effect(() => {
-        if (activeLayer) activeLayer.name = layerName;
-    });
-    $effect(() => {
-        if (activeLayer) activeLayer.locked = layerLocked;
-    });
-    $effect(() => {
-        unjStorage.color.value = $color;
-        oekaki.color.value = $color;
-    });
+// activeLayerが変わったときにstateを同期する
+$effect(() => {
+	if (!activeLayer) return;
+	opacity = [activeLayer.opacity];
+	layerVisible = activeLayer.visible;
+	layerName = activeLayer.name;
+	layerNameDisabled = true;
+	layerLocked = activeLayer.locked;
+});
 
-    let recent: string[] = $state([]);
-    const maxRecent = 32;
-    const addRecent = () => {
-        if (choiced === tool.translate.label) return;
-        const idx = recent.indexOf($color);
-        if (idx === 0) return;
-        if (idx !== -1) recent.splice(idx, 1);
-        recent.unshift($color);
-        if (recent.length > maxRecent) recent.pop();
-        recent = [...recent]; // 新しい配列を代入する（Svelte のリアクティブ性を保つため）
-    };
+let opacity = $state([100]);
+let layerVisible = $state(true);
+let layerName = $state("");
+let layerNameDisabled = $state(true);
+let layerLocked = $state(false);
+$effect(() => {
+	if (activeLayer) activeLayer.opacity = opacity[0];
+});
+$effect(() => {
+	if (activeLayer) activeLayer.visible = layerVisible;
+});
+$effect(() => {
+	if (activeLayer) activeLayer.name = layerName;
+});
+$effect(() => {
+	if (activeLayer) activeLayer.locked = layerLocked;
+});
+$effect(() => {
+	unjStorage.color.value = $color;
+	oekaki.color.value = $color;
+});
 
-    const tool = {
-        // 描画系
-        pen: { label: "ペン", mdi: mdiPen, icon: IconPen },
-        eraser: { label: "消しゴム", mdi: mdiEraser, icon: IconEraser },
-        dropper: {
-            label: "カラーピッカー",
-            mdi: mdiEyedropper,
-            icon: IconPipette,
-        },
-        fill: {
-            label: "塗りつぶし",
-            mdi: mdiFormatColorFill,
-            icon: IconPaintBucket,
-        },
-        translate: {
-            label: "ハンドツール",
-            mdi: mdiHandBackRight,
-            icon: IconMove,
-        },
-        // 切り替え系
-        erasable: {
-            label: "常に消しゴム",
-            mdi: mdiEraserVariant,
-            icon: IconEraser,
-        },
-        flip: {
-            label: "左右反転",
-            mdi: mdiFlipHorizontal,
-            icon: IconFlipHorizontal,
-        },
-        grid: { label: "グリッド線", mdi: mdiGrid, icon: IconGrid },
-        // アクション系
-        undo: { label: "戻る", mdi: mdiUndo, icon: IconUndo },
-        redo: { label: "進む", mdi: mdiRedo, icon: IconRedo },
-        save: {
-            label: "画像を保存",
-            mdi: mdiContentSaveOutline,
-            icon: IconSave,
-        },
-        clear: { label: "全消し", mdi: mdiTrashCanOutline, icon: IconTrash2 },
-    } as const;
+let recent: string[] = $state([]);
+const maxRecent = 32;
+const addRecent = () => {
+	if (choiced === tool.translate.label || choiced === tool.select.label) return;
+	const idx = recent.indexOf($color);
+	if (idx === 0) return;
+	if (idx !== -1) recent.splice(idx, 1);
+	recent.unshift($color);
+	if (recent.length > maxRecent) recent.pop();
+	recent = [...recent]; // 新しい配列を代入する（Svelte のリアクティブ性を保つため）
+};
 
-    let choices = [
-        tool.pen,
-        tool.eraser,
-        tool.dropper,
-        tool.fill,
-        tool.translate,
-    ];
-    let choiced: string = $state(unjStorage.tool.value ?? tool.pen.label);
+const tool = {
+	// 描画系
+	pen: { label: "ペン", mdi: mdiPen, icon: IconPen },
+	eraser: { label: "消しゴム", mdi: mdiEraser, icon: IconEraser },
+	dropper: {
+		label: "カラーピッカー",
+		mdi: mdiEyedropper,
+		icon: IconPipette,
+	},
+	fill: {
+		label: "塗りつぶし",
+		mdi: mdiFormatColorFill,
+		icon: IconPaintBucket,
+	},
+	translate: {
+		label: "ハンドツール",
+		mdi: mdiHandBackRight,
+		icon: IconMove,
+	},
+	select: {
+		label: "範囲選択",
+		mdi: mdiSelectionDrag,
+		icon: IconBoxSelect,
+	},
+	// 切り替え系
+	erasable: {
+		label: "常に消しゴム",
+		mdi: mdiEraserVariant,
+		icon: IconEraser,
+	},
+	flip: {
+		label: "左右反転",
+		mdi: mdiFlipHorizontal,
+		icon: IconFlipHorizontal,
+	},
+	grid: { label: "グリッド線", mdi: mdiGrid, icon: IconGrid },
+	// アクション系
+	undo: { label: "戻る", mdi: mdiUndo, icon: IconUndo },
+	redo: { label: "進む", mdi: mdiRedo, icon: IconRedo },
+	save: {
+		label: "画像を保存",
+		mdi: mdiContentSaveOutline,
+		icon: IconSave,
+	},
+	clear: { label: "全消し", mdi: mdiTrashCanOutline, icon: IconTrash2 },
+} as const;
 
-    const mdi2DataUrl = (mdi: string) => {
-        const style = `fill="${isDark ? "white" : "black"}" stroke="${isDark ? "black" : "white"}" stroke-width="1"`;
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" ${style}/></svg>`;
-        const base64 = btoa(svg);
-        return `data:image/svg+xml;base64,${base64}`;
-    };
+let choices = [
+	tool.pen,
+	tool.eraser,
+	tool.dropper,
+	tool.fill,
+	tool.translate,
+	tool.select,
+];
+let choiced: string = $state(unjStorage.tool.value ?? tool.pen.label);
 
-    $effect(() => {
-        unjStorage.tool.value = choiced;
-        if (upperLayer) {
-            const xy = choiced === tool.fill.label ? "21 19" : "3 21";
-            const mdi = choices.find((v) => v.label === choiced)?.mdi;
-            if (!mdi) return;
-            upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(mdi)}') ${xy}, auto`;
-        }
-    });
+const mdi2DataUrl = (mdi: string) => {
+	const style = `fill="${isDark ? "white" : "black"}" stroke="${isDark ? "black" : "white"}" stroke-width="1"`;
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="${mdi}" ${style}/></svg>`;
+	const base64 = btoa(svg);
+	return `data:image/svg+xml;base64,${base64}`;
+};
 
-    let erasable = $state(false);
-    let flipped = $state(false);
-    $effect(() => {
-        oekaki.flipped.value = flipped;
-    });
-    let isGrid = $state(true);
-    let isDark = $state(false);
-    $effect(() => {
-        if (isDark) {
-            document.body.classList.add("hg-paint-gimp-dark");
-        } else {
-            document.body.classList.remove("hg-paint-gimp-dark");
-        }
-    });
+$effect(() => {
+	unjStorage.tool.value = choiced;
+	if (upperLayer) {
+		const xy = choiced === tool.fill.label ? "21 19" : "3 21";
+		const mdi = choices.find((v) => v.label === choiced)?.mdi;
+		if (!mdi) return;
+		upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(mdi)}') ${xy}, auto`;
+	}
+});
 
-    let actions = [tool.undo, tool.redo, tool.save, tool.clear];
-    const doAction = (action: string) => {
-        switch (action) {
-            case tool.undo.label:
-                activeLayer?.undo();
-                updatePointerupTimestamp();
-                break;
-            case tool.redo.label:
-                activeLayer?.redo();
-                updatePointerupTimestamp();
-                break;
-            case tool.save.label:
-                {
-                    const dataURL = oekaki.render().toDataURL("image/png");
-                    const link = document.createElement("a");
-                    link.href = dataURL;
-                    link.download = "drawing.png";
-                    link.click();
-                }
-                break;
-            case tool.clear.label:
-                activeLayer?.clear();
-                activeLayer?.trace();
-                break;
-        }
-    };
+let erasable = $state(false);
+let flipped = $state(false);
+$effect(() => {
+	oekaki.flipped.value = flipped;
+});
+let isGrid = $state(true);
+let isDark = $state(false);
+$effect(() => {
+	if (isDark) {
+		document.body.classList.add("hg-paint-gimp-dark");
+	} else {
+		document.body.classList.remove("hg-paint-gimp-dark");
+	}
+});
+
+let selectDragMode: "new" | "move" | "resize" | null = $state(null);
+let selectStartX = 0;
+let selectStartY = 0;
+let selectAnchorX = 0;
+let selectAnchorY = 0;
+let selectAccDx = 0;
+let selectAccDy = 0;
+let selectSnappedDx = 0;
+let selectSnappedDy = 0;
+let internalClipboard: HTMLCanvasElement | null = null;
+let hasSelection = $state(false);
+const updateSelectionState = () => {
+	hasSelection = !!activeLayer?.selection;
+};
+
+const SELECTION_HANDLE_SIZE = 8;
+const SELECTION_HANDLE_HIT = 10;
+const drawSelectionHandle = () => {
+	const sel = activeLayer?.selection;
+	const ctx = upperLayer?.ctx;
+	if (!sel || !ctx) return;
+	const hx = sel.x + sel.w;
+	const hy = sel.y + sel.h;
+	ctx.save();
+	ctx.fillStyle = "#ffffff";
+	ctx.strokeStyle = "#000000";
+	ctx.lineWidth = 1;
+	ctx.fillRect(
+		hx - SELECTION_HANDLE_SIZE / 2,
+		hy - SELECTION_HANDLE_SIZE / 2,
+		SELECTION_HANDLE_SIZE,
+		SELECTION_HANDLE_SIZE,
+	);
+	ctx.strokeRect(
+		hx - SELECTION_HANDLE_SIZE / 2,
+		hy - SELECTION_HANDLE_SIZE / 2,
+		SELECTION_HANDLE_SIZE,
+		SELECTION_HANDLE_SIZE,
+	);
+	ctx.restore();
+};
+const isNearSelectionHandle = (
+	sel: { x: number; y: number; w: number; h: number },
+	x: number,
+	y: number,
+) => {
+	const hx = sel.x + sel.w;
+	const hy = sel.y + sel.h;
+	return (
+		Math.abs(x - hx) <= SELECTION_HANDLE_HIT &&
+		Math.abs(y - hy) <= SELECTION_HANDLE_HIT
+	);
+};
+const isInsideSelection = (
+	sel: { x: number; y: number; w: number; h: number },
+	x: number,
+	y: number,
+) => x >= sel.x && x <= sel.x + sel.w && y >= sel.y && y <= sel.y + sel.h;
+
+let actions = [tool.undo, tool.redo, tool.save, tool.clear];
+const doAction = (action: string) => {
+	switch (action) {
+		case tool.undo.label:
+			activeLayer?.undo();
+			updatePointerupTimestamp();
+			break;
+		case tool.redo.label:
+			activeLayer?.redo();
+			updatePointerupTimestamp();
+			break;
+		case tool.save.label:
+			{
+				const dataURL = oekaki.render().toDataURL("image/png");
+				const link = document.createElement("a");
+				link.href = dataURL;
+				link.download = "drawing.png";
+				link.click();
+			}
+			break;
+		case tool.clear.label:
+			activeLayer?.clear();
+			activeLayer?.trace();
+			break;
+	}
+};
 </script>
 
 <div class="grid h-screen grid-rows-[auto_1fr_auto]">
@@ -817,6 +1024,33 @@
                 </button>
             {/each}
         </nav>
+        {#if hasSelection && choiced === tool.select.label}
+            <nav class="btn-group preset-outlined-surface-200-800 flex gap-2">
+                <button
+                    type="button"
+                    class="btn-icond btn-lg"
+                    title="選択範囲をコピー"
+                    onclick={() => {
+                        const copy = activeLayer?.copySelection();
+                        if (copy) internalClipboard = copy;
+                    }}
+                >
+                    <IconCopy size={18} />
+                </button>
+                <button
+                    type="button"
+                    class="btn-icond btn-lg"
+                    title="選択範囲を削除"
+                    onclick={() => {
+                        activeLayer?.deleteSelection();
+                        fin();
+                        updateSelectionState();
+                    }}
+                >
+                    <IconScissors size={18} />
+                </button>
+            </nav>
+        {/if}
 
         <ManualPart />
         <ResizePart {init} bind:activeLayer bind:initTimestamp />
