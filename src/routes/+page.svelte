@@ -192,7 +192,11 @@ const handleSelectionKeyDown = (e: KeyboardEvent) => {
 		const dx =
 			e.key === "ArrowLeft" ? -step : e.key === "ArrowRight" ? step : 0;
 		const dy = e.key === "ArrowUp" ? -step : e.key === "ArrowDown" ? step : 0;
-		activeLayer.moveSelection(dx, dy);
+		if (isGrid) {
+			activeLayer.moveSelectionByDot(dx, dy);
+		} else {
+			activeLayer.moveSelection(dx, dy);
+		}
 		fin();
 		drawSelectionHandle();
 	}
@@ -450,10 +454,6 @@ $effect(() => {
 					selectAnchorY = sel.y;
 				} else if (sel && isInsideSelection(sel, x, y)) {
 					selectDragMode = "move";
-					selectAccDx = 0;
-					selectAccDy = 0;
-					selectSnappedDx = 0;
-					selectSnappedDy = 0;
 				} else {
 					selectDragMode = "new";
 					selectStartX = x;
@@ -462,39 +462,34 @@ $effect(() => {
 			}
 			if (selectDragMode === "move") {
 				if (isGrid) {
-					const size = oekaki.getDotSize();
-					selectAccDx += x - (prevX ?? 0);
-					selectAccDy += y - (prevY ?? 0);
-					const snappedDx = Math.round(selectAccDx / size) * size;
-					const snappedDy = Math.round(selectAccDy / size) * size;
-					const dx = snappedDx - selectSnappedDx;
-					const dy = snappedDy - selectSnappedDy;
-					if (dx !== 0 || dy !== 0) {
-						activeLayer?.moveSelection(dx, dy);
-						selectSnappedDx = snappedDx;
-						selectSnappedDy = snappedDy;
-					}
+					activeLayer?.moveSelectionByDot(x - (prevX ?? 0), y - (prevY ?? 0));
 				} else {
 					activeLayer?.moveSelection(x - (prevX ?? 0), y - (prevY ?? 0));
 				}
 			} else if (selectDragMode === "resize") {
-				let w = x - selectAnchorX;
-				let h = y - selectAnchorY;
+				const w = x - selectAnchorX;
+				const h = y - selectAnchorY;
 				if (isGrid) {
-					const size = oekaki.getDotSize();
-					w = Math.round(w / size) * size;
-					h = Math.round(h / size) * size;
-					w = Math.max(size, w);
-					h = Math.max(size, h);
+					activeLayer?.resizeSelectionByDot(w, h);
+				} else {
+					activeLayer?.resizeSelection(w, h);
 				}
-				activeLayer?.resizeSelection(w, h);
 			} else {
-				activeLayer?.select(
-					selectStartX,
-					selectStartY,
-					x - selectStartX,
-					y - selectStartY,
-				);
+				if (isGrid) {
+					activeLayer?.selectByDot(
+						selectStartX,
+						selectStartY,
+						x - selectStartX,
+						y - selectStartY,
+					);
+				} else {
+					activeLayer?.select(
+						selectStartX,
+						selectStartY,
+						x - selectStartX,
+						y - selectStartY,
+					);
+				}
 			}
 			drawSelectionHandle();
 		} else {
@@ -675,10 +670,6 @@ let selectStartX = 0;
 let selectStartY = 0;
 let selectAnchorX = 0;
 let selectAnchorY = 0;
-let selectAccDx = 0;
-let selectAccDy = 0;
-let selectSnappedDx = 0;
-let selectSnappedDy = 0;
 let internalClipboard: HTMLCanvasElement | null = null;
 let hasSelection = $state(false);
 const updateSelectionState = () => {
