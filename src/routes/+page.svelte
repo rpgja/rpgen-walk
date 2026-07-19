@@ -30,11 +30,14 @@
 	import IconEraser from "@lucide/svelte/icons/eraser";
 	import IconFlipHorizontal from "@lucide/svelte/icons/flip-horizontal-2";
 	import IconGrid from "@lucide/svelte/icons/grid";
+	import IconLasso from "@lucide/svelte/icons/lasso";
 	import IconMove from "@lucide/svelte/icons/move";
 	import IconPaintBucket from "@lucide/svelte/icons/paint-bucket";
 	import IconPen from "@lucide/svelte/icons/pen";
 	import IconPipette from "@lucide/svelte/icons/pipette";
 	import IconRedo from "@lucide/svelte/icons/redo";
+	import IconRotateCcw from "@lucide/svelte/icons/rotate-ccw";
+	import IconRotateCw from "@lucide/svelte/icons/rotate-cw";
 	import IconSave from "@lucide/svelte/icons/save";
 	import IconScissors from "@lucide/svelte/icons/scissors";
 	import IconTrash2 from "@lucide/svelte/icons/trash-2";
@@ -50,9 +53,12 @@
 		mdiHandBackRight,
 		mdiPen,
 		mdiRedo,
+		mdiRotateLeft,
+		mdiRotateRight,
 		mdiSelectionDrag,
 		mdiTrashCanOutline,
 		mdiUndo,
+		mdiVectorPolygon,
 	} from "@mdi/js";
 	import * as oekaki from "@onjmin/oekaki";
 	import { Slider } from "@skeletonlabs/skeleton-svelte";
@@ -107,6 +113,10 @@
 			case "6":
 				e.preventDefault();
 				choiced = tool.select.label;
+				break;
+			case "7":
+				e.preventDefault();
+				choiced = tool.lasso.label;
 				break;
 			case "e":
 				e.preventDefault();
@@ -198,6 +208,17 @@
 			const dy =
 				e.key === "ArrowUp" ? -step : e.key === "ArrowDown" ? step : 0;
 			activeLayer.moveSelectionByDot(dx, dy);
+			fin();
+			drawSelectionHandle();
+		} else if (e.key === "[" || e.key === "]") {
+			e.preventDefault();
+			const rotateStep = isGrid ? 90 : 15;
+			const deltaAngle = e.key === "[" ? -rotateStep : rotateStep;
+			if (isGrid) {
+				activeLayer.rotateSelectionByDot(deltaAngle);
+			} else {
+				activeLayer.rotateSelection(deltaAngle);
+			}
 			fin();
 			drawSelectionHandle();
 		}
@@ -404,20 +425,38 @@
 			"pointermove",
 			(e) => {
 				if (!upperLayer) return;
-				if (choiced === tool.select.label) {
-					if (selectDragMode !== null || e.buttons !== 0) return;
+				if (
+					choiced === tool.select.label ||
+					choiced === tool.lasso.label
+				) {
+					if (
+						choiced === tool.lasso.label ||
+						selectDragMode !== null ||
+						e.buttons !== 0
+					) {
+						if (
+							choiced === tool.lasso.label &&
+							lassoPoints.length > 0
+						) {
+							upperLayer.clear();
+							drawLassoPreview();
+						}
+						return;
+					}
 					const sel = activeLayer?.selection;
 					if (!sel) {
-						upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(mdiSelectionDrag)}') 3 21, auto`;
+						upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced === tool.select.label ? mdiSelectionDrag : mdiVectorPolygon)}') 3 21, auto`;
 						return;
 					}
 					const [x, y] = oekaki.getXY(e);
-					if (isNearSelectionHandle(sel, x, y)) {
+					if (isNearRotateHandle(sel, x, y)) {
+						upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(mdiRotateRight)}') 12 12, auto`;
+					} else if (isNearSelectionHandle(sel, x, y)) {
 						upperLayer.canvas.style.cursor = "nwse-resize";
 					} else if (isInsideSelection(sel, x, y)) {
 						upperLayer.canvas.style.cursor = "move";
 					} else {
-						upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(mdiSelectionDrag)}') 3 21, auto`;
+						upperLayer.canvas.style.cursor = `url('${mdi2DataUrl(choiced === tool.select.label ? mdiSelectionDrag : mdiVectorPolygon)}') 3 21, auto`;
 					}
 					drawSelectionHandle();
 					return;
@@ -448,38 +487,71 @@
 			if (choiced === tool.dropper.label || (buttons & 2) !== 0) {
 				dropper(x, y);
 				dropping = true;
-			} else if (choiced === tool.select.label) {
-				if (!activeLayer?.editable) return;
-				if (selectDragMode === null) {
-					const sel = activeLayer?.selection;
-					if (sel && isNearSelectionHandle(sel, x, y)) {
-						selectDragMode = "resize";
-						selectAnchorX = sel.x;
-						selectAnchorY = sel.y;
-					} else if (sel && isInsideSelection(sel, x, y)) {
-						selectDragMode = "move";
-					} else {
-						selectDragMode = "new";
-						selectStartX = x;
-						selectStartY = y;
-					}
-				}
-				if (selectDragMode === "move") {
-					activeLayer?.moveSelectionByDot(
-						x - (prevX ?? 0),
-						y - (prevY ?? 0),
-					);
-				} else if (selectDragMode === "resize") {
-					const w = x - selectAnchorX;
-					const h = y - selectAnchorY;
-					activeLayer?.resizeSelectionByDot(w, h);
+			} else if (
+				choiced === tool.select.label ||
+				choiced === tool.lasso.label
+			) {
+				if (choiced === tool.lasso.label) {
+					if (!activeLayer?.editable) return;
+					lassoPoints.push([x, y]);
+					upperLayer?.clear();
+					drawLassoPreview();
 				} else {
-					activeLayer?.selectByDot(
-						selectStartX,
-						selectStartY,
-						x - selectStartX,
-						y - selectStartY,
-					);
+					if (!activeLayer?.editable) return;
+					if (selectDragMode === null) {
+						const sel = activeLayer?.selection;
+						if (sel && isNearRotateHandle(sel, x, y)) {
+							selectDragMode = "rotate";
+							const cx = sel.x + sel.w / 2;
+							const cy = sel.y + sel.h / 2;
+							selectRotateLastAngle =
+								(Math.atan2(y - cy, x - cx) * 180) / Math.PI;
+						} else if (sel && isNearSelectionHandle(sel, x, y)) {
+							selectDragMode = "resize";
+							selectAnchorX = sel.x;
+							selectAnchorY = sel.y;
+						} else if (sel && isInsideSelection(sel, x, y)) {
+							selectDragMode = "move";
+						} else {
+							selectDragMode = "new";
+							selectStartX = x;
+							selectStartY = y;
+						}
+					}
+					if (selectDragMode === "rotate") {
+						const sel = activeLayer?.selection;
+						if (sel) {
+							const cx = sel.x + sel.w / 2;
+							const cy = sel.y + sel.h / 2;
+							const angle =
+								(Math.atan2(y - cy, x - cx) * 180) / Math.PI;
+							let deltaAngle = angle - selectRotateLastAngle;
+							if (deltaAngle > 180) deltaAngle -= 360;
+							if (deltaAngle < -180) deltaAngle += 360;
+							if (isGrid) {
+								activeLayer?.rotateSelectionByDot(deltaAngle);
+							} else {
+								activeLayer?.rotateSelection(deltaAngle);
+							}
+							selectRotateLastAngle = angle;
+						}
+					} else if (selectDragMode === "move") {
+						activeLayer?.moveSelectionByDot(
+							x - (prevX ?? 0),
+							y - (prevY ?? 0),
+						);
+					} else if (selectDragMode === "resize") {
+						const w = x - selectAnchorX;
+						const h = y - selectAnchorY;
+						activeLayer?.resizeSelectionByDot(w, h);
+					} else {
+						activeLayer?.selectByDot(
+							selectStartX,
+							selectStartY,
+							x - selectStartX,
+							y - selectStartY,
+						);
+					}
 				}
 				drawSelectionHandle();
 			} else {
@@ -513,6 +585,20 @@
 			if (choiced === tool.select.label && selectDragMode !== null) {
 				selectDragMode = null;
 				updateSelectionState();
+			}
+			if (choiced === tool.lasso.label) {
+				if (activeLayer?.editable && lassoPoints.length >= 3) {
+					if (isGrid) {
+						activeLayer.selectFreehandByDot(lassoPoints);
+					} else {
+						activeLayer.selectFreehand(lassoPoints);
+					}
+					choiced = tool.select.label;
+					updateSelectionState();
+					drawSelectionHandle();
+				}
+				lassoPoints = [];
+				upperLayer?.clear();
 			}
 			if (!activeLayer?.editable) return;
 			if (choiced === tool.fill.label && !dropping) fill(x, y);
@@ -557,7 +643,11 @@
 	let recent: string[] = $state([]);
 	const maxRecent = 32;
 	const addRecent = () => {
-		if (choiced === tool.translate.label || choiced === tool.select.label)
+		if (
+			choiced === tool.translate.label ||
+			choiced === tool.select.label ||
+			choiced === tool.lasso.label
+		)
 			return;
 		const idx = recent.indexOf($color);
 		if (idx === 0) return;
@@ -591,6 +681,11 @@
 			mdi: mdiSelectionDrag,
 			icon: IconBoxSelect,
 		},
+		lasso: {
+			label: "フリーハンド選択",
+			mdi: mdiVectorPolygon,
+			icon: IconLasso,
+		},
 		// 切り替え系
 		erasable: {
 			label: "常に消しゴム",
@@ -621,6 +716,7 @@
 		tool.fill,
 		tool.translate,
 		tool.select,
+		tool.lasso,
 	];
 	let choiced: string = $state(unjStorage.tool.value ?? tool.pen.label);
 
@@ -656,11 +752,14 @@
 		}
 	});
 
-	let selectDragMode: "new" | "move" | "resize" | null = $state(null);
+	let selectDragMode: "new" | "move" | "resize" | "rotate" | null =
+		$state(null);
 	let selectStartX = 0;
 	let selectStartY = 0;
 	let selectAnchorX = 0;
 	let selectAnchorY = 0;
+	let selectRotateLastAngle = 0;
+	let lassoPoints: [number, number][] = [];
 	let internalClipboard: HTMLCanvasElement | null = null;
 	let hasSelection = $state(false);
 	const updateSelectionState = () => {
@@ -669,6 +768,9 @@
 
 	const SELECTION_HANDLE_SIZE = 8;
 	const SELECTION_HANDLE_HIT = 10;
+	const ROTATION_HANDLE_OFFSET = 24;
+	const ROTATION_HANDLE_RADIUS = 5;
+	const ROTATION_HANDLE_HIT = 10;
 	const drawSelectionHandle = () => {
 		const sel = activeLayer?.selection;
 		const ctx = upperLayer?.ctx;
@@ -691,6 +793,16 @@
 			SELECTION_HANDLE_SIZE,
 			SELECTION_HANDLE_SIZE,
 		);
+		const rx = sel.x + sel.w / 2;
+		const ry = sel.y - ROTATION_HANDLE_OFFSET;
+		ctx.beginPath();
+		ctx.moveTo(sel.x + sel.w / 2, sel.y);
+		ctx.lineTo(rx, ry);
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.arc(rx, ry, ROTATION_HANDLE_RADIUS, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.stroke();
 		ctx.restore();
 	};
 	const isNearSelectionHandle = (
@@ -705,11 +817,43 @@
 			Math.abs(y - hy) <= SELECTION_HANDLE_HIT
 		);
 	};
+	const isNearRotateHandle = (
+		sel: { x: number; y: number; w: number; h: number },
+		x: number,
+		y: number,
+	) => {
+		const rx = sel.x + sel.w / 2;
+		const ry = sel.y - ROTATION_HANDLE_OFFSET;
+		return (
+			Math.abs(x - rx) <= ROTATION_HANDLE_HIT &&
+			Math.abs(y - ry) <= ROTATION_HANDLE_HIT
+		);
+	};
 	const isInsideSelection = (
 		sel: { x: number; y: number; w: number; h: number },
 		x: number,
 		y: number,
 	) => x >= sel.x && x <= sel.x + sel.w && y >= sel.y && y <= sel.y + sel.h;
+
+	const drawLassoPreview = () => {
+		if (lassoPoints.length < 2) return;
+		const ctx = upperLayer?.ctx;
+		if (!ctx) return;
+		ctx.save();
+		ctx.setLineDash([4, 4]);
+		ctx.strokeStyle = "#ffffff";
+		ctx.lineWidth = 1;
+		ctx.beginPath();
+		ctx.moveTo(lassoPoints[0][0], lassoPoints[0][1]);
+		for (let i = 1; i < lassoPoints.length; i++) {
+			ctx.lineTo(lassoPoints[i][0], lassoPoints[i][1]);
+		}
+		ctx.stroke();
+		ctx.strokeStyle = "#000000";
+		ctx.lineDashOffset = 4;
+		ctx.stroke();
+		ctx.restore();
+	};
 
 	let actions = [tool.undo, tool.redo, tool.save, tool.clear];
 	const doAction = (action: string) => {
@@ -1006,7 +1150,7 @@
 				</button>
 			{/each}
 		</nav>
-		{#if hasSelection && choiced === tool.select.label}
+		{#if hasSelection && (choiced === tool.select.label || choiced === tool.lasso.label)}
 			<nav class="btn-group preset-outlined-surface-200-800 flex gap-2">
 				<button
 					type="button"
@@ -1030,6 +1174,38 @@
 					}}
 				>
 					<IconScissors size={18} />
+				</button>
+				<button
+					type="button"
+					class="btn-icond btn-lg"
+					title="左に回転"
+					onclick={() => {
+						if (isGrid) {
+							activeLayer?.rotateSelectionByDot(-90);
+						} else {
+							activeLayer?.rotateSelection(-15);
+						}
+						fin();
+						drawSelectionHandle();
+					}}
+				>
+					<IconRotateCcw size={18} />
+				</button>
+				<button
+					type="button"
+					class="btn-icond btn-lg"
+					title="右に回転"
+					onclick={() => {
+						if (isGrid) {
+							activeLayer?.rotateSelectionByDot(90);
+						} else {
+							activeLayer?.rotateSelection(15);
+						}
+						fin();
+						drawSelectionHandle();
+					}}
+				>
+					<IconRotateCw size={18} />
 				</button>
 			</nav>
 		{/if}
