@@ -12,6 +12,7 @@
 	import PreviewPart from "$lib/components/PreviewPart.svelte";
 	import ResizePart from "$lib/components/ResizePart.svelte";
 	import SharePart from "$lib/components/SharePart.svelte";
+	import { copyToClipboard, readPasteImage } from "$lib/oekaki-clipboard";
 	import { isOnionSkin } from "$lib/onion-skin";
 	import { color } from "$lib/store";
 	import * as unjStorage from "$lib/unj-storage.js";
@@ -150,20 +151,12 @@
 				e.preventDefault();
 				doAction(tool.save.label);
 				break;
-			case "c": // クリップボードにコピー
+			case "c": // 選択範囲をクリップボードにコピー（選択が無ければ何もしない）
 				{
+					const copy = activeLayer?.copySelection();
+					if (!copy) break;
 					e.preventDefault();
-					if (activeLayer?.selection) {
-						const copy = activeLayer.copySelection();
-						if (copy) internalClipboard = copy;
-						break;
-					}
-					const blob = await new Promise<Blob | null>((resolve) =>
-						oekaki.render().toBlob(resolve),
-					);
-					if (!blob) return;
-					const item = new ClipboardItem({ "image/png": blob });
-					await navigator.clipboard.write([item]);
+					copyToClipboard(copy);
 				}
 				break;
 			case "x": // 選択範囲の切り取り
@@ -171,7 +164,7 @@
 					if (!activeLayer?.editable || !activeLayer.selection) break;
 					e.preventDefault();
 					const copy = activeLayer.copySelection();
-					if (copy) internalClipboard = copy;
+					if (copy) copyToClipboard(copy);
 					activeLayer.deleteSelection();
 					fin();
 					updateSelectionState();
@@ -298,16 +291,7 @@
 	const handlePaste = async (e: ClipboardEvent) => {
 		if (notDrawing(e)) return;
 		if (!activeLayer?.editable) return;
-		let bitmap: ImageBitmap | null = null;
-		for (const v of e.clipboardData?.items ?? []) {
-			if (v.kind === "file" && v.type.startsWith("image/")) {
-				const file = v.getAsFile();
-				if (file) bitmap = await createImageBitmap(file);
-			}
-		}
-		if (!bitmap && internalClipboard) {
-			bitmap = await createImageBitmap(internalClipboard);
-		}
+		const bitmap = await readPasteImage(e, true);
 		if (!bitmap) return;
 		activeLayer.paste(bitmap);
 		fin();
@@ -760,7 +744,6 @@
 	let selectAnchorY = 0;
 	let selectRotateLastAngle = 0;
 	let lassoPoints: [number, number][] = [];
-	let internalClipboard: HTMLCanvasElement | null = null;
 	let hasSelection = $state(false);
 	const updateSelectionState = () => {
 		hasSelection = !!activeLayer?.selection;
@@ -1158,7 +1141,7 @@
 					title="選択範囲をコピー"
 					onclick={() => {
 						const copy = activeLayer?.copySelection();
-						if (copy) internalClipboard = copy;
+						if (copy) copyToClipboard(copy);
 					}}
 				>
 					<IconCopy size={18} />
