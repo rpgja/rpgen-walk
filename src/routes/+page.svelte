@@ -151,6 +151,17 @@
 				e.preventDefault();
 				doAction(tool.save.label);
 				break;
+			case "a": // キャンバス全体を選択（全選択→コピー→貼り付けの入口）
+				{
+					if (!activeLayer?.editable) break;
+					e.preventDefault();
+					choiced = tool.select.label;
+					const { width, height } = activeLayer.canvas;
+					activeLayer.selectByDot(0, 0, width, height);
+					updateSelectionState();
+					drawSelectionHandle();
+				}
+				break;
 			case "c": // 選択範囲をクリップボードにコピー（選択が無ければ何もしない）
 				{
 					const copy = activeLayer?.copySelection();
