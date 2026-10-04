@@ -8,7 +8,11 @@
 		Trash2Icon,
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
-	import { syncAddLayer, syncLayerProps } from "$lib/sync-edit";
+	import {
+		syncAddLayer,
+		syncLayerProps,
+		syncMoveLayer,
+	} from "$lib/sync-edit";
 
 	let { activeLayer = $bindable(undefined), pointerupTimestamp } = $props();
 
@@ -33,6 +37,7 @@
 	const moveLayerUp = (layer: oekaki.LayeredCanvas) => {
 		const { above } = layer;
 		if (above) {
+			syncMoveLayer(layer, 1);
 			layer.swap(above.index);
 			layers = oekaki.getLayers();
 		}
@@ -41,6 +46,7 @@
 	const moveLayerDown = (layer: oekaki.LayeredCanvas) => {
 		const { below } = layer;
 		if (below) {
+			syncMoveLayer(layer, -1);
 			layer.swap(below.index);
 			layers = oekaki.getLayers();
 		}

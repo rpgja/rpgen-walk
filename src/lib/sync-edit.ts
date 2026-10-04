@@ -151,3 +151,36 @@ export const syncLayerProps = (
 	}
 	oekaki.setLayers(current);
 };
+
+/**
+ * 一括適用先のコマでも、同じ重ね順のレイヤーを1つ上（1）か下（-1）へ入れ替える
+ *
+ * 編集中のコマで入れ替える前に呼ぶこと。
+ * そのコマに同じ重ね順のレイヤーが無い、または端で動かせないときは何もしない
+ */
+export const syncMoveLayer = (
+	layer: oekaki.LayeredCanvas | undefined,
+	dir: 1 | -1,
+) => {
+	if (!layer) return;
+	const targets = syncTargets(get(activeIndex));
+	if (!targets.length) return;
+	const current = oekaki.getLayers();
+	const order = current.indexOf(layer);
+	if (order === -1) return;
+	for (const t of targets) {
+		const layers = anime.layersByI.get(t);
+		if (!layers || order >= layers.length) continue;
+		oekaki.setLayers([...layers]);
+		const target = layers[order];
+		const that = dir === 1 ? target.above : target.below;
+		if (!that) continue;
+		target.swap(that.index);
+		anime.layersByI.set(t, oekaki.getLayers());
+
+		const canvas = oekaki.render();
+		anime.canvasByI.set(t, canvas);
+		anime.dataURLByI.set(t, canvas.toDataURL("image/png"));
+	}
+	oekaki.setLayers(current);
+};
