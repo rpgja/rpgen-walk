@@ -22,6 +22,10 @@
 	import {
 		isSyncFrame,
 		isSyncWay,
+		flushSelectionSync,
+		flushTranslateSync,
+		hasPendingSelectionMove,
+		markDragStart,
 		resetSyncBase,
 		syncEdit,
 		syncLayerProps,
@@ -191,7 +195,7 @@
 					const copy = activeLayer.copySelection();
 					if (copy) copyToClipboard(copy);
 					activeLayer.deleteSelection();
-					fin();
+					fin(false);
 					updateSelectionState();
 				}
 				break;
@@ -206,12 +210,14 @@
 		if (e.key === "Delete" || e.key === "Backspace") {
 			e.preventDefault();
 			activeLayer.deleteSelection();
-			fin();
+			fin(false);
 			updateSelectionState();
 		} else if (e.key === "Escape") {
 			e.preventDefault();
 			activeLayer.deselect();
 			updateSelectionState();
+			// 解除で一括適用先に再生されるので、サムネイルを描き直す
+			updatePointerupTimestamp();
 		} else if (
 			["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)
 		) {
@@ -226,7 +232,7 @@
 			const dy =
 				e.key === "ArrowUp" ? -step : e.key === "ArrowDown" ? step : 0;
 			activeLayer.moveSelectionByDot(dx, dy);
-			fin();
+			fin(false);
 			drawSelectionHandle();
 		} else if (e.key === "[" || e.key === "]") {
 			e.preventDefault();
@@ -237,7 +243,7 @@
 			} else {
 				activeLayer.rotateSelection(deltaAngle);
 			}
-			fin();
+			fin(false);
 			drawSelectionHandle();
 		}
 	};
@@ -320,7 +326,7 @@
 		const bitmap = await readPasteImage(e, true);
 		if (!bitmap) return;
 		activeLayer.paste(bitmap);
-		fin();
+		fin(false);
 		updateSelectionState();
 		drawSelectionHandle();
 	};
@@ -479,12 +485,16 @@
 		);
 	});
 
-	const fin = () => {
+	/**
+	 * @param sync 一括適用するか。選択範囲の操作は記録して後で再生するので false
+	 */
+	const fin = (sync = true) => {
 		if (activeLayer?.modified()) {
 			activeLayer.trace();
 			addRecent();
 		}
-		applySync();
+		if (sync) applySync();
+		else resetSyncBase(activeLayer);
 	};
 
 	/**
@@ -493,19 +503,24 @@
 	 * 移動系の操作は絵の位置がずれるだけなので写さない
 	 */
 	const applySync = () => {
-		if (
-			choiced === tool.translate.label ||
-			choiced === tool.select.label ||
-			choiced === tool.lasso.label
-		) {
+		if (choiced === tool.translate.label) {
+			// ハンドツールはドラッグごとに再生する
+			flushTranslateSync();
 			resetSyncBase(activeLayer);
 			return;
 		}
+		if (choiced === tool.select.label || choiced === tool.lasso.label) {
+			resetSyncBase(activeLayer);
+			return;
+		}
+		// 移動などが済んだ選択範囲が残っていれば、ここで連動先に再生して終える
+		if (hasPendingSelectionMove()) flushSelectionSync();
 		syncEdit(activeLayer);
 	};
 	// レイヤーやコマを切り替えたら差分の基準を取り直す
 	$effect(() => {
 		$activeIndex;
+		flushSelectionSync();
 		resetSyncBase(activeLayer);
 	});
 
@@ -514,6 +529,10 @@
 		if (!upperLayer) return;
 		let prevX: number | null = null;
 		let prevY: number | null = null;
+		// ライブラリはドラッグ開始時に移動・回転の累積値を戻すので、連動の記録にも残す
+		upperLayer.canvas.addEventListener("pointerdown", markDragStart, {
+			passive: true,
+		});
 		oekaki.onDraw((x, y, buttons) => {
 			if (prevX === null) prevX = x;
 			if (prevY === null) prevY = y;
@@ -892,12 +911,12 @@
 		switch (action) {
 			case tool.undo.label:
 				activeLayer?.undo();
-				syncEdit(activeLayer);
+				resetSyncBase(activeLayer); // 連動先は履歴を紐づけて戻す
 				updatePointerupTimestamp();
 				break;
 			case tool.redo.label:
 				activeLayer?.redo();
-				syncEdit(activeLayer);
+				resetSyncBase(activeLayer); // 連動先は履歴を紐づけて戻す
 				updatePointerupTimestamp();
 				break;
 			case tool.save.label:
@@ -1242,7 +1261,7 @@
 					title="選択範囲を削除"
 					onclick={() => {
 						activeLayer?.deleteSelection();
-						fin();
+						fin(false);
 						updateSelectionState();
 					}}
 				>
@@ -1258,7 +1277,7 @@
 						} else {
 							activeLayer?.rotateSelection(-15);
 						}
-						fin();
+						fin(false);
 						drawSelectionHandle();
 					}}
 				>
@@ -1274,7 +1293,7 @@
 						} else {
 							activeLayer?.rotateSelection(15);
 						}
-						fin();
+						fin(false);
 						drawSelectionHandle();
 					}}
 				>
