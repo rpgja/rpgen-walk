@@ -24,6 +24,7 @@
 		isSyncWay,
 		resetSyncBase,
 		syncEdit,
+		syncLayerProps,
 	} from "$lib/sync-edit";
 	import { activeIndex, color } from "$lib/store";
 	import * as unjStorage from "$lib/unj-storage.js";
@@ -1026,6 +1027,7 @@
 			checked={layerVisible}
 			onCheckedChange={(e) => {
 				layerVisible = e.checked;
+				syncLayerProps(activeLayer, { visible: e.checked });
 			}}
 		>
 			{#snippet inactiveChild()}
@@ -1045,7 +1047,10 @@
 		<div class="my-2 w-full basis-full max-w-[300px] mt-2">
 			<Slider
 				value={opacity}
-				onValueChange={(e) => (opacity = e.value)}
+				onValueChange={(e) => {
+					opacity = e.value;
+					syncLayerProps(activeLayer, { opacity: e.value[0] });
+				}}
 				markers={[25, 50, 75]}
 			/>
 		</div>

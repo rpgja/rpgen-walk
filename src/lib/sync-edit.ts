@@ -122,3 +122,32 @@ export const syncAddLayer = (name: string) => {
 	}
 	oekaki.setLayers(current);
 };
+
+/**
+ * 一括適用先のコマの同じ重ね順のレイヤーにも、表示・非表示や不透明度を反映する
+ *
+ * 書き込み先の選び方はsyncEdit()と同じ（足りなければ一番上）
+ */
+export const syncLayerProps = (
+	layer: oekaki.LayeredCanvas | undefined,
+	props: { visible?: boolean; opacity?: number },
+) => {
+	if (!layer) return;
+	const targets = syncTargets(get(activeIndex));
+	if (!targets.length) return;
+	const current = oekaki.getLayers();
+	const order = Math.max(0, current.indexOf(layer));
+	for (const t of targets) {
+		const layers = anime.layersByI.get(t);
+		if (!layers?.length) continue;
+		const target = layers[Math.min(order, layers.length - 1)];
+		if (props.visible !== undefined) target.visible = props.visible;
+		if (props.opacity !== undefined) target.opacity = props.opacity;
+
+		oekaki.setLayers(layers);
+		const canvas = oekaki.render();
+		anime.canvasByI.set(t, canvas);
+		anime.dataURLByI.set(t, canvas.toDataURL("image/png"));
+	}
+	oekaki.setLayers(current);
+};

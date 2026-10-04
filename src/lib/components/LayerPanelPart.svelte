@@ -8,7 +8,7 @@
 		Trash2Icon,
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
-	import { syncAddLayer } from "$lib/sync-edit";
+	import { syncAddLayer, syncLayerProps } from "$lib/sync-edit";
 
 	let { activeLayer = $bindable(undefined), pointerupTimestamp } = $props();
 
@@ -105,12 +105,18 @@
 								{#if layer.visible}
 									<EyeIcon
 										class="w-4 h-4"
-										onclick={() => (layer.visible = false)}
+										onclick={() => {
+											layer.visible = false;
+											syncLayerProps(layer, { visible: false });
+										}}
 									/>
 								{:else}
 									<EyeClosedIcon
 										class="w-4 h-4"
-										onclick={() => (layer.visible = true)}
+										onclick={() => {
+											layer.visible = true;
+											syncLayerProps(layer, { visible: true });
+										}}
 									/>
 								{/if}
 								<Trash2Icon
