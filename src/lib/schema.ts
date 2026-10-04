@@ -40,7 +40,7 @@ export const Fps = v.pipe(
 	v.number(),
 	v.integer(),
 	v.minValue(2),
-	v.maxValue(16),
+	v.maxValue(32),
 );
 
 export const Preview = v.pipe(
