@@ -34,8 +34,22 @@ const ProjectSchema = v.object({
 	height: schema.Height,
 	frames: schema.Frames,
 	ways: schema.Ways,
-	fps: v.optional(v.pipe(v.number(), v.transform(String), schema.Fps)),
-	preview: v.optional(v.pipe(v.number(), v.transform(String), schema.Preview)),
+	// 他のアプリ（うんｊレゼのドット絵エディタ等）は小数や範囲外のfpsを書くので、
+	// 読めない値はファイルごと拒否せず、無かったことにする
+	fps: v.fallback(
+		v.optional(
+			v.pipe(
+				v.number(),
+				v.transform((n) => String(Math.round(n))),
+				schema.Fps,
+			),
+		),
+		undefined,
+	),
+	preview: v.fallback(
+		v.optional(v.pipe(v.number(), v.transform(String), schema.Preview)),
+		undefined,
+	),
 	chips: v.array(
 		v.object({
 			index: v.pipe(v.number(), v.integer(), v.minValue(0)),
