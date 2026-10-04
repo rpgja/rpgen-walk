@@ -8,6 +8,7 @@
 		Trash2Icon,
 	} from "@lucide/svelte";
 	import * as oekaki from "@onjmin/oekaki";
+	import { syncAddLayer } from "$lib/sync-edit";
 
 	let { activeLayer = $bindable(undefined), pointerupTimestamp } = $props();
 
@@ -48,6 +49,8 @@
 	const addLayer = () => {
 		const newLayer = new oekaki.LayeredCanvas();
 		newLayer.name = `レイヤー #${newLayer.index + 1}`;
+		// 一括適用のトグルが有効なら、同じ方向・同じ番目のコマにも追加する
+		syncAddLayer(newLayer.name);
 		activeLayer = newLayer;
 	};
 </script>

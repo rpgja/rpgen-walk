@@ -104,3 +104,21 @@ export const syncEdit = (layer: oekaki.LayeredCanvas | undefined) => {
 	}
 	oekaki.setLayers(current);
 };
+
+/**
+ * 一括適用先のコマにも同じ名前のレイヤーを一番上に追加する
+ *
+ * 追加したレイヤーをそのコマの選択レイヤーにもしておく
+ */
+export const syncAddLayer = (name: string) => {
+	const targets = syncTargets(get(activeIndex));
+	if (!targets.length) return;
+	const current = oekaki.getLayers();
+	for (const t of targets) {
+		oekaki.setLayers([...(anime.layersByI.get(t) ?? [])]);
+		const layer = new oekaki.LayeredCanvas(name);
+		anime.layersByI.set(t, oekaki.getLayers());
+		anime.activatedByI.set(t, layer);
+	}
+	oekaki.setLayers(current);
+};
