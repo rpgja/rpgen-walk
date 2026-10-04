@@ -14,9 +14,19 @@
 	let layers: oekaki.LayeredCanvas[] = $state([]);
 	let reversedLayers = $derived([...layers].reverse());
 
+	/**
+	 * レイヤー一覧を取り直し、未選択（選択中のレイヤーが一覧に無い）なら最前面を選ぶ
+	 */
+	const syncLayers = () => {
+		const list = oekaki.getLayers();
+		layers = list;
+		if (list.length && !list.includes(activeLayer))
+			activeLayer = list[list.length - 1];
+	};
 	$effect(() => {
-		if (!activeLayer) return;
-		layers = oekaki.getLayers();
+		activeLayer;
+		pointerupTimestamp;
+		syncLayers();
 	});
 
 	const moveLayerUp = (layer: oekaki.LayeredCanvas) => {
@@ -102,7 +112,9 @@
 								{/if}
 								<Trash2Icon
 									class="w-4 h-4"
-									onclick={() => {
+									onclick={(e) => {
+										// 行のクリック（レイヤー選択）まで伝わらないように
+										e.stopPropagation();
 										if (
 											layer.locked ||
 											(layer.used &&
@@ -112,9 +124,12 @@
 										)
 											return;
 										layer.delete();
-										const { above, below } = layer;
-										if (above) activeLayer = above;
-										else if (below) activeLayer = below;
+										if (layer === activeLayer) {
+											const { above, below } = layer;
+											if (above) activeLayer = above;
+											else if (below) activeLayer = below;
+										}
+										syncLayers();
 									}}
 								/>
 								<span>{layer.opacity}%</span>

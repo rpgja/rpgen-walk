@@ -13,7 +13,11 @@
 	import ProjectPart from "$lib/components/ProjectPart.svelte";
 	import ResizePart from "$lib/components/ResizePart.svelte";
 	import SharePart from "$lib/components/SharePart.svelte";
-	import { copyToClipboard, readPasteImage } from "$lib/oekaki-clipboard";
+	import {
+		copyMergedSelection,
+		copyToClipboard,
+		readPasteImage,
+	} from "$lib/oekaki-clipboard";
 	import { isOnionSkin } from "$lib/onion-skin";
 	import { color } from "$lib/store";
 	import * as unjStorage from "$lib/unj-storage.js";
@@ -163,9 +167,9 @@
 					drawSelectionHandle();
 				}
 				break;
-			case "c": // 選択範囲をクリップボードにコピー（選択が無ければ何もしない）
+			case "c": // 選択範囲を全レイヤー重ね合わせた見た目でコピー（選択が無ければ何もしない）
 				{
-					const copy = activeLayer?.copySelection();
+					const copy = activeLayer && copyMergedSelection(activeLayer);
 					if (!copy) break;
 					e.preventDefault();
 					copyToClipboard(copy);
@@ -1152,7 +1156,8 @@
 					class="btn-icond btn-lg"
 					title="選択範囲をコピー"
 					onclick={() => {
-						const copy = activeLayer?.copySelection();
+						const copy =
+							activeLayer && copyMergedSelection(activeLayer);
 						if (copy) copyToClipboard(copy);
 					}}
 				>

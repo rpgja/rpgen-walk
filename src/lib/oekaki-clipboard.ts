@@ -1,3 +1,5 @@
+import * as oekaki from "@onjmin/oekaki";
+
 /**
  * お絵描きのクリップボード
  *
@@ -63,4 +65,41 @@ export const readPasteImage = async (
 		if (file) return await createImageBitmap(file);
 	}
 	return internal;
+};
+
+/**
+ * 選択範囲を全レイヤー重ね合わせた見た目で複製する
+ *
+ * 選択範囲の形（フリーハンドのマスクや浮かせた絵の形）はライブラリの内部にしか無いので、
+ * 選択中のレイヤーを一瞬だけ不透明で塗りつぶしてcopySelection()し、形だけを取り出す。
+ * 塗りつぶしたレイヤーはすぐ元の画素に戻すので、履歴には残らない
+ */
+export const copyMergedSelection = (
+	layer: oekaki.LayeredCanvas,
+): HTMLCanvasElement | null => {
+	const rect = layer.selection;
+	if (!rect) return null;
+	const { canvas, ctx } = layer;
+	const saved = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	ctx.save();
+	ctx.globalAlpha = 1;
+	ctx.globalCompositeOperation = "source-over";
+	ctx.fillStyle = "#000";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	ctx.restore();
+	const mask = layer.copySelection();
+	ctx.putImageData(saved, 0, 0);
+	if (!mask) return null;
+
+	const merged = oekaki.render();
+	const { x, y, w, h } = rect;
+	const copy = document.createElement("canvas");
+	copy.width = w;
+	copy.height = h;
+	const copyCtx = copy.getContext("2d");
+	if (!copyCtx) return null;
+	copyCtx.drawImage(merged, x, y, w, h, 0, 0, w, h);
+	copyCtx.globalCompositeOperation = "destination-in";
+	copyCtx.drawImage(mask, 0, 0);
+	return copy;
 };

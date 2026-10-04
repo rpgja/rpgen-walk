@@ -44,6 +44,8 @@
 		const activatedLayer = anime.activatedByI.get($activeIndex);
 		if (!activatedLayer || $activeIndex === prevIndex) {
 			anime.activatedByI.set($activeIndex, activeLayer);
+			// 初めて開いたコマでも、次のレイヤー選択が記録で巻き戻されないように
+			prevIndex = $activeIndex;
 		} else {
 			activeLayer = activatedLayer;
 			prevIndex = $activeIndex;
