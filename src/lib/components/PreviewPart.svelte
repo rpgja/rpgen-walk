@@ -25,7 +25,7 @@
                 unjStorage.fps.value = String(n);
             }}
         >
-            {#each [2, 3, 4, 5, 6, 7, 8] as v}
+            {#each Array.from({ length: 15 }, (_, i) => i + 2) as v}
                 <option value={v}>{v}fps</option>
             {/each}
         </select>
