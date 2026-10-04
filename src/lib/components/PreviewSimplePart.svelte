@@ -2,7 +2,7 @@
     import * as anime from "$lib/anime";
     import { activeIndex, fps } from "$lib/store";
 
-    let { initTimestamp, stop = true } = $props();
+    let { initTimestamp, stop = false } = $props();
 
     const width = 48 * 4;
     let height = $state(0);
