@@ -19,13 +19,21 @@
 		readPasteImage,
 	} from "$lib/oekaki-clipboard";
 	import { isOnionSkin } from "$lib/onion-skin";
-	import { color } from "$lib/store";
+	import {
+		isSyncFrame,
+		isSyncWay,
+		resetSyncBase,
+		syncEdit,
+	} from "$lib/sync-edit";
+	import { activeIndex, color } from "$lib/store";
 	import * as unjStorage from "$lib/unj-storage.js";
 	import {
 		BombIcon,
 		CheckIcon,
+		Columns3Icon,
 		Layers2Icon,
 		MoonIcon,
+		Rows3Icon,
 		SunIcon,
 	} from "@lucide/svelte";
 	import { EyeIcon } from "@lucide/svelte";
@@ -298,6 +306,7 @@
 			}
 		}
 		activeLayer?.trace();
+		applySync();
 		updatePointerupTimestamp();
 	};
 
@@ -474,7 +483,30 @@
 			activeLayer.trace();
 			addRecent();
 		}
+		applySync();
 	};
+
+	/**
+	 * 一括適用のトグルが有効なら、同じ方向・同じ番目のコマにも反映する
+	 *
+	 * 移動系の操作は絵の位置がずれるだけなので写さない
+	 */
+	const applySync = () => {
+		if (
+			choiced === tool.translate.label ||
+			choiced === tool.select.label ||
+			choiced === tool.lasso.label
+		) {
+			resetSyncBase(activeLayer);
+			return;
+		}
+		syncEdit(activeLayer);
+	};
+	// レイヤーやコマを切り替えたら差分の基準を取り直す
+	$effect(() => {
+		$activeIndex;
+		resetSyncBase(activeLayer);
+	});
 
 	// 描画イベント登録
 	$effect(() => {
@@ -859,10 +891,12 @@
 		switch (action) {
 			case tool.undo.label:
 				activeLayer?.undo();
+				syncEdit(activeLayer);
 				updatePointerupTimestamp();
 				break;
 			case tool.redo.label:
 				activeLayer?.redo();
+				syncEdit(activeLayer);
 				updatePointerupTimestamp();
 				break;
 			case tool.save.label:
@@ -877,6 +911,8 @@
 			case tool.clear.label:
 				activeLayer?.clear();
 				activeLayer?.trace();
+				syncEdit(activeLayer);
+				updatePointerupTimestamp();
 				break;
 		}
 	};
@@ -1137,6 +1173,38 @@
 					<Layers2Icon size="14" />
 				{/snippet}
 			</Switch>
+			<span title="同じ方向のコマに一括適用">
+				<Switch
+					controlActive="bg-secondary-500"
+					checked={$isSyncWay}
+					onCheckedChange={(e) => {
+						isSyncWay.set(e.checked);
+					}}
+				>
+					{#snippet inactiveChild()}
+						<Rows3Icon size="14" />
+					{/snippet}
+					{#snippet activeChild()}
+						<Rows3Icon size="14" />
+					{/snippet}
+				</Switch>
+			</span>
+			<span title="同じ番目のコマに一括適用">
+				<Switch
+					controlActive="bg-secondary-500"
+					checked={$isSyncFrame}
+					onCheckedChange={(e) => {
+						isSyncFrame.set(e.checked);
+					}}
+				>
+					{#snippet inactiveChild()}
+						<Columns3Icon size="14" />
+					{/snippet}
+					{#snippet activeChild()}
+						<Columns3Icon size="14" />
+					{/snippet}
+				</Switch>
+			</span>
 		</nav>
 		<nav class="btn-group preset-outlined-surface-200-800 flex gap-2">
 			{#each actions as action}

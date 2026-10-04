@@ -4,6 +4,7 @@
     import * as oekaki from "@onjmin/oekaki";
     import * as anime from "$lib/anime";
     import { activeIndex } from "$lib/store";
+    import { resetSyncBase, syncEdit } from "$lib/sync-edit";
 
     let { activeLayer = $bindable() } = $props();
 
@@ -92,6 +93,8 @@
             ctx.restore();
             layer.trace();
         }
+        // 全レイヤーの反転なので一括適用の対象にしない
+        resetSyncBase(activeLayer);
     };
 
     const drawOutline = () => {
@@ -130,6 +133,7 @@
             }
         }
         activeLayer.trace();
+        syncEdit(activeLayer);
     };
 </script>
 

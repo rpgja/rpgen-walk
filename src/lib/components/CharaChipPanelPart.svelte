@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as anime from "$lib/anime";
 	import { activeIndex } from "$lib/store";
+	import { isSyncFrame, isSyncWay, syncTargets } from "$lib/sync-edit";
 	import {
 		ArrowDownIcon,
 		ArrowLeftIcon,
@@ -17,6 +18,13 @@
 	} = $props();
 
 	let prevIndex = 0;
+
+	// 一括適用先のコマ（枠で示す）
+	let syncTargetSet = $derived(
+		$isSyncWay || $isSyncFrame
+			? new Set(syncTargets($activeIndex))
+			: new Set<number>(),
+	);
 	$effect(() => {
 		if (!initTimestamp) return;
 		$activeIndex = 0;
@@ -81,7 +89,9 @@
 									class={`relative w-16 h-16 rounded-container overflow-hidden cursor-pointer ${
 										$activeIndex === anime.toI(x, y)
 											? "ring-4 ring-primary-500 ring-offset-2"
-											: ""
+											: syncTargetSet.has(anime.toI(x, y))
+												? "ring-2 ring-secondary-500 ring-offset-2"
+												: ""
 									}`}
 									onclick={() => {
 										const i = anime.toI(x, y);
