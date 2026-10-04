@@ -29,6 +29,9 @@
 		const now = anime.layersByI.get($activeIndex);
 		if (now) {
 			oekaki.setLayers(now);
+			// 読み込みで作られたコマは選択レイヤーの記録が無いので、一番上を選ぶ
+			if (!anime.activatedByI.has($activeIndex) && now.length)
+				activeLayer = now[now.length - 1];
 		} else {
 			oekaki.setLayers([]);
 			activeLayer = new oekaki.LayeredCanvas("レイヤー #1");

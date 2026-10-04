@@ -10,6 +10,7 @@
 	import MacroPart from "$lib/components/MacroPart.svelte";
 	import ManualPart from "$lib/components/ManualPart.svelte";
 	import PreviewPart from "$lib/components/PreviewPart.svelte";
+	import ProjectPart from "$lib/components/ProjectPart.svelte";
 	import ResizePart from "$lib/components/ResizePart.svelte";
 	import SharePart from "$lib/components/SharePart.svelte";
 	import { copyToClipboard, readPasteImage } from "$lib/oekaki-clipboard";
@@ -1208,6 +1209,7 @@
 		<ResizePart {init} bind:activeLayer bind:initTimestamp />
 		<ImportPart {init} bind:activeLayer bind:initTimestamp />
 		<ExportPart {width} {height} />
+		<ProjectPart {init} bind:activeLayer bind:initTimestamp />
 		<MacroPart bind:activeLayer />
 		<SharePart />
 

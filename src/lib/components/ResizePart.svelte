@@ -97,6 +97,15 @@
     if (_preview.success) $preview = _preview.output;
   });
 
+  // プロジェクトを開いたときなど、外から変わった設定を入力欄に反映する
+  $effect(() => {
+    if (!initTimestamp || !anime.ready) return;
+    width = anime.width;
+    height = anime.height;
+    frames = anime.frames;
+    ways = anime.waysToStr(anime.waysOrder);
+  });
+
   const ParamSchema = v.strictObject({
     width: schema.Width,
     height: schema.Height,

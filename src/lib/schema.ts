@@ -49,7 +49,7 @@ export const Preview = v.pipe(
 	v.number(),
 	v.integer(),
 	v.minValue(0),
-	v.maxValue(1),
+	v.maxValue(2),
 );
 
 export const ImageURL = v.pipe(v.string(), v.url());

@@ -19,6 +19,42 @@ https://rpgja.github.io/rpgen-walk/
 - **Undo / Redo** 完備で安心の編集操作
 - シンプルな UI と軽快な動作
 
+### プロジェクトファイル（.hgp）/ Project File
+
+「プロジェクト」ボタンから、作業内容を丸ごと `.hgp` で保存・復元できます。  
+開くと **コマ数・サイズ・方向、FPS、プレビュー種別** が自動で切り替わり、全コマのレイヤーが復元されます。
+
+中身はただの ZIP です（拡張子を `.zip` に変えれば中を見られます）。
+
+```
+project.json        設定とレイヤー情報
+layers/{コマ}/{重ね順}.png  各レイヤーの絵（1ドット=1px の等倍、0 が一番下）
+sheet.png           全コマを合成した歩行グラ（確認用。読み込みには使わない）
+```
+
+```jsonc
+{
+  "format": "hg-paint-project",
+  "version": 1,
+  "width": 48, "height": 48,   // 1コマの大きさ
+  "frames": 3,                 // コマ数
+  "ways": "sadw",              // 方向の並び（wasd + qezc）
+  "fps": 8,                    // 省略可
+  "preview": 0,                // 0=歩行グラ 1=シンプル 2=静画、省略可
+  "chips": [
+    {
+      "index": 0,              // コマ番号（方向の行 × コマ数 + 列）
+      "layers": [
+        // visible / opacity(0-100) / locked / alphaLocked は省略可
+        { "name": "レイヤー #1", "file": "layers/0/0.png", "opacity": 100 }
+      ]
+    }
+  ]
+}
+```
+
+PNG を外部ツールで描き替えて ZIP に戻せば、その絵がそのまま読み込まれます。
+
 ## 採用技術 / Tech Stack
 
 - **開発言語**: TypeScript  
