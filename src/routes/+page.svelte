@@ -1206,10 +1206,10 @@
 					}}
 				>
 					{#snippet inactiveChild()}
-						<Rows3Icon size="14" />
+						<Columns3Icon size="14" />
 					{/snippet}
 					{#snippet activeChild()}
-						<Rows3Icon size="14" />
+						<Columns3Icon size="14" />
 					{/snippet}
 				</Switch>
 			</span>
@@ -1222,10 +1222,10 @@
 					}}
 				>
 					{#snippet inactiveChild()}
-						<Columns3Icon size="14" />
+						<Rows3Icon size="14" />
 					{/snippet}
 					{#snippet activeChild()}
-						<Columns3Icon size="14" />
+						<Rows3Icon size="14" />
 					{/snippet}
 				</Switch>
 			</span>
