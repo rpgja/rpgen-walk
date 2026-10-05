@@ -4,7 +4,13 @@
     import * as oekaki from "@onjmin/oekaki";
     import * as anime from "$lib/anime";
     import { activeIndex } from "$lib/store";
-    import { resetSyncBase, syncEdit } from "$lib/sync-edit";
+    import {
+        flattenWithSync,
+        isSyncFrame,
+        isSyncWay,
+        resetSyncBase,
+        syncEdit,
+    } from "$lib/sync-edit";
 
     let { activeLayer = $bindable() } = $props();
 
@@ -74,6 +80,21 @@
         activeLayer = now?.length
             ? now[now.length - 1]
             : new oekaki.LayeredCanvas("レイヤー #1");
+    };
+
+    /**
+     * 表示中のレイヤーを見た目どおり1枚に統合する（非表示のレイヤーは消える）
+     *
+     * 一括適用のトグルが有効なら、同じ方向・同じ番目のコマも統合する
+     */
+    const drawFlatten = () => {
+        const synced = $isSyncWay || $isSyncFrame;
+        const message = synced
+            ? "このコマと一括適用先のコマのレイヤーを1枚に統合しますか？（元に戻せません）"
+            : "このコマのレイヤーを1枚に統合しますか？（元に戻せません）";
+        if (!confirm(message)) return;
+        activeLayer = flattenWithSync();
+        resetSyncBase(activeLayer);
     };
 
     const drawFlip = async () => {
@@ -177,6 +198,17 @@
                     onclick={drawOutline}
                 >
                     輪郭塗り
+                </button>
+            </div>
+            <div class="pt-2">
+                <button
+                    type="button"
+                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                    aria-label="submit"
+                    title="表示中のレイヤーを見た目どおり1枚にまとめる。一括適用のトグルが有効なら連動先のコマも統合する"
+                    onclick={drawFlatten}
+                >
+                    1枚に統合
                 </button>
             </div>
 

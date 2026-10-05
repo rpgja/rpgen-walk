@@ -430,3 +430,51 @@ export const flushSelectionSync = () => {
 		replaying = false;
 	}
 };
+
+// ───────────────────────────────────────────────────────
+// レイヤーの統合
+// ───────────────────────────────────────────────────────
+
+/**
+ * レイヤーを見た目どおり（表示中のものを不透明度込みで）1枚に統合する
+ *
+ * 呼んだ後は oekaki に統合したレイヤー1枚だけが載った状態になる
+ */
+const flatten = (layers: oekaki.LayeredCanvas[]) => {
+	oekaki.setLayers([...layers]);
+	const merged = oekaki.render();
+	oekaki.setLayers([]);
+	const layer = new oekaki.LayeredCanvas("レイヤー #1");
+	layer.ctx.drawImage(merged, 0, 0);
+	layer.trace();
+	layer.used = true;
+	return layer;
+};
+
+/**
+ * 編集中のコマのレイヤーを1枚に統合する。一括適用のトグルが有効なら、一括適用先のコマも統合する
+ *
+ * レイヤーの構成が変わる操作なのでUndoは効かない
+ *
+ * @returns 編集中のコマの統合後のレイヤー
+ */
+export const flattenWithSync = (): oekaki.LayeredCanvas => {
+	// 選択範囲の記録が残っていれば先に再生して終える（消えるレイヤーに紐づいているため）
+	flushSelectionSync();
+	const index = get(activeIndex);
+	const current = oekaki.getLayers();
+	for (const t of syncTargets(index)) {
+		const layers = anime.layersByI.get(t);
+		if (!layers?.length) continue;
+		const layer = flatten(layers);
+		anime.layersByI.set(t, [layer]);
+		anime.activatedByI.set(t, layer);
+		const canvas = oekaki.render();
+		anime.canvasByI.set(t, canvas);
+		anime.dataURLByI.set(t, canvas.toDataURL("image/png"));
+	}
+	const layer = flatten(current);
+	anime.layersByI.set(index, [layer]);
+	anime.activatedByI.set(index, layer);
+	return layer;
+};
