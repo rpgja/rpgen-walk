@@ -4,6 +4,13 @@
     import { importImage } from "$lib/init";
     import * as schema from "$lib/schema";
     import {
+        analyzeSheet,
+        applySheet,
+        dotsToDataURL,
+        imageToRaw,
+    } from "$lib/sheet-import-frames";
+    import type { SheetResult } from "$lib/sheet-import";
+    import {
         imageUrl,
         isAddEmptyLayer,
         isSimpleImport,
@@ -50,7 +57,8 @@
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
         init();
-        importImage(imageRef);
+        if (isSheetImport && sheet) applySheet(sheet);
+        else importImage(imageRef);
         const now = anime.layersByI.get(0);
         if (now) {
             oekaki.setLayers(now);
@@ -58,6 +66,82 @@
             initTimestamp = performance.now();
         }
     };
+
+    // ───────────────────────────────────────────────────────
+    // 背景付きシートの切り分け取り込み
+    // ───────────────────────────────────────────────────────
+
+    /**
+     * 背景を透過してコマごとに切り分ける（AI生成素材など、背景が単色で格子が揃っていない素材向け）
+     */
+    let isSheetImport = $state(false);
+    /**
+     * 背景とみなす色の許容誤差（0〜255）
+     */
+    let tolerance = $state(40);
+    /**
+     * 1ドットが何pxか（0なら自動で測る）
+     */
+    let pitchHint = $state(0);
+    let sheet = $state<SheetResult | null>(null);
+    /**
+     * 取り込む前に見せる、コマごとの絵（行ごと）
+     */
+    let previews = $state<(string | null)[][]>([]);
+    let analyzing = $state(false);
+    /**
+     * 画像の読み込み完了を知るためのカウンタ
+     */
+    let imageLoaded = $state(0);
+
+    /**
+     * 今の画像と設定で切り分け直し、プレビューを作る
+     */
+    const analyze = () => {
+        sheet = null;
+        previews = [];
+        if (!isSheetImport || !imageRef || imageRef.naturalWidth === 0) return;
+        analyzing = true;
+        try {
+            const result = analyzeSheet(
+                imageToRaw(imageRef),
+                tolerance,
+                $isSimpleImport,
+                pitchHint,
+            );
+            sheet = result;
+            // 1コマが 64px 前後に見える倍率
+            const scale = Math.max(1, Math.round(64 / anime.height));
+            previews = result.frames.map((row) =>
+                row.map((dots) => (dots ? dotsToDataURL(dots, scale) : null)),
+            );
+        } catch (e) {
+            console.error(e);
+        } finally {
+            analyzing = false;
+        }
+    };
+    $effect(() => {
+        isSheetImport;
+        tolerance;
+        pitchHint;
+        $isSimpleImport;
+        imageLoaded;
+        analyze();
+    });
+
+    const sheetSummary = $derived.by(() => {
+        if (!sheet) return "";
+        const bg = sheet.background
+            ? `rgb(${sheet.background.join(", ")})`
+            : "透明";
+        const cols = [...new Set(sheet.detectedCols)].join("・");
+        const p = sheet.pitches;
+        const pitch = p.length
+            ? `${Math.min(...p).toFixed(2)}〜${Math.max(...p).toFixed(2)}px`
+            : "-";
+        return `背景: ${bg} / 検出: ${sheet.detectedRows}行 × ${cols}列 / 1ドット: ${pitch}`;
+    });
 
     const template = [
         { label: "鍵山雛", url: "https://rpgen.cc/dq/sAnims/res/1920.png" },
@@ -171,9 +255,81 @@
                         class="max-w-96 object-contain rounded border"
                         crossorigin="anonymous"
                         bind:this={imageRef}
+                        onload={() => imageLoaded++}
                     />
                 </div>
             {/if}
+
+            <div class="space-y-2">
+                <label class="flex items-center space-x-2">
+                    <input
+                        class="checkbox"
+                        type="checkbox"
+                        bind:checked={isSheetImport}
+                    />
+                    <p>背景を透過して切り分ける</p>
+                </label>
+                {#if isSheetImport}
+                    <p class="opacity-60 text-xs">
+                        白などの単色背景の素材向け。コマの位置が揃っていなくても前景の切れ目で分け、1ドットが何pxかをコマごとに測って等倍にします
+                    </p>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                        <label class="flex items-center gap-2">
+                            背景の許容誤差
+                            <input
+                                class="input w-20 bg-white"
+                                type="number"
+                                min="0"
+                                max="255"
+                                bind:value={tolerance}
+                            />
+                        </label>
+                        <label
+                            class="flex items-center gap-2"
+                            title="0なら自動で測る。コマによって絵が小さくなるなら、表示された範囲の値を入れて固定する"
+                        >
+                            1ドット(px)
+                            <input
+                                class="input w-20 bg-white"
+                                type="number"
+                                min="0"
+                                max="32"
+                                step="0.1"
+                                bind:value={pitchHint}
+                            />
+                        </label>
+                    </div>
+                    {#if analyzing}
+                        <p class="opacity-60 text-xs">切り分け中…</p>
+                    {:else if sheet}
+                        <p class="opacity-60 text-xs">{sheetSummary}</p>
+                        <div
+                            class="gimp-checkered-background max-h-48 overflow-auto border rounded p-1 space-y-1"
+                        >
+                            {#each previews as row, y}
+                                <div class="flex gap-1">
+                                    {#each row as src, x}
+                                        {#if src}
+                                            <img
+                                                {src}
+                                                alt="コマ {anime.toI(x, y) + 1}"
+                                                title="コマ {anime.toI(x, y) + 1}"
+                                                class="border border-gray-300"
+                                            />
+                                        {:else}
+                                            <div
+                                                class="w-16 h-16 border border-dashed border-gray-300 text-xs opacity-60 flex items-center justify-center"
+                                            >
+                                                無し
+                                            </div>
+                                        {/if}
+                                    {/each}
+                                </div>
+                            {/each}
+                        </div>
+                    {/if}
+                {/if}
+            </div>
 
             <div class="space-y-0">
                 <div class="flex items-center gap-4 max-w-[360px]">

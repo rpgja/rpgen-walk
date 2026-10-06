@@ -1,6 +1,6 @@
 <script lang="ts">
     import IconX from "@lucide/svelte/icons/x";
-    import { Popover } from "@skeletonlabs/skeleton-svelte";
+    import { Popover, Tabs } from "@skeletonlabs/skeleton-svelte";
     import * as oekaki from "@onjmin/oekaki";
     import { untrack } from "svelte";
     import * as anime from "$lib/anime";
@@ -26,6 +26,10 @@
     let { activeLayer = $bindable() } = $props();
 
     let open = $state(false);
+    /**
+     * 開いているタブ（系統別）
+     */
+    let tab = $state("draw");
     let sourceWayKey = $state("");
     let pasteFlipped = $state(false);
 
@@ -328,7 +332,7 @@
     }}
     positioning={{ placement: "top" }}
     triggerBase="btn preset-tonal"
-    contentBase="card bg-surface-300 p-4 space-y-4 max-w-[320px] max-h-[80vh] overflow-y-auto"
+    contentBase="card bg-surface-300 p-4 space-y-4 w-[340px] max-w-[90vw] max-h-[80vh] overflow-y-auto"
     arrow
     arrowBackground="!bg-surface-300 dark:!bg-surface-800"
 >
@@ -343,220 +347,243 @@
                 }}><IconX /></button
             >
         </header>
-        <article class="space-y-4">
-            <p class="opacity-60">自動お絵描き</p>
-            <div class="pt-2">
-                <button
-                    type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
-                    aria-label="submit"
-                    onclick={drawFlip}
-                >
-                    左右反転
-                </button>
-            </div>
-            <div class="pt-2">
-                <button
-                    type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
-                    aria-label="submit"
-                    onclick={drawOutline}
-                >
-                    輪郭塗り
-                </button>
-            </div>
-            <div class="pt-2">
-                <button
-                    type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
-                    aria-label="submit"
-                    title="表示中のレイヤーを見た目どおり1枚にまとめる。一括適用のトグルが有効なら連動先のコマも統合する"
-                    onclick={drawFlatten}
-                >
-                    1枚に統合
-                </button>
-            </div>
+        <Tabs value={tab} onValueChange={(e) => (tab = e.value)} fluid>
+            {#snippet list()}
+                <Tabs.Control value="draw">お絵描き</Tabs.Control>
+                <Tabs.Control value="split">分割</Tabs.Control>
+                <Tabs.Control value="motion">動き</Tabs.Control>
+                <Tabs.Control value="way">方向</Tabs.Control>
+            {/snippet}
+            {#snippet content()}
+                <Tabs.Panel value="draw">
+                    <article class="space-y-4">
+                        <p class="opacity-60 text-xs">
+                            編集中のコマに対する自動お絵描き
+                        </p>
+                        <button
+                            type="button"
+                            class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                            onclick={drawFlip}
+                        >
+                            左右反転
+                        </button>
+                        <button
+                            type="button"
+                            class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                            title="絵の周りを今の色で1ドット縁取る"
+                            onclick={drawOutline}
+                        >
+                            輪郭塗り
+                        </button>
+                        <button
+                            type="button"
+                            class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                            title="表示中のレイヤーを見た目どおり1枚にまとめる。一括適用のトグルが有効なら連動先のコマも統合する"
+                            onclick={drawFlatten}
+                        >
+                            1枚に統合
+                        </button>
+                    </article>
+                </Tabs.Panel>
 
-            <p class="opacity-60">パーツ分割</p>
-            <p class="opacity-60 text-xs">
-                選択中のレイヤーを頭・胴・脚のレイヤーに分けます。境目は推定した行を初期値にして、ずれていたら直してください（赤=首、青=脚の目安線）
-            </p>
-            <div class="flex items-center gap-2 text-sm">
-                <label class="flex items-center gap-1">
-                    首
-                    <input
-                        class="input w-16 bg-white"
-                        type="number"
-                        min="0"
-                        max={anime.ready ? anime.height : 0}
-                        bind:value={neck}
-                        oninput={() => drawGuides(neck, legsTop)}
-                    />
-                </label>
-                <label class="flex items-center gap-1">
-                    脚
-                    <input
-                        class="input w-16 bg-white"
-                        type="number"
-                        min="0"
-                        max={anime.ready ? anime.height : 0}
-                        bind:value={legsTop}
-                        oninput={() => drawGuides(neck, legsTop)}
-                    />
-                </label>
-                <button
-                    type="button"
-                    class="px-2 py-1 rounded bg-gray-500 text-white hover:bg-gray-600 transition"
-                    onclick={estimate}
-                >
-                    {estimated ? "再推定" : "推定"}
-                </button>
-            </div>
-            <div class="pt-2">
-                <button
-                    type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition disabled:opacity-50"
-                    disabled={!estimated}
-                    onclick={doSplit}
-                >
-                    頭・胴・脚に分ける
-                </button>
-            </div>
+                <Tabs.Panel value="split">
+                    <article class="space-y-4">
+                        <p class="opacity-60 text-xs">
+                            選択中のレイヤーを頭・胴・脚のレイヤーに分けます。境目は推定した行を初期値にして、ずれていたら直してください（赤=首、青=脚の目安線）
+                        </p>
+                        <div class="flex items-center gap-2 text-sm">
+                            <label class="flex items-center gap-1">
+                                首
+                                <input
+                                    class="input w-16 bg-white"
+                                    type="number"
+                                    min="0"
+                                    max={anime.ready ? anime.height : 0}
+                                    bind:value={neck}
+                                    oninput={() => drawGuides(neck, legsTop)}
+                                />
+                            </label>
+                            <label class="flex items-center gap-1">
+                                脚
+                                <input
+                                    class="input w-16 bg-white"
+                                    type="number"
+                                    min="0"
+                                    max={anime.ready ? anime.height : 0}
+                                    bind:value={legsTop}
+                                    oninput={() => drawGuides(neck, legsTop)}
+                                />
+                            </label>
+                            <button
+                                type="button"
+                                class="px-2 py-1 rounded bg-gray-500 text-white hover:bg-gray-600 transition"
+                                onclick={estimate}
+                            >
+                                {estimated ? "再推定" : "推定"}
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition disabled:opacity-50"
+                            disabled={!estimated}
+                            onclick={doSplit}
+                        >
+                            頭・胴・脚に分ける
+                        </button>
+                    </article>
+                </Tabs.Panel>
 
-            <p class="opacity-60">動き付け</p>
-            <p class="opacity-60 text-xs">
-                このコマを起点に、同じ方向の全コマを生成します。パーツ分割しておくと部位ごとに動かせます
-            </p>
-            <select
-                class="select select-bordered w-full bg-white"
-                bind:value={preset}
-            >
-                {#each presets as p}
-                    <option value={p.key}>{p.label}</option>
-                {/each}
-            </select>
-            <p class="opacity-60 text-xs">{presetHint}</p>
-            {#if preset !== "blink"}
-                <label class="flex items-center gap-2 text-sm">
-                    {preset === "walk" ? "持ち上げ（ドット）" : "振れ幅（ドット）"}
-                    <input
-                        class="input w-16 bg-white"
-                        type="number"
-                        min="1"
-                        max="8"
-                        bind:value={amp}
-                    />
-                </label>
-            {/if}
-            {#if needsLayerTable}
-                <table class="w-full text-sm">
-                    <thead class="opacity-60 text-xs">
-                        <tr>
-                            <th class="text-left">レイヤー</th>
-                            <th>動かす</th>
-                            <th>遅れ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each frameLayers as layer (layer.uuid)}
-                            {#if layerOpts[layer.uuid]}
-                                <tr>
-                                    <td class="truncate max-w-[120px]"
-                                        >{layer.name}</td
+                <Tabs.Panel value="motion">
+                    <article class="space-y-4">
+                        <p class="opacity-60 text-xs">
+                            このコマを起点に、同じ方向の全コマを生成します。分割しておくと部位ごとに動かせます
+                        </p>
+                        <select
+                            class="select select-bordered w-full bg-white"
+                            bind:value={preset}
+                        >
+                            {#each presets as p}
+                                <option value={p.key}>{p.label}</option>
+                            {/each}
+                        </select>
+                        <p class="opacity-60 text-xs">{presetHint}</p>
+                        {#if preset !== "blink"}
+                            <label class="flex items-center gap-2 text-sm">
+                                {preset === "walk"
+                                    ? "持ち上げ（ドット）"
+                                    : "振れ幅（ドット）"}
+                                <input
+                                    class="input w-16 bg-white"
+                                    type="number"
+                                    min="1"
+                                    max="8"
+                                    bind:value={amp}
+                                />
+                            </label>
+                        {/if}
+                        {#if needsLayerTable}
+                            <table class="w-full text-sm">
+                                <thead class="opacity-60 text-xs">
+                                    <tr>
+                                        <th class="text-left">レイヤー</th>
+                                        <th>動かす</th>
+                                        <th>遅れ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {#each frameLayers as layer (layer.uuid)}
+                                        {#if layerOpts[layer.uuid]}
+                                            <tr>
+                                                <td
+                                                    class="truncate max-w-[120px]"
+                                                    >{layer.name}</td
+                                                >
+                                                <td class="text-center">
+                                                    <input
+                                                        class="checkbox"
+                                                        type="checkbox"
+                                                        bind:checked={
+                                                            layerOpts[
+                                                                layer.uuid
+                                                            ].move
+                                                        }
+                                                    />
+                                                </td>
+                                                <td class="text-center">
+                                                    <input
+                                                        class="input w-14 bg-white"
+                                                        type="number"
+                                                        min="0"
+                                                        max={anime.ready
+                                                            ? anime.frames - 1
+                                                            : 0}
+                                                        disabled={!layerOpts[
+                                                            layer.uuid
+                                                        ].move}
+                                                        bind:value={
+                                                            layerOpts[
+                                                                layer.uuid
+                                                            ].delay
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                        {/if}
+                                    {/each}
+                                </tbody>
+                            </table>
+                        {/if}
+                        {#if preset === "walk"}
+                            <label class="flex items-center gap-2 text-sm">
+                                脚のレイヤー
+                                <select
+                                    class="select select-bordered flex-1 bg-white"
+                                    bind:value={legsLayerUuid}
+                                >
+                                    <option value="">自動（絵の下の帯）</option>
+                                    {#each frameLayers as layer (layer.uuid)}
+                                        <option value={layer.uuid}
+                                            >{layer.name}</option
+                                        >
+                                    {/each}
+                                </select>
+                            </label>
+                        {/if}
+                        <button
+                            type="button"
+                            class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                            onclick={doGenerate}
+                        >
+                            全コマを生成
+                        </button>
+                    </article>
+                </Tabs.Panel>
+
+                <Tabs.Panel value="way">
+                    <article class="space-y-4">
+                        <p class="opacity-60 text-xs">
+                            選択中のコマの方向（{anime.ready
+                                ? wayLabel(
+                                      anime.waysOrder[
+                                          Math.floor(
+                                              $activeIndex / anime.frames,
+                                          )
+                                      ],
+                                  )
+                                : ""}）の全コマを、選んだ方向のコマ（全レイヤーを重ねた見た目）で上書きします
+                        </p>
+                        <select
+                            class="select select-bordered w-full bg-white"
+                            bind:value={sourceWayKey}
+                        >
+                            <option value="">コピー元の方向</option>
+                            {#each anime.ready ? anime.waysOrder : [] as way, y}
+                                {#if y !== Math.floor($activeIndex / anime.frames)}
+                                    <option value={way.key}
+                                        >{wayLabel(way)}</option
                                     >
-                                    <td class="text-center">
-                                        <input
-                                            class="checkbox"
-                                            type="checkbox"
-                                            bind:checked={
-                                                layerOpts[layer.uuid].move
-                                            }
-                                        />
-                                    </td>
-                                    <td class="text-center">
-                                        <input
-                                            class="input w-14 bg-white"
-                                            type="number"
-                                            min="0"
-                                            max={anime.ready
-                                                ? anime.frames - 1
-                                                : 0}
-                                            disabled={!layerOpts[layer.uuid]
-                                                .move}
-                                            bind:value={
-                                                layerOpts[layer.uuid].delay
-                                            }
-                                        />
-                                    </td>
-                                </tr>
-                            {/if}
-                        {/each}
-                    </tbody>
-                </table>
-            {/if}
-            {#if preset === "walk"}
-                <label class="flex items-center gap-2 text-sm">
-                    脚のレイヤー
-                    <select
-                        class="select select-bordered flex-1 bg-white"
-                        bind:value={legsLayerUuid}
-                    >
-                        <option value="">自動（絵の下の帯）</option>
-                        {#each frameLayers as layer (layer.uuid)}
-                            <option value={layer.uuid}>{layer.name}</option>
-                        {/each}
-                    </select>
-                </label>
-            {/if}
-            <div class="pt-2">
-                <button
-                    type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
-                    onclick={doGenerate}
-                >
-                    全コマを生成
-                </button>
-            </div>
-
-            <p class="opacity-60">方向の一括上書き</p>
-            <p class="opacity-60 text-xs">
-                選択中のコマの方向（{anime.ready
-                    ? wayLabel(
-                          anime.waysOrder[
-                              Math.floor($activeIndex / anime.frames)
-                          ],
-                      )
-                    : ""}）の全コマを、選んだ方向のコマ（全レイヤーを重ねた見た目）で上書きします
-            </p>
-            <select
-                class="select select-bordered w-full bg-white"
-                bind:value={sourceWayKey}
-            >
-                <option value="">コピー元の方向</option>
-                {#each anime.ready ? anime.waysOrder : [] as way, y}
-                    {#if y !== Math.floor($activeIndex / anime.frames)}
-                        <option value={way.key}>{wayLabel(way)}</option>
-                    {/if}
-                {/each}
-            </select>
-            <label class="flex items-center space-x-2">
-                <input
-                    class="checkbox"
-                    type="checkbox"
-                    bind:checked={pasteFlipped}
-                />
-                <p>左右反転して貼る</p>
-            </label>
-            <div class="pt-2">
-                <button
-                    type="button"
-                    class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition disabled:opacity-50"
-                    disabled={!sourceWayKey}
-                    onclick={pasteWay}
-                >
-                    一括上書きペースト
-                </button>
-            </div>
-        </article>
+                                {/if}
+                            {/each}
+                        </select>
+                        <label class="flex items-center space-x-2">
+                            <input
+                                class="checkbox"
+                                type="checkbox"
+                                bind:checked={pasteFlipped}
+                            />
+                            <p>左右反転して貼る</p>
+                        </label>
+                        <button
+                            type="button"
+                            class="w-full px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition disabled:opacity-50"
+                            disabled={!sourceWayKey}
+                            onclick={pasteWay}
+                        >
+                            一括上書きペースト
+                        </button>
+                    </article>
+                </Tabs.Panel>
+            {/snippet}
+        </Tabs>
     {/snippet}
 </Popover>

@@ -220,6 +220,25 @@ const writeFrame = (index: number, items: Item[]) => {
 };
 
 /**
+ * 等倍の絵を1枚のレイヤーとしてコマに書き込む（既存のレイヤーは消える）
+ */
+export const writeFrameDots = (
+	index: number,
+	dots: A.Dots,
+	name = "レイヤー #1",
+) =>
+	writeFrame(index, [
+		{
+			name,
+			dots,
+			visible: true,
+			opacity: 100,
+			locked: false,
+			alphaLocked: false,
+		},
+	]);
+
+/**
  * 編集中のコマを元に、同じ方向の全コマを生成する
  *
  * 編集中のコマが動きの起点（0コマ目）になる。歩行だけは編集中のコマも書き換わる。
