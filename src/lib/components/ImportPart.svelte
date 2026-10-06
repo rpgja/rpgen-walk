@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     import { combineAniIconsToDataUrl } from "$lib/ani";
     import * as anime from "$lib/anime";
     import { importImage } from "$lib/init";
@@ -8,6 +9,7 @@
         applySheet,
         dotsToDataURL,
         imageToRaw,
+        rowMapping,
     } from "$lib/sheet-import-frames";
     import type { SheetResult } from "$lib/sheet-import";
     import {
@@ -57,7 +59,7 @@
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
         init();
-        if (isSheetImport && sheet) applySheet(sheet);
+        if (isSheetImport && sheet) applySheet(sheet, sheetOrder);
         else importImage(imageRef);
         const now = anime.layersByI.get(0);
         if (now) {
@@ -83,6 +85,10 @@
      * 1ドットが何pxか（0なら自動で測る）
      */
     let pitchHint = $state(0);
+    /**
+     * シートの行の並び（方向のキー）。初期値は今の方向の並び
+     */
+    let sheetOrder = $state("");
     let sheet = $state<SheetResult | null>(null);
     /**
      * 取り込む前に見せる、コマごとの絵（行ごと）
@@ -101,6 +107,8 @@
         sheet = null;
         previews = [];
         if (!isSheetImport || !imageRef || imageRef.naturalWidth === 0) return;
+        if (!sheetOrder && anime.ready)
+            sheetOrder = anime.waysToStr(anime.waysOrder);
         analyzing = true;
         try {
             const result = analyzeSheet(
@@ -140,29 +148,60 @@
         const pitch = p.length
             ? `${Math.min(...p).toFixed(2)}〜${Math.max(...p).toFixed(2)}px`
             : "-";
-        return `背景: ${bg} / 検出: ${sheet.detectedRows}行 × ${cols}列 / 1ドット: ${pitch}`;
+        return `背景: ${bg} / 検出: ${sheet.detectedRows}行 × ${cols}列 / 1ドット: ${pitch} / 絵: 最大 ${sheet.maxCols}×${sheet.maxRows}ドット`;
     });
 
+    /**
+     * 検出した行・列数やコマの大きさが今の設定と合わないときの注意
+     */
+    const sheetWarnings = $derived.by(() => {
+        if (!sheet || !anime.ready) return [];
+        const out: string[] = [];
+        const { frames, ways, width, height } = anime;
+        const cols = Math.max(0, ...sheet.detectedCols);
+        if (cols > frames)
+            out.push(
+                `${cols}列を検出しましたがコマ数が${frames}なので、先頭${frames}列だけ取り込みます。全部入れるならリサイズでコマ数を${cols}にしてください`,
+            );
+        if (sheet.detectedRows > ways)
+            out.push(
+                `${sheet.detectedRows}行を検出しましたが方向が${ways}つなので、先頭${ways}行だけ取り込みます`,
+            );
+        if (sheet.detectedRows < ways || cols < frames)
+            out.push("検出した行・列が足りないので、広い塊を等分しています");
+        if (sheet.coarsened)
+            out.push(
+                `絵がコマ（${width}×${height}）に収まらないので粗くしています。先にリサイズで大きくしてください`,
+            );
+        if (rowMapping(sheetOrder).some((y) => y < 0))
+            out.push("行の並びに今の方向に無い文字があります。その行は取り込みません");
+        return out;
+    });
+
+    /**
+     * 同梱素材（static/assets/mv 以下）。白背景の物は「背景を透過して切り分ける」で読み込む
+     */
     const template = [
-        { label: "鍵山雛", url: "https://rpgen.cc/dq/sAnims/res/1920.png" },
-        { label: "ドレミー", url: "https://rpgen.cc/dq/sAnims/res/1919.png" },
-        { label: "八雲紫", url: "https://rpgen.cc/dq/sAnims/res/1282.png" },
-        {
-            label: "天子",
-            url: "https://rpgen.cc/dq/sAnims/res/1891.png",
-        },
-        { label: "純狐", url: "https://rpgen.cc/dq/sAnims/res/1894.png" },
-        {
-            label: "ヘカーティア",
-            url: "https://rpgen.cc/dq/sAnims/res/1884.png",
-        },
-        { label: "妹紅", url: "https://rpgen.cc/dq/sAnims/res/1874.png" },
-        { label: "小鈴", url: "https://rpgen.cc/dq/sAnims/res/1526.png" },
-        { label: "阿求", url: "https://rpgen.cc/dq/sAnims/res/1527.png" },
-        { label: "マミゾウ", url: "https://rpgen.cc/dq/sAnims/res/1882.png" },
-        { label: "袿姫", url: "https://rpgen.cc/dq/sAnims/res/2116.png" },
-        { label: "残無", url: "https://rpgen.cc/dq/sAnims/res/2115.png" },
-    ];
+        ...["sheet-a", "sheet-b", "pose-a"],
+        ...["a", "b", "c", "d", "e", "f", "g"].map((v) => `beat-${v}`),
+    ]
+        .map((v) => `roze/${v}`)
+        .concat(
+            ["a", "b", "c"].map((v) => `cookie/mgr-${v}`),
+            ["a", "b", "c"].map((v) => `cookie/mot-${v}`),
+            ["a", "b", "c", "d"].map((v) => `cookie/nyn-${v}`),
+        )
+        .map((label) => ({ label, path: `${base}/assets/mv/${label}.png` }));
+
+    /**
+     * 同じオリジンの画像（同梱素材）はプロキシを通さない
+     */
+    const toSrc = (url: string) => {
+        try {
+            if (new URL(url).origin === location.origin) return url;
+        } catch {}
+        return corsKiller(url);
+    };
 </script>
 
 <Popover
@@ -204,7 +243,7 @@
                             (v) => v.label === e.currentTarget.value,
                         );
                         if (!v) return;
-                        $imageUrl = v.url;
+                        $imageUrl = new URL(v.path, location.href).href;
                     }}
                 >
                     <option value="">自動入力</option>
@@ -250,7 +289,7 @@
             {#if $imageUrl}
                 <div class="mt-4 max-h-32 overflow-auto border rounded p-2">
                     <img
-                        src={corsKiller($imageUrl)}
+                        src={toSrc($imageUrl)}
                         alt="インポート画像"
                         class="max-w-96 object-contain rounded border"
                         crossorigin="anonymous"
@@ -298,11 +337,25 @@
                                 bind:value={pitchHint}
                             />
                         </label>
+                        <label
+                            class="flex items-center gap-2"
+                            title="シートの上の行から順に、どの方向か（w=後 a=左 s=前 d=右）。ツクール系の素材は sadw"
+                        >
+                            行の並び
+                            <input
+                                class="input w-24 bg-white"
+                                type="text"
+                                bind:value={sheetOrder}
+                            />
+                        </label>
                     </div>
                     {#if analyzing}
                         <p class="opacity-60 text-xs">切り分け中…</p>
                     {:else if sheet}
                         <p class="opacity-60 text-xs">{sheetSummary}</p>
+                        {#each sheetWarnings as warning}
+                            <p class="text-xs text-red-600">{warning}</p>
+                        {/each}
                         <div
                             class="gimp-checkered-background max-h-48 overflow-auto border rounded p-1 space-y-1"
                         >

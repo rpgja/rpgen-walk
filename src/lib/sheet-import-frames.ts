@@ -71,18 +71,35 @@ export const dotsToDataURL = (dots: Dots, scale: number): string => {
 };
 
 /**
+ * シートの行の並び（方向のキーの列）を、今の方向の行番号に引き当てる
+ *
+ * @returns シートの行ごとの行番号。今の方向に無いキーは -1
+ */
+export const rowMapping = (order: string): number[] =>
+	anime
+		.strToWays(order)
+		.map((way) => anime.waysOrder.findIndex((v) => v.key === way.key));
+
+/**
  * 切り分けた絵を全コマに書き込む
  *
  * anime.init() とキャンバスの初期化を済ませてから呼ぶこと。
  * 絵の無いコマは空のまま
+ *
+ * @param order シートの行の並び（例 "sadw"）。省略すれば今の方向の並びと同じとみなす
  */
-export const applySheet = (result: SheetResult) => {
+export const applySheet = (result: SheetResult, order?: string) => {
 	const { frames, ways } = anime;
-	for (let y = 0; y < ways; y++)
+	const mapping = order
+		? rowMapping(order)
+		: Array.from({ length: ways }, (_, y) => y);
+	for (const [sheetY, y] of mapping.entries()) {
+		if (y < 0 || y >= ways) continue;
 		for (let x = 0; x < frames; x++) {
-			const dots = result.frames[y]?.[x];
+			const dots = result.frames[sheetY]?.[x];
 			if (dots) writeFrameDots(anime.toI(x, y), dots);
 		}
+	}
 	oekaki.setLayers([]);
 	thumbnailsVersion.update((v) => v + 1);
 };

@@ -141,19 +141,31 @@ const segments = (profile: number[], minGap: number): [number, number][] => {
 /**
  * 区間の数を expected に合わせる
  *
- * 多ければ一番狭い隙間から順にくっつけ、少なければ一番広い区間を等分する
+ * 多いときは、一番狭い隙間が一番広い隙間の3割未満なら（髪飾りなど本体から少し離れた塊）そこをくっつけ、
+ * そうでなければ先頭から expected 個だけ使う（隣のコマ同士をくっつけると絵が崩れるため）。
+ * 少なければ一番広い区間を等分する（コマ同士が接触して1つに見えている場合の保険）
  */
 const fitCount = (
 	segs: [number, number][],
 	expected: number,
 ): [number, number][] => {
-	const out = segs.map((s) => [...s] as [number, number]);
+	let out = segs.map((s) => [...s] as [number, number]);
 	while (out.length > expected && out.length > 1) {
-		let k = 0;
-		for (let i = 1; i < out.length - 1; i++)
-			if (out[i + 1][0] - out[i][1] < out[k + 1][0] - out[k][1]) k = i;
-		out[k][1] = out[k + 1][1];
-		out.splice(k + 1, 1);
+		let narrow = 0;
+		let wide = 0;
+		for (let i = 0; i < out.length - 1; i++) {
+			const gap = out[i + 1][0] - out[i][1];
+			if (gap < out[narrow + 1][0] - out[narrow][1]) narrow = i;
+			if (gap > out[wide + 1][0] - out[wide][1]) wide = i;
+		}
+		const gapNarrow = out[narrow + 1][0] - out[narrow][1];
+		const gapWide = out[wide + 1][0] - out[wide][1];
+		if (gapNarrow < gapWide * 0.3) {
+			out[narrow][1] = out[narrow + 1][1];
+			out.splice(narrow + 1, 1);
+		} else {
+			out = out.slice(0, expected);
+		}
 	}
 	while (out.length < expected && out.length) {
 		let k = 0;
@@ -292,8 +304,9 @@ export const peaksOf = (scores: PitchCandidate[]): PitchCandidate[] =>
 /**
  * 候補から周期を選ぶ
  *
- * 目安（シート全体の中央値）があれば、その前後2割に入る候補のうち一番良いものを選ぶ。
- * 無ければ一番良い候補
+ * 目安（シート全体の中央値や指定値）があれば、その前後 range に入る候補のうち一番良いもの。
+ * 無ければ、一番良い候補の6割以上の強さがある候補のうち一番細かい周期。
+ * ドット絵は輪郭や模様の間隔（ドットの何倍か）にも山が立つが、ドットの周期はその中で一番細かい
  */
 export const choosePitch = (
 	candidates: PitchCandidate[],
@@ -301,7 +314,10 @@ export const choosePitch = (
 	range = 0.2,
 ): PitchCandidate => {
 	const best = candidates[0] ?? { pitch: prior ?? 2, phase: 0, score: 0 };
-	if (prior === undefined) return best;
+	if (prior === undefined) {
+		const strong = candidates.filter((c) => c.score >= best.score * 0.6);
+		return strong.sort((a, b) => a.pitch - b.pitch)[0] ?? best;
+	}
 	const near = candidates.filter(
 		(c) =>
 			Math.abs(c.pitch - prior) <= prior * range && c.score >= best.score * 0.4,
@@ -311,24 +327,36 @@ export const choosePitch = (
 
 /**
  * 絵の領域の色の変わり目を横・縦それぞれ集計する
+ *
+ * JPEGや拡大でぼけた境目は2〜3pxに広がるので、隣との差が極大の1pxだけを変わり目に数える
  */
 const edgeProfiles = (img: Raw, mask: Uint8Array, box: Rect, tol: number) => {
 	const { w, data } = img;
 	const ex = new Array<number>(box.w).fill(0);
 	const ey = new Array<number>(box.h).fill(0);
-	const differ = (i: number, j: number) =>
+	const diff = (i: number, j: number) =>
 		Math.max(
 			Math.abs(data[i] - data[j]),
 			Math.abs(data[i + 1] - data[j + 1]),
 			Math.abs(data[i + 2] - data[j + 2]),
-		) > tol;
+		);
+	const on = (x: number, y: number) =>
+		x >= box.x &&
+		x < box.x + box.w &&
+		y >= box.y &&
+		y < box.y + box.h &&
+		mask[x + y * w] === 1;
+	// 横方向の差 d(x) = |c(x) - c(x-1)|
+	const dx = (x: number, y: number) =>
+		on(x, y) && on(x - 1, y) ? diff((x + y * w) * 4, (x - 1 + y * w) * 4) : 0;
+	const dy = (x: number, y: number) =>
+		on(x, y) && on(x, y - 1) ? diff((x + y * w) * 4, (x + (y - 1) * w) * 4) : 0;
 	for (let y = box.y; y < box.y + box.h; y++)
 		for (let x = box.x; x < box.x + box.w; x++) {
-			const i = (x + y * w) * 4;
-			if (!mask[x + y * w]) continue;
-			if (x > box.x && mask[x - 1 + y * w] && differ(i, i - 4)) ex[x - box.x]++;
-			if (y > box.y && mask[x + (y - 1) * w] && differ(i, i - w * 4))
-				ey[y - box.y]++;
+			const h = dx(x, y);
+			if (h > tol && h >= dx(x - 1, y) && h > dx(x + 1, y)) ex[x - box.x]++;
+			const v = dy(x, y);
+			if (v > tol && v >= dy(x, y - 1) && v > dy(x, y + 1)) ey[y - box.y]++;
 		}
 	return { ex, ey };
 };
@@ -340,6 +368,8 @@ export type CellResult = {
 	rows: number;
 	pitchX: number;
 	pitchY: number;
+	/** コマに収まらず、格子を粗くしたか */
+	coarsened: boolean;
 };
 
 /**
@@ -439,12 +469,17 @@ export const sampleCell = (
 			dots.data[o + 2] = Math.round(best[2] / best[3]);
 			dots.data[o + 3] = 255;
 		}
-	return { dots, cols, rows, pitchX: px, pitchY: py };
+	return { dots, cols, rows, pitchX: px, pitchY: py, coarsened: need > 1 };
 };
 
 export type SheetResult = {
 	/** コマごとの等倍の絵（width×height に配置済み）。絵が無いコマは null */
 	frames: (Dots | null)[][];
+	/** 一番大きい絵のドット数 */
+	maxCols: number;
+	maxRows: number;
+	/** コマに収まらず粗くしたコマの数 */
+	coarsened: number;
 	background: RGB | null;
 	detectedRows: number;
 	detectedCols: number[];
@@ -492,11 +527,15 @@ export const importSheet = (
 	);
 	const pitches: number[] = [];
 	let maxRows = 0;
+	let maxCols = 0;
+	let coarsened = 0;
 	for (const row of sampled)
 		for (const s of row)
 			if (s) {
 				pitches.push((s.pitchX + s.pitchY) / 2);
 				maxRows = Math.max(maxRows, s.rows);
+				maxCols = Math.max(maxCols, s.cols);
+				if (s.coarsened) coarsened++;
 			}
 	// 足元の線：一番背の高いコマが上下中央に来る高さ
 	const baseline = height - Math.floor((height - maxRows) / 2);
@@ -520,5 +559,14 @@ export const importSheet = (
 			return out;
 		}),
 	);
-	return { frames, background, detectedRows, detectedCols, pitches };
+	return {
+		frames,
+		background,
+		detectedRows,
+		detectedCols,
+		pitches,
+		maxCols,
+		maxRows,
+		coarsened,
+	};
 };
