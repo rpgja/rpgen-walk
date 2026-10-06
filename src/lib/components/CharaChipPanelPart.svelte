@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as anime from "$lib/anime";
-	import { activeIndex } from "$lib/store";
+	import { activeIndex, thumbnailsVersion } from "$lib/store";
 	import { isSyncFrame, isSyncWay, syncTargets } from "$lib/sync-edit";
 	import {
 		ArrowDownIcon,
@@ -106,7 +106,7 @@
 									>
 										{anime.toI(x, y) + 1}
 									</div>
-									{#key pointerupTimestampAfter}
+									{#key `${pointerupTimestampAfter}-${$thumbnailsVersion}`}
 										<img
 											alt="frame"
 											src={anime.dataURLByI.get(

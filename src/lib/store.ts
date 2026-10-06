@@ -6,6 +6,10 @@ import * as unjStorage from "./unj-storage.js";
 
 export const color = writable(unjStorage.color.value ?? oekaki.color.value);
 export const activeIndex = writable(0);
+/**
+ * コマのサムネイルを描き直す合図。マクロなどで描画以外の経路からコマを書き換えたら増やす
+ */
+export const thumbnailsVersion = writable(0);
 
 const _fps = v.safeParse(schema.Fps, unjStorage.fps.value);
 export const fps = writable(_fps.success ? _fps.output : 2);
