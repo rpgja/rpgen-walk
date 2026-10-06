@@ -5,7 +5,9 @@
     import { importImage } from "$lib/init";
     import * as schema from "$lib/schema";
     import {
+        type AutoLayout,
         analyzeSheet,
+        analyzeSheetAuto,
         applySheet,
         dotsToDataURL,
         imageToRaw,
@@ -23,6 +25,7 @@
     import { corsKiller } from "@onjmin/cors-killer";
     import * as oekaki from "@onjmin/oekaki";
     import { Popover } from "@skeletonlabs/skeleton-svelte";
+    import { untrack } from "svelte";
     import { Slider } from "@skeletonlabs/skeleton-svelte";
     import * as v from "valibot";
 
@@ -58,9 +61,16 @@
         if (!$imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
-        init();
-        if (isSheetImport && sheet) applySheet(sheet, sheetOrder);
-        else importImage(imageRef);
+        if (isSheetImport && isAutoLayout && auto) {
+            // シートから決めたコマ数・方向数・大きさで作り直してから書き込む
+            anime.init(auto.width, auto.height, auto.frames, auto.ways);
+            init();
+            applySheet(auto.result);
+        } else {
+            init();
+            if (isSheetImport && sheet) applySheet(sheet, sheetOrder);
+            else importImage(imageRef);
+        }
         const now = anime.layersByI.get(0);
         if (now) {
             oekaki.setLayers(now);
@@ -89,6 +99,11 @@
      * シートの行の並び（方向のキー）。初期値は今の方向の並び
      */
     let sheetOrder = $state("");
+    /**
+     * コマ数・方向数・コマの大きさもシートから決める
+     */
+    let isAutoLayout = $state(false);
+    let auto = $state<AutoLayout | null>(null);
     let sheet = $state<SheetResult | null>(null);
     /**
      * 取り込む前に見せる、コマごとの絵（行ごと）
@@ -105,21 +120,32 @@
      */
     const analyze = () => {
         sheet = null;
+        auto = null;
         previews = [];
         if (!isSheetImport || !imageRef || imageRef.naturalWidth === 0) return;
         if (!sheetOrder && anime.ready)
             sheetOrder = anime.waysToStr(anime.waysOrder);
         analyzing = true;
         try {
-            const result = analyzeSheet(
-                imageToRaw(imageRef),
-                tolerance,
-                $isSimpleImport,
-                pitchHint,
-            );
+            const raw = imageToRaw(imageRef);
+            let result: SheetResult;
+            let cellHeight = anime.height;
+            if (isAutoLayout && !$isSimpleImport) {
+                const found = analyzeSheetAuto(
+                    raw,
+                    tolerance,
+                    pitchHint,
+                    sheetOrder,
+                );
+                result = found.result;
+                cellHeight = found.height;
+                auto = found;
+            } else {
+                result = analyzeSheet(raw, tolerance, $isSimpleImport, pitchHint);
+            }
             sheet = result;
             // 1コマが 64px 前後に見える倍率
-            const scale = Math.max(1, Math.round(64 / anime.height));
+            const scale = Math.max(1, Math.round(64 / cellHeight));
             previews = result.frames.map((row) =>
                 row.map((dots) => (dots ? dotsToDataURL(dots, scale) : null)),
             );
@@ -131,11 +157,15 @@
     };
     $effect(() => {
         isSheetImport;
+        isAutoLayout;
         tolerance;
         pitchHint;
+        sheetOrder;
         $isSimpleImport;
         imageLoaded;
-        analyze();
+        imageRef;
+        // 切り分けの中で書き換える sheet や auto を依存にしない（読み書きが同じ効果にあると自分を呼び直して結果が消える）
+        untrack(analyze);
     });
 
     const sheetSummary = $derived.by(() => {
@@ -148,7 +178,9 @@
         const pitch = p.length
             ? `${Math.min(...p).toFixed(2)}〜${Math.max(...p).toFixed(2)}px`
             : "-";
-        return `背景: ${bg} / 検出: ${sheet.detectedRows}行 × ${cols}列 / 1ドット: ${pitch} / 絵: 最大 ${sheet.maxCols}×${sheet.maxRows}ドット`;
+        const base = `背景: ${bg} / 検出: ${sheet.detectedRows}行 × ${cols}列 / 1ドット: ${pitch} / 絵: 最大 ${sheet.maxCols}×${sheet.maxRows}ドット`;
+        if (!auto) return base;
+        return `${base} → ${auto.frames}コマ × ${auto.ways.length}方向（${auto.ways}）、コマの大きさ ${auto.width}×${auto.height}`;
     });
 
     /**
@@ -157,6 +189,13 @@
     const sheetWarnings = $derived.by(() => {
         if (!sheet || !anime.ready) return [];
         const out: string[] = [];
+        if (auto) {
+            if (auto.ways !== sheetOrder)
+                out.push(
+                    `行の並びが${auto.ways.length}行と合わないので、方向は ${auto.ways} の順にします`,
+                );
+            return out;
+        }
         const { frames, ways, width, height } = anime;
         const cols = Math.max(0, ...sheet.detectedCols);
         if (cols > frames)
@@ -312,6 +351,17 @@
                     <p class="opacity-60 text-xs">
                         白などの単色背景の素材向け。コマの位置が揃っていなくても前景の切れ目で分け、1ドットが何pxかをコマごとに測って等倍にします
                     </p>
+                    <label
+                        class="flex items-center space-x-2"
+                        title="シートの行数を方向数、列数をコマ数にし、コマの大きさも絵に合わせて決める。今のリサイズ設定は上書きされる"
+                    >
+                        <input
+                            class="checkbox"
+                            type="checkbox"
+                            bind:checked={isAutoLayout}
+                        />
+                        <p>コマ数・方向数・大きさもシートから決める</p>
+                    </label>
                     <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                         <label class="flex items-center gap-2">
                             背景の許容誤差

@@ -50,6 +50,50 @@ export const analyzeSheet = (
 	);
 };
 
+export type AutoLayout = {
+	frames: number;
+	ways: string;
+	width: number;
+	height: number;
+	result: SheetResult;
+};
+
+/**
+ * 方向のキーの候補。4方向なら sadw、それ以上は斜めを足し、足りなければ余りの文字
+ */
+const WAY_KEYS = "sadwqezcbfghijklmnoprtuvxy";
+
+/**
+ * コマ数・方向数・コマの大きさもシートから決めて切り分ける
+ *
+ * 行数を方向数、一番多い行の列数をコマ数にし、コマの大きさは一番大きい絵に少し余白を足して8の倍数にする。
+ * 方向の並びは、行数と同じ長さの指定があればそれ、無ければ sadw から順に当てる
+ *
+ * @param orderHint 方向の並びの指定（例 "sadw"）
+ */
+export const analyzeSheetAuto = (
+	raw: Raw,
+	tolerance: number,
+	pitchHint = 0,
+	orderHint = "",
+): AutoLayout => {
+	const hint = pitchHint > 0 ? pitchHint : undefined;
+	// まず大きさの制限なしに測る（256 はコマの大きさの上限）
+	const probe = importSheet(raw, 0, 0, 256, 256, tolerance, hint);
+	const rows = Math.max(1, Math.min(WAY_KEYS.length, probe.detectedRows));
+	const frames = Math.max(1, Math.min(8, ...probe.detectedCols));
+	const fit = (dots: number) =>
+		Math.max(16, Math.min(256, Math.ceil((dots + 2) / 8) * 8));
+	const width = fit(probe.maxCols);
+	const height = fit(probe.maxRows);
+	const ways =
+		orderHint.length === rows && new Set(orderHint).size === rows
+			? orderHint
+			: WAY_KEYS.slice(0, rows);
+	const result = importSheet(raw, rows, frames, width, height, tolerance, hint);
+	return { frames, ways, width, height, result };
+};
+
 /**
  * プレビュー用に等倍の絵を拡大した画像
  */

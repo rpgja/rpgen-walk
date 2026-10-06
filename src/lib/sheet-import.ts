@@ -189,6 +189,8 @@ export type Cell = Rect & {
  * 行（方向）→ 行の中の列（コマ）の順に、前景の切れ目で分ける。
  * 数が合わなければ fitCount で合わせる。ゴミ（面積の小さい塊）は捨てる
  *
+ * @param rows 期待する行数。0 なら見つかった数のまま
+ * @param cols 期待する列数。0 なら見つかった数のまま（行ごとに違ってもよい）
  * @returns cells[行][列]
  */
 export const splitCells = (
@@ -208,7 +210,7 @@ export const splitCells = (
 	const maxArea = Math.max(1, ...bands.map(bandArea));
 	bands = bands.filter((b) => bandArea(b) > maxArea * 0.02);
 	const detectedRows = bands.length;
-	bands = fitCount(bands, rows);
+	if (rows > 0) bands = fitCount(bands, rows);
 
 	const cells: Cell[][] = [];
 	const detectedCols: number[] = [];
@@ -222,7 +224,7 @@ export const splitCells = (
 		const maxSeg = Math.max(1, ...segs.map(segArea));
 		segs = segs.filter((s) => segArea(s) > maxSeg * 0.02);
 		detectedCols.push(segs.length);
-		segs = fitCount(segs, cols);
+		if (cols > 0) segs = fitCount(segs, cols);
 		const row: Cell[] = [];
 		for (const [x0, x1] of segs) {
 			// コマの中の前景の外接矩形
@@ -491,6 +493,8 @@ export type SheetResult = {
  *
  * 横は各コマの絵の中心を合わせ、縦は全コマ共通の足元の線に揃える（コマごとに高さが違っても足が跳ねない）
  *
+ * @param rows 方向の数。0 なら見つかった行数のまま
+ * @param cols コマの数。0 なら見つかった列数のまま（frames の各行の長さが変わる）
  * @param pitchHint 1ドットが何pxかの指定。あればその前後1割でコマごとに合わせ、無ければ測った中央値を目安にする
  */
 export const importSheet = (
