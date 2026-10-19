@@ -3,6 +3,8 @@
 // 画像とタイトルは、rpgen-post-prepare.py が作る post/ フォルダ（posts.json と PNG）を
 // ユーザーがファイル選択で渡す。パスワード入力と投稿ボタンもユーザーが行う。
 // 画像をコードに埋め込まないので、読み込みの1行は短いまま済む。
+// posts.json の item に site（作者のサイト）があれば、投稿のあと そのアニメーションのページに設定する
+// （投稿フォームには欄が無く、各ページの「編集」→ cons/updateAuthComments.php で入れる仕組みのため）。
 (() => {
 	const ID = "__rpost";
 	document.getElementById(ID)?.remove();
@@ -59,6 +61,7 @@
 			c.getContext("2d").drawImage(img, tx, ty, fw, fh, 0, 0, fw, fh);
 			items.push({
 				title: it.title,
+				site: it.site || "",
 				file: it.file,
 				url,
 				thumb: c.toDataURL("image/png"),
@@ -66,7 +69,7 @@
 				h: img.height,
 			});
 		}
-		state.items = items.map(({ title, file, w, h }) => ({ title, file, w, h }));
+		state.items = items.map(({ title, site, file, w, h }) => ({ title, site, file, w, h }));
 		state.state = "ready";
 
 		view.innerHTML = `<b>${man.label || ""} ${items.length}体</b><div data-k=list style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0"></div>削除/編集パスワード: <input data-k=pass type=password maxlength=8 style="width:120px"> <button data-k=go>${items.length}体を投稿する</button><div data-k=log style="margin-top:8px;white-space:pre"></div>`;
@@ -77,6 +80,12 @@
 			img.src = it.url;
 			img.style.cssText = `image-rendering:pixelated;width:${it.w * 2}px;background:#ddd`;
 			d.append(img, document.createElement("br"), `${i + 1}. ${it.title}`);
+			if (it.site) {
+				const s = document.createElement("div");
+				s.style.cssText = "font-size:10px;color:#555;max-width:160px;word-break:break-all";
+				s.textContent = it.site;
+				d.append(s);
+			}
 			$k("list").appendChild(d);
 		});
 		const log = (s) => {
@@ -93,6 +102,16 @@
 			inp.value = "";
 			$k("go").disabled = true;
 			state.state = "posting";
+			const page = async (n) => (await fetch(`/dq/sAnims/${n}/`, { cache: "no-store" })).text();
+			const post = (url, data) =>
+				new Promise((r) =>
+					$.ajax({ type: "POST", url, data })
+						.done((x) => r(String(x)))
+						.fail(() => r("fail")),
+				);
+			// 投稿後の番号: 一覧ページの maxNum の次から、タイトルが一致するページを探す
+			const top = await (await fetch("/dq/sAnims/", { cache: "no-store" })).text();
+			let next = Number(top.match(/maxNum = (\d+)/)?.[1] || 0) + 1;
 			for (const it of items) {
 				const ret = await new Promise((r) =>
 					$.ajax({
@@ -111,11 +130,33 @@
 						.done((x) => r(String(x)))
 						.fail(() => r("fail")),
 				);
-				state.results.push({ title: it.title, ret });
+				const res = { title: it.title, ret };
+				state.results.push(res);
 				log(`${it.title}: ${ret === "0" ? "投稿OK" : `失敗 (${ret})`}`);
 				if (ret !== "0") {
 					log("ここで止めました");
 					break;
+				}
+				if (next > 1) {
+					for (let n = next; n < next + 6 && !res.num; n++) {
+						const h = await page(n);
+						if (h.includes(`<title>「${it.title}」`)) {
+							res.num = n;
+							res.token = h.match(/g_token = '([0-9a-f]+)'/)?.[1];
+						}
+					}
+					if (res.num) next = res.num + 1;
+					log(`  番号: ${res.num ?? "見つからない"}`);
+				}
+				if (it.site && res.num && res.token) {
+					res.siteRet = await post("cons/updateAuthComments.php", {
+						token: res.token,
+						curDir: res.num,
+						pass,
+						website: it.site,
+						authComment: "",
+					});
+					log(`  作者のサイト: ${res.siteRet === "0" ? "設定OK" : `失敗 (${res.siteRet})`}`);
 				}
 				await new Promise((r) => setTimeout(r, 1500));
 			}

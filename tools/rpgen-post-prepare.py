@@ -6,7 +6,8 @@
 
 posts.json の例:
 {"label": "ずんだもん関連キャラ", "frame": [16, 16], "thumb": [0, 32],
- "items": [{"title": "ずんだもん", "file": "out/zundamon.png"}]}
+ "items": [{"title": "ずんだもん", "file": "out/zundamon.png", "site": "https://..."}]}
+site（作者のサイト）は省略可。投稿後にそのアニメーションのページへ設定する。
 """
 import json
 import shutil
@@ -42,7 +43,7 @@ def main():
             raise SystemExit(f"ファイル名が重なっています: {src.name}")
         names.add(src.name)
         shutil.copyfile(src, out / src.name)
-        items.append({"title": it["title"], "file": src.name})
+        items.append({**it, "file": src.name})   # site（作者のサイト）なども そのまま渡す
         print(f"{it['title']}\t{src.name}\t{w}x{h}")
     man = {**man, "items": items}
     (out / "posts.json").write_text(json.dumps(man, ensure_ascii=False, indent=2), encoding="utf-8")
