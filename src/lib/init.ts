@@ -3,7 +3,7 @@ import { isAddEmptyLayer, isSimpleImport, opacity } from "$lib/store";
 import * as oekaki from "@onjmin/oekaki";
 import { get } from "svelte/store";
 
-export const importImage = (image: HTMLImageElement) => {
+export const importImage = (image: HTMLImageElement | HTMLCanvasElement) => {
 	const dotSize = oekaki.getDotSize();
 	const { width, height, frames, ways } = anime;
 
@@ -18,8 +18,9 @@ export const importImage = (image: HTMLImageElement) => {
 	ctx.imageSmoothingEnabled = false;
 
 	if (get(isSimpleImport)) {
-		const srcW = image.naturalWidth;
-		const srcH = image.naturalHeight;
+		const isImg = image instanceof HTMLImageElement;
+		const srcW = isImg ? image.naturalWidth : image.width;
+		const srcH = isImg ? image.naturalHeight : image.height;
 		const ratio = Math.min(width / srcW, height / srcH);
 		const dstW = srcW * ratio;
 		const dstH = srcH * ratio;

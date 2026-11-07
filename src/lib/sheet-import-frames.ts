@@ -61,7 +61,7 @@ export type AutoLayout = {
 /**
  * 方向のキーの候補。4方向なら sadw、それ以上は斜めを足し、足りなければ余りの文字
  */
-const WAY_KEYS = "sadwqezcbfghijklmnoprtuvxy";
+export const WAY_KEYS = "sadwqezcbfghijklmnoprtuvxy";
 
 /**
  * コマ数・方向数・コマの大きさもシートから決めて切り分ける

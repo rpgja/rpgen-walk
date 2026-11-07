@@ -6,6 +6,7 @@
     import * as schema from "$lib/schema";
     import {
         type AutoLayout,
+        WAY_KEYS,
         analyzeSheet,
         analyzeSheetAuto,
         applySheet,
@@ -58,7 +59,14 @@
     };
 
     const handleImportButton = async () => {
-        if (!$imageUrl || !imageRef || imageRef.naturalWidth === 0) return;
+        // 読み込み途中だと前の画像の大きさのままなので待つ
+        if (
+            !$imageUrl ||
+            !imageRef ||
+            !imageRef.complete ||
+            imageRef.naturalWidth === 0
+        )
+            return;
         if (!confirm("歩行グラを読み込みますか？（※全てのデータは失われます）"))
             return;
         if (isSheetImport && isAutoLayout && auto) {
@@ -67,9 +75,13 @@
             init();
             applySheet(auto.result);
         } else {
+            const source =
+                !isSheetImport && !$isSimpleImport
+                    ? fitToImage(imageRef)
+                    : imageRef;
             init();
             if (isSheetImport && sheet) applySheet(sheet, sheetOrder);
-            else importImage(imageRef);
+            else importImage(source);
         }
         const now = anime.layersByI.get(0);
         if (now) {
@@ -77,6 +89,62 @@
             activeLayer = now[now.length - 1];
             initTimestamp = performance.now();
         }
+    };
+
+    /**
+     * コマの大きさを画像に合わせて作り直し、取り込む画像を返す
+     *
+     * テンプレなら等倍に縮め、決まったコマの大きさでコマ数・方向数も決める。
+     * コマ数は8までなので、多い行は折り返して行を増やす。
+     * それ以外は今のコマ数・方向数のまま、画像が割り切れるときだけ大きさを変える
+     */
+    const fitToImage = (
+        image: HTMLImageElement,
+    ): HTMLImageElement | HTMLCanvasElement => {
+        const t = selectedTemplate;
+        if (!t) {
+            const { frames } = anime;
+            const ways = anime.waysToStr(anime.waysOrder);
+            const width = image.naturalWidth / frames;
+            const height = image.naturalHeight / ways.length;
+            if (
+                Number.isInteger(width) &&
+                Number.isInteger(height) &&
+                v.is(schema.Width, width) &&
+                v.is(schema.Height, height)
+            )
+                anime.init(width, height, frames, ways);
+            return image;
+        }
+        const { pitch } = t;
+        const [cw, ch] = t.cell;
+        const count = Math.round(image.naturalWidth / pitch / cw);
+        const rows = Math.round(image.naturalHeight / pitch / ch);
+        const wraps = Math.ceil(count / 8);
+        const frames = Math.ceil(count / wraps);
+        const canvas = document.createElement("canvas");
+        canvas.width = cw * frames;
+        canvas.height = ch * rows * wraps;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return image;
+        ctx.imageSmoothingEnabled = false;
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < count; x++) {
+                ctx.drawImage(
+                    image,
+                    x * cw * pitch,
+                    y * ch * pitch,
+                    cw * pitch,
+                    ch * pitch,
+                    (x % frames) * cw,
+                    (y * wraps + Math.floor(x / frames)) * ch,
+                    cw,
+                    ch,
+                );
+            }
+        }
+        anime.init(cw, ch, frames, WAY_KEYS.slice(0, rows * wraps));
+        return canvas;
     };
 
     // ───────────────────────────────────────────────────────
@@ -219,18 +287,38 @@
 
     /**
      * 同梱素材（static/assets/mv 以下）。白背景の物は「背景を透過して切り分ける」で読み込む
+     *
+     * pitch は1ドットが何pxか、cell は1コマが何ドットか。読み込むときにこれでコマを作り直す
      */
     const template = [
-        ...["sheet-a", "sheet-b", "pose-a"],
-        ...["a", "b", "c", "d", "e", "f", "g"].map((v) => `beat-${v}`),
-    ]
-        .map((v) => `roze/${v}`)
-        .concat(
-            ["a", "b", "c"].map((v) => `cookie/mgr-${v}`),
-            ["a", "b", "c"].map((v) => `cookie/mot-${v}`),
-            ["a", "b", "c", "d"].map((v) => `cookie/nyn-${v}`),
-        )
-        .map((label) => ({ label, path: `${base}/assets/mv/${label}.png` }));
+        ...["sheet-a", "sheet-b"].map((v) => ({
+            label: `roze/${v}`,
+            pitch: 1,
+            cell: [64, 64],
+        })),
+        { label: "roze/pose-a", pitch: 5, cell: [64, 64] },
+        ...["a", "b", "c", "d", "e", "f", "g"].map((v) => ({
+            label: `roze/beat-${v}`,
+            pitch: 6,
+            cell: [64, 64],
+        })),
+        ...[
+            ...["a", "b", "c"].map((v) => `mgr-${v}`),
+            ...["a", "b", "c"].map((v) => `mot-${v}`),
+            ...["a", "b", "c", "d"].map((v) => `nyn-${v}`),
+        ].map((v) => ({ label: `cookie/${v}`, pitch: 5, cell: [32, 48] })),
+    ].map((v) => ({ ...v, path: `${base}/assets/mv/${v.label}.png` }));
+
+    /**
+     * 今の画像が同梱素材ならその設定
+     */
+    const selectedTemplate = $derived(
+        template.find(
+            (v) =>
+                typeof location !== "undefined" &&
+                new URL(v.path, location.href).href === $imageUrl,
+        ),
+    );
 
     /**
      * 同じオリジンの画像（同梱素材）はプロキシを通さない
@@ -264,7 +352,9 @@
             >
         </header>
         <article class="space-y-4">
-            <p class="opacity-60">先にリサイズしてください</p>
+            <p class="opacity-60">
+                コマの大きさは画像に合わせて変わります（割り切れないときは今のまま）
+            </p>
             <a
                 href="https://github.com/rpgja/rpgen-walk/tree/main?tab=readme-ov-file#%E5%90%8C%E6%A2%B1%E7%B4%A0%E6%9D%90%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6--about-included-assets"
                 target="_blank"
@@ -283,6 +373,8 @@
                         );
                         if (!v) return;
                         $imageUrl = new URL(v.path, location.href).href;
+                        // 切り分けるときも1ドットの大きさが分かっていれば測り違えない（1なら自動に任せる）
+                        pitchHint = v.pitch > 1 ? v.pitch : 0;
                     }}
                 >
                     <option value="">自動入力</option>
