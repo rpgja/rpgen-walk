@@ -253,6 +253,19 @@
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	});
+	/**
+	 * 描いた絵はどこにも残らないので、ページを離れる前に確認する
+	 * （ブラウザは一度も操作していないページでは確認を出さない）
+	 */
+	$effect(() => {
+		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+			e.preventDefault();
+			e.returnValue = ""; // 古いブラウザ向け
+		};
+		window.addEventListener("beforeunload", handleBeforeUnload);
+		return () =>
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+	});
 	$effect(() => {
 		if (!upperLayer) return;
 		window.removeEventListener("keydown", handleSelectionKeyDown);
